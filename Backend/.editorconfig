@@ -1,0 +1,4 @@
+[*.php]
+ij_php_class_brace_style = next_line
+ij_php_method_brace_style = next_line
+ij_typescript_function_expression_brace_style = next_line
