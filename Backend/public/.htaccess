@@ -6,4 +6,4 @@ RewriteBase /File-Manager/Backend/public
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 
-RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
+RewriteRule . index.php [QSA,L]

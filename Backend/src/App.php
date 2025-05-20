@@ -1,10 +1,11 @@
 ﻿<?php
 
 use Controllers\ApiController;
+use Controllers\Contracts\ApiRequest;
 use Controllers\User\UserController;
 
 /**
- * Represents the main Application that will handle all requests.
+ * Represents the main Application that will forward all requests to the corresponding controller.
  */
 class App
 {
@@ -16,20 +17,41 @@ class App
         $this->registerController(new UserController);
     }
 
-    public function handleRequest(string $requestRoute): void
+    /**
+     * Forwards a given request to the corresponding controller that handles the request.
+     */
+    public function forwardRequestToController(string $route, string $method): void
     {
-        if (empty($requestRoute) || !array_key_exists($requestRoute, $this->controllers)) {
+        if (empty($route))
+        {
             return;
         }
 
-        // TODO: Get methods of controller with HTTP attributes to get route
-        $controller = $this->controllers[$requestRoute];
-        var_dump(gettype($controller));
+        $controller = $this->findControllerByRoute($route);
+        if ($controller == null)
+        {
+            return;
+        }
+
+        $controller->handleRequest(new ApiRequest($route, $method));
     }
 
     private function registerController(ApiController $controller): void
     {
         $route = $controller->getRoute();
         $this->controllers[$route] = $controller;
+    }
+
+    private function findControllerByRoute(string $route): ?ApiController
+    {
+        foreach ($this->controllers as $controller)
+        {
+            if (str_starts_with($route, $controller->getRoute()))
+            {
+                return $controller;
+            }
+        }
+
+        return null;
     }
 }

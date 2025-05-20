@@ -2,7 +2,7 @@
 
 namespace Controllers\User;
 
-use Attributes\Controllers\HttpGetAttribute;
+use Attributes\Http\Methods\HttpGetAttribute;
 use Controllers\ApiController;
 use Services\User\UserService;
 use Services\User\UserServiceInterface;
@@ -13,17 +13,19 @@ use Services\User\UserServiceInterface;
 class UserController extends ApiController
 {
     private const ROUTE = "api/user";
+
     private readonly UserServiceInterface $userService;
 
     function __construct()
     {
-        $this->userService = new UserService();
         parent::__construct(self::ROUTE);
+
+        $this->userService = new UserService();
     }
 
     #[HttpGetAttribute("all")]
-    public function getUsers(): array
+    public function getUsers(): void
     {
-        return $this->userService->getUsers();
+        var_dump($this->userService->getUsers());
     }
 }

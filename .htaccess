@@ -1,0 +1,2 @@
+﻿# Prevents looking into root files and directories
+Options -Indexes
