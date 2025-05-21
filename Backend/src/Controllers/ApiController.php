@@ -36,7 +36,7 @@ abstract class ApiController
         if ($method == null)
         {
             http_response_code(500);
-            exit;
+            return;
         }
 
         $response = $method->call();
@@ -50,7 +50,7 @@ abstract class ApiController
         return $this->route;
     }
 
-    private function findControllerMethodByRequest(ApiRequest $request): ?ControllerMethod
+    private function findControllerMethodByRequest(ApiRequest $request): ?ApiControllerMethod
     {
         $requestRoute = $request->getRoute();
         $requestMethod = $request->getMethod();
@@ -81,7 +81,7 @@ abstract class ApiController
             }
 
             // TODO: Arguments, Request body/parameters
-            return new ControllerMethod($method->name, $this);
+            return new ApiControllerMethod($method->name, $this);
         }
 
         return null;

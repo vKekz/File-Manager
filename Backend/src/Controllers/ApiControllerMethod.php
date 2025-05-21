@@ -5,9 +5,9 @@ namespace Controllers;
 use Controllers\Contracts\Api\ApiResponse;
 
 /**
- * Represents a method for a given controller that can be called.
+ * Represents a method for a given API controller that can be called.
  */
-readonly class ControllerMethod
+readonly class ApiControllerMethod
 {
     private string $name;
     private ApiController $controller;

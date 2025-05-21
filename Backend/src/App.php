@@ -24,14 +24,14 @@ class App
     {
         if (empty($route))
         {
-            exit;
+            return;
         }
 
         $controller = $this->findControllerByRoute($route);
         if ($controller == null)
         {
             http_response_code(500);
-            exit;
+            return;
         }
 
         $controller->handleRequest(new ApiRequest($route, $method));
