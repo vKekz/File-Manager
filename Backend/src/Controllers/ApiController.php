@@ -3,8 +3,7 @@
 namespace Controllers;
 
 use Attributes\Http\HttpMethodAttribute;
-use Controllers\Contracts\ApiRequest;
-use Controllers\Contracts\ControllerMethod;
+use Controllers\Contracts\Api\ApiRequest;
 use ReflectionClass;
 
 /**
@@ -29,17 +28,21 @@ abstract class ApiController
     }
 
     /**
-     * Attempts to find a method matching our requested route and calls it.
+     * Attempts to find a method matching our requested route, calls it and returns the response in JSON format.
      */
     public function handleRequest(ApiRequest $request): void
     {
         $method = $this->findControllerMethodByRequest($request);
         if ($method == null)
         {
-            return;
+            http_response_code(500);
+            exit;
         }
 
-        $method->call();
+        $response = $method->call();
+        header("Content-Type: application/json; charset=utf-8", true, $response->getStatusCode());
+
+        echo json_encode($response->getData(), JSON_PRETTY_PRINT);
     }
 
     public function getRoute(): string
@@ -59,7 +62,7 @@ abstract class ApiController
             $attributes = $method->getAttributes();
             if (count($attributes) < 1)
             {
-                // Skip, since we only support one attribute
+                // Skip since we only support one attribute
                 continue;
             }
 
@@ -74,11 +77,10 @@ abstract class ApiController
             $mergedRoute = $this->getRoute() . "/" . $httpAttribute->getRoute();
             if (strcmp($mergedRoute, $requestRoute) != 0 || $httpAttribute->getMethod() != $requestMethod)
             {
-                // TODO: MethodNotSupported exception 500 probably
                 continue;
             }
 
-             // TODO: Arguments, Request body/parameters
+            // TODO: Arguments, Request body/parameters
             return new ControllerMethod($method->name, $this);
         }
 

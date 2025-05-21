@@ -4,6 +4,7 @@ namespace Controllers\User;
 
 use Attributes\Http\Methods\HttpGetAttribute;
 use Controllers\ApiController;
+use Controllers\Contracts\Api\Responses\OkResponse;
 use Services\User\UserService;
 use Services\User\UserServiceInterface;
 
@@ -13,7 +14,6 @@ use Services\User\UserServiceInterface;
 class UserController extends ApiController
 {
     private const ROUTE = "api/user";
-
     private readonly UserServiceInterface $userService;
 
     function __construct()
@@ -24,8 +24,8 @@ class UserController extends ApiController
     }
 
     #[HttpGetAttribute("all")]
-    public function getUsers(): void
+    public function getUsers(): OkResponse
     {
-        var_dump($this->userService->getUsers());
+        return new OkResponse($this->userService->getUsers());
     }
 }

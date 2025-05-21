@@ -1,6 +1,6 @@
 <?php
 
-namespace Controllers\Contracts;
+namespace Controllers\Contracts\Api;
 
 use Attributes\Http\HttpMethod;
 

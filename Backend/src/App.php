@@ -1,7 +1,7 @@
 ﻿<?php
 
 use Controllers\ApiController;
-use Controllers\Contracts\ApiRequest;
+use Controllers\Contracts\Api\ApiRequest;
 use Controllers\User\UserController;
 
 /**
@@ -24,13 +24,14 @@ class App
     {
         if (empty($route))
         {
-            return;
+            exit;
         }
 
         $controller = $this->findControllerByRoute($route);
         if ($controller == null)
         {
-            return;
+            http_response_code(500);
+            exit;
         }
 
         $controller->handleRequest(new ApiRequest($route, $method));

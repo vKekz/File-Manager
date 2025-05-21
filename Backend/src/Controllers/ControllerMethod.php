@@ -1,8 +1,8 @@
 <?php
 
-namespace Controllers\Contracts;
+namespace Controllers;
 
-use Controllers\ApiController;
+use Controllers\Contracts\Api\ApiResponse;
 
 /**
  * Represents a method for a given controller that can be called.
@@ -19,14 +19,10 @@ readonly class ControllerMethod
     }
 
     /**
-     * Calls the method in the controller if it exists.
+     * Calls the method in the controller and returns the response.
      */
-    public function call(): void
+    public function call(): ApiResponse
     {
-        if (!method_exists($this->controller, $this->name)) {
-            return;
-        }
-
-        call_user_func([$this->controller, $this->name]);
+        return call_user_func([$this->controller, $this->name]);
     }
 }
