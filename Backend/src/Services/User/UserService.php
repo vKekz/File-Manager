@@ -2,17 +2,27 @@
 
 namespace Services\User;
 
+use Contracts\User\RegisterUserRequest;
 use Contracts\User\RegisterUserResponse;
+use Database\Repositories\User\UserRepositoryInterface;
+use Entities\User\UserEntity;
 
-class UserService implements UserServiceInterface
+/**
+ * @inheritdoc
+ */
+readonly class UserService implements UserServiceInterface
 {
-    function getUsers(): array
+    function __construct(private UserRepositoryInterface $userRepository)
     {
-        return ["1", "2"];
     }
 
-    function registerUser(mixed $request): RegisterUserResponse
+    function registerUser(RegisterUserRequest $request): RegisterUserResponse
     {
-        return new RegisterUserResponse(rand());
+        return new RegisterUserResponse($request->email);
+    }
+
+    function getUserById(string $id): ?UserEntity
+    {
+        return $this->userRepository->findById($id);
     }
 }

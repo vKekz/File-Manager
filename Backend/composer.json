@@ -5,7 +5,12 @@
       "Controllers\\": "src/Controllers/",
       "Services\\": "src/Services/",
       "Contracts\\": "src/Contracts/",
-      "Enums\\": "src/Enums/"
+      "Enums\\": "src/Enums/",
+      "Database\\": "src/Database/",
+      "Entities\\": "src/Entities/"
     }
+  },
+  "require": {
+    "ext-mysqli": "*"
   }
 }

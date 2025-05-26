@@ -3,6 +3,8 @@
 use Contracts\Api\ApiRequest;
 use Controllers\ApiController;
 use Controllers\User\UserController;
+use Database\Database;
+use Database\Repositories\User\UserRepository;
 use Enums\HttpMethod;
 use Services\User\UserService;
 
@@ -12,10 +14,14 @@ use Services\User\UserService;
 class App
 {
     private array $controllers = [];
+    private readonly Database $database;
 
     function __construct()
     {
-        $userService = new UserService();
+        $this->database = new Database();
+
+        $userRepository = new UserRepository($this->database);
+        $userService = new UserService($userRepository);
         $this->registerController(new UserController($userService));
     }
 
@@ -41,14 +47,14 @@ class App
 
     private function registerController(ApiController $controller): void
     {
-        $this->controllers[$controller->route] = $controller;
+        $this->controllers[$controller->endpoint] = $controller;
     }
 
     private function findControllerByRoute(string $route): ?ApiController
     {
         foreach ($this->controllers as $controller)
         {
-            if (str_starts_with($route, $controller->route))
+            if (str_starts_with($route, $controller->endpoint))
             {
                 return $controller;
             }

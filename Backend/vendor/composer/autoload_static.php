@@ -14,6 +14,11 @@ class ComposerStaticInit3fc97ab8604a44ad2c8111ce6849f29e
         'E' => 
         array (
             'Enums\\' => 6,
+            'Entities\\' => 9,
+        ),
+        'D' => 
+        array (
+            'Database\\' => 9,
         ),
         'C' => 
         array (
@@ -35,6 +40,14 @@ class ComposerStaticInit3fc97ab8604a44ad2c8111ce6849f29e
         array (
             0 => __DIR__ . '/../..' . '/src/Enums',
         ),
+        'Entities\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/Entities',
+        ),
+        'Database\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/Database',
+        ),
         'Controllers\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/Controllers',
@@ -55,17 +68,26 @@ class ComposerStaticInit3fc97ab8604a44ad2c8111ce6849f29e
         'Attributes\\Http\\Types\\HttpGet' => __DIR__ . '/../..' . '/src/Attributes/Http/Types/HttpGet.php',
         'Attributes\\Http\\Types\\HttpPatch' => __DIR__ . '/../..' . '/src/Attributes/Http/Types/HttpPatch.php',
         'Attributes\\Http\\Types\\HttpPost' => __DIR__ . '/../..' . '/src/Attributes/Http/Types/HttpPost.php',
-        'Attributes\\Parameter\\BodyParameter' => __DIR__ . '/../..' . '/src/Attributes/Parameter/BodyParameter.php',
+        'Attributes\\Parameter\\ParameterAttribute' => __DIR__ . '/../..' . '/src/Attributes/Parameter/ParameterAttribute.php',
+        'Attributes\\Parameter\\Types\\BodyParameter' => __DIR__ . '/../..' . '/src/Attributes/Parameter/Types/BodyParameter.php',
+        'Attributes\\Parameter\\Types\\QueryParameter' => __DIR__ . '/../..' . '/src/Attributes/Parameter/Types/QueryParameter.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Contracts\\Api\\ApiRequest' => __DIR__ . '/../..' . '/src/Contracts/Api/ApiRequest.php',
         'Contracts\\Api\\ApiResponse' => __DIR__ . '/../..' . '/src/Contracts/Api/ApiResponse.php',
         'Contracts\\Api\\OkResponse' => __DIR__ . '/../..' . '/src/Contracts/Api/OkResponse.php',
+        'Contracts\\JsonDeserializableInterface' => __DIR__ . '/../..' . '/src/Contracts/JsonDeserializableInterface.php',
         'Contracts\\User\\RegisterUserRequest' => __DIR__ . '/../..' . '/src/Contracts/User/RegisterUserRequest.php',
         'Contracts\\User\\RegisterUserResponse' => __DIR__ . '/../..' . '/src/Contracts/User/RegisterUserResponse.php',
         'Controllers\\ApiController' => __DIR__ . '/../..' . '/src/Controllers/ApiController.php',
         'Controllers\\ApiControllerMethod' => __DIR__ . '/../..' . '/src/Controllers/ApiControllerMethod.php',
+        'Controllers\\ApiControllerMethodParameter' => __DIR__ . '/../..' . '/src/Controllers/ApiControllerMethodParameter.php',
         'Controllers\\User\\UserController' => __DIR__ . '/../..' . '/src/Controllers/User/UserController.php',
+        'Database\\Database' => __DIR__ . '/../..' . '/src/Database/Database.php',
+        'Database\\Repositories\\User\\UserRepository' => __DIR__ . '/../..' . '/src/Database/Repositories/User/UserRepository.php',
+        'Database\\Repositories\\User\\UserRepositoryInterface' => __DIR__ . '/../..' . '/src/Database/Repositories/User/UserRepositoryInterface.php',
+        'Entities\\User\\UserEntity' => __DIR__ . '/../..' . '/src/Entities/User/UserEntity.php',
         'Enums\\HttpMethod' => __DIR__ . '/../..' . '/src/Enums/HttpMethod.php',
+        'Enums\\ParameterType' => __DIR__ . '/../..' . '/src/Enums/ParameterType.php',
         'Services\\User\\UserService' => __DIR__ . '/../..' . '/src/Services/User/UserService.php',
         'Services\\User\\UserServiceInterface' => __DIR__ . '/../..' . '/src/Services/User/UserServiceInterface.php',
     );
