@@ -10,15 +10,15 @@ use Contracts\Api\ApiResponse;
  */
 readonly class ApiControllerMethod
 {
-    function __construct(private string $name, private ApiController $controller)
+    function __construct(private ApiController $controller, private string $name, public array $parameters = [])
     {
     }
 
     /**
      * Calls the method in the controller and returns the response.
      */
-    public function call(): ApiResponse
+    public function call(mixed ...$arguments): ApiResponse
     {
-        return call_user_func([$this->controller, $this->name]);
+        return call_user_func([$this->controller, $this->name], $arguments);
     }
 }

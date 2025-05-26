@@ -3,7 +3,9 @@
 namespace Controllers;
 
 use Attributes\Http\HttpMethodAttribute;
+use Attributes\Parameter\ParameterAttribute;
 use Contracts\Api\ApiRequest;
+use Enums\ParameterType;
 use ReflectionAttribute;
 use ReflectionClass;
 
@@ -33,7 +35,22 @@ abstract class ApiController
             return;
         }
 
-        $response = $method->call();
+        $parameters = [];
+        foreach ($method->parameters as $parameter) {
+            switch ($parameter->parameterType) {
+                case ParameterType::Body:
+                    $parameters[] = file_get_contents("php://input");
+                break;
+                case ParameterType::Query:
+                    $parameters[] = $_GET[$parameter->name];
+                break;
+            }
+        }
+
+//        var_dump($parameters);
+
+        // TODO: Parameters is passed as an array...
+        $response = $method->call($parameters);
         header("Content-Type: application/json; charset=utf-8", true, $response->statusCode);
 
         echo json_encode($response->data, JSON_PRETTY_PRINT);
@@ -75,8 +92,26 @@ abstract class ApiController
                 continue;
             }
 
+            $parameters = [];
+            foreach ($method->getParameters() as $parameter)
+            {
+                $parameterAttributes = $parameter->getAttributes(ParameterAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
+                if (count($parameterAttributes) == 0)
+                {
+                    continue;
+                }
+
+                $parameterAttribute = $parameterAttributes[0]->newInstance();
+                if (!($parameterAttribute instanceof ParameterAttribute))
+                {
+                    continue;
+                }
+
+                $parameters[] = new ApiControllerMethodParameter($parameter->getName(), $parameterAttribute->parameterType);
+            }
+
             $route = $this->route . $httpAttribute->route;
-            $this->routes[$httpAttribute->method->name][$route] = new ApiControllerMethod($method->name, $this);
+            $this->routes[$httpAttribute->method->name][$route] = new ApiControllerMethod($this, $method->name, $parameters);
         }
     }
 }

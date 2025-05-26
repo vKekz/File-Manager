@@ -4,9 +4,8 @@ namespace Controllers\User;
 
 use Attributes\Http\Types\HttpGet;
 use Attributes\Http\Types\HttpPost;
-use Attributes\Parameter\BodyParameter;
+use Attributes\Parameter\Types\BodyParameter;
 use Contracts\Api\OkResponse;
-use Contracts\User\RegisterUserRequest;
 use Controllers\ApiController;
 use Services\User\UserServiceInterface;
 
@@ -29,9 +28,8 @@ class UserController extends ApiController
     }
 
     #[HttpPost("/register")]
-    public function registerUser(#[BodyParameter] RegisterUserRequest $request): OkResponse
+    public function registerUser(#[BodyParameter] mixed $request): OkResponse
     {
-        $response = $this->userService->registerUser($request);
-        return new OkResponse($response);
+        return new OkResponse($this->userService->registerUser($request));
     }
 }
