@@ -19,6 +19,7 @@ readonly class ApiControllerMethod
      */
     public function call(mixed ...$arguments): ApiResponse
     {
-        return call_user_func([$this->controller, $this->name], $arguments);
+        // Making use of https://wiki.php.net/rfc/argument_unpacking
+        return call_user_func([$this->controller, $this->name], ...$arguments);
     }
 }

@@ -8,6 +8,7 @@ use Contracts\Api\ApiRequest;
 use Enums\ParameterType;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * Represents the base class for an API controller.
@@ -17,7 +18,7 @@ abstract class ApiController
     private readonly ReflectionClass $reflection;
     private array $routes = [];
 
-    function __construct(public readonly string $route)
+    function __construct(public readonly string $endpoint)
     {
         $this->reflection = new ReflectionClass($this);
         $this->registerRoutes();
@@ -35,22 +36,22 @@ abstract class ApiController
             return;
         }
 
-        $parameters = [];
-        foreach ($method->parameters as $parameter) {
-            switch ($parameter->parameterType) {
+        $arguments = [];
+        foreach ($method->parameters as $parameter)
+        {
+            switch ($parameter->parameterType)
+            {
                 case ParameterType::Body:
-                    $parameters[] = file_get_contents("php://input");
+                    $arguments[] = file_get_contents("php://input");
                 break;
                 case ParameterType::Query:
-                    $parameters[] = $_GET[$parameter->name];
+                    $arguments[] = $_GET[$parameter->name];
                 break;
             }
         }
 
-//        var_dump($parameters);
-
-        // TODO: Parameters is passed as an array...
-        $response = $method->call($parameters);
+        // https://wiki.php.net/rfc/argument_unpacking
+        $response = $method->call(...$arguments);
         header("Content-Type: application/json; charset=utf-8", true, $response->statusCode);
 
         echo json_encode($response->data, JSON_PRETTY_PRINT);
@@ -92,26 +93,32 @@ abstract class ApiController
                 continue;
             }
 
-            $parameters = [];
-            foreach ($method->getParameters() as $parameter)
-            {
-                $parameterAttributes = $parameter->getAttributes(ParameterAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
-                if (count($parameterAttributes) == 0)
-                {
-                    continue;
-                }
-
-                $parameterAttribute = $parameterAttributes[0]->newInstance();
-                if (!($parameterAttribute instanceof ParameterAttribute))
-                {
-                    continue;
-                }
-
-                $parameters[] = new ApiControllerMethodParameter($parameter->getName(), $parameterAttribute->parameterType);
-            }
-
-            $route = $this->route . $httpAttribute->route;
+            $parameters = $this->getParametersForMethod($method);
+            $route = $this->endpoint . $httpAttribute->route;
             $this->routes[$httpAttribute->method->name][$route] = new ApiControllerMethod($this, $method->name, $parameters);
         }
+    }
+
+    private function getParametersForMethod(ReflectionMethod $method): array
+    {
+        $parameters = [];
+        foreach ($method->getParameters() as $parameter)
+        {
+            $parameterAttributes = $parameter->getAttributes(ParameterAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
+            if (count($parameterAttributes) == 0)
+            {
+                continue;
+            }
+
+            $parameterAttribute = $parameterAttributes[0]->newInstance();
+            if (!($parameterAttribute instanceof ParameterAttribute))
+            {
+                continue;
+            }
+
+            $parameters[] = new ApiControllerMethodParameter($parameter->getName(), $parameterAttribute->parameterType);
+        }
+
+        return $parameters;
     }
 }

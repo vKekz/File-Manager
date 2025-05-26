@@ -2,15 +2,17 @@
 
 namespace Contracts\User;
 
-readonly class RegisterUserRequest
+use Contracts\JsonDeserializableInterface;
+
+readonly class RegisterUserRequest implements JsonDeserializableInterface
 {
     function __construct(public string $email, public string $password)
     {
     }
 
-    public static function fromJson(string $jsonString): RegisterUserRequest
+    public static function deserialize(string $json): RegisterUserRequest
     {
-        $json = json_decode($jsonString, true);
-        return new self($json->email, $json->password);
+        $decoded = json_decode($json, true);
+        return new self($decoded["email"], $decoded["password"]);
     }
 }
