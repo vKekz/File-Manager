@@ -3,7 +3,8 @@
 namespace Controllers;
 
 use Attributes\Http\HttpMethodAttribute;
-use Controllers\Contracts\Api\ApiRequest;
+use Contracts\Api\ApiRequest;
+use ReflectionAttribute;
 use ReflectionClass;
 
 /**
@@ -11,20 +12,13 @@ use ReflectionClass;
  */
 abstract class ApiController
 {
-    /**
-     * The route to this controller.
-     */
-    private readonly string $route;
-
-    /**
-     * The reflection details to this controller.
-     */
     private readonly ReflectionClass $reflection;
+    private array $routes = [];
 
-    function __construct(string $route)
+    function __construct(public readonly string $route)
     {
-        $this->route = $route;
         $this->reflection = new ReflectionClass($this);
+        $this->registerRoutes();
     }
 
     /**
@@ -40,50 +34,49 @@ abstract class ApiController
         }
 
         $response = $method->call();
-        header("Content-Type: application/json; charset=utf-8", true, $response->getStatusCode());
+        header("Content-Type: application/json; charset=utf-8", true, $response->statusCode);
 
-        echo json_encode($response->getData(), JSON_PRETTY_PRINT);
-    }
-
-    public function getRoute(): string
-    {
-        return $this->route;
+        echo json_encode($response->data, JSON_PRETTY_PRINT);
     }
 
     private function findControllerMethodByRequest(ApiRequest $request): ?ApiControllerMethod
     {
-        $requestRoute = $request->getRoute();
-        $requestMethod = $request->getMethod();
+        $requestRoute = $request->route;
+        $requestMethod = $request->method;
 
-        // Goes through each method the controller has
+        if (!array_key_exists($requestMethod->name, $this->routes))
+        {
+            return null;
+        }
+
+        $methodDictionary = $this->routes[$requestMethod->name];
+        if (!array_key_exists($requestRoute, $methodDictionary))
+        {
+            return null;
+        }
+
+        return $methodDictionary[$requestRoute];
+    }
+
+    private function registerRoutes(): void
+    {
         $methods = $this->reflection->getMethods();
         foreach ($methods as $method)
         {
-            $attributes = $method->getAttributes();
-            if (count($attributes) < 1)
+            $attributes = $method->getAttributes(HttpMethodAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
+            if (count($attributes) == 0)
             {
-                // Skip since we only support one attribute
                 continue;
             }
 
-            // Check if the attribute is our HTTP attribute
             $httpAttribute = $attributes[0]->newInstance();
             if (!($httpAttribute instanceof HttpMethodAttribute))
             {
                 continue;
             }
 
-            // Check if the route matches
-            $mergedRoute = $this->getRoute() . "/" . $httpAttribute->getRoute();
-            if (strcmp($mergedRoute, $requestRoute) != 0 || $httpAttribute->getMethod() != $requestMethod)
-            {
-                continue;
-            }
-
-            // TODO: Arguments, Request body/parameters
-            return new ApiControllerMethod($method->name, $this);
+            $route = $this->route . $httpAttribute->route;
+            $this->routes[$httpAttribute->method->name][$route] = new ApiControllerMethod($method->name, $this);
         }
-
-        return null;
     }
 }

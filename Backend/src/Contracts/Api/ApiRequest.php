@@ -1,13 +1,13 @@
 <?php
 
-namespace Attributes\Http;
+namespace Contracts\Api;
 
 use Enums\HttpMethod;
 
 /**
- * Represents the base class for an HTTP attribute.
+ * Represents an API request.
  */
-abstract class HttpMethodAttribute
+readonly class ApiRequest
 {
     function __construct(public string $route, public HttpMethod $method)
     {

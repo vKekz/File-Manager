@@ -7,6 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Services\\' => array($baseDir . '/src/Services'),
+    'Enums\\' => array($baseDir . '/src/Enums'),
     'Controllers\\' => array($baseDir . '/src/Controllers'),
+    'Contracts\\' => array($baseDir . '/src/Contracts'),
     'Attributes\\' => array($baseDir . '/src/Attributes'),
 );

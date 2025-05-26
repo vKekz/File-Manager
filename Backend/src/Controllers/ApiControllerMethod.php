@@ -2,20 +2,16 @@
 
 namespace Controllers;
 
-use Controllers\Contracts\Api\ApiResponse;
+
+use Contracts\Api\ApiResponse;
 
 /**
  * Represents a method for a given API controller that can be called.
  */
 readonly class ApiControllerMethod
 {
-    private string $name;
-    private ApiController $controller;
-
-    function __construct(string $name, ApiController $controller)
+    function __construct(private string $name, private ApiController $controller)
     {
-        $this->name = $name;
-        $this->controller = $controller;
     }
 
     /**

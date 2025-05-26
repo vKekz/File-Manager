@@ -1,6 +1,6 @@
 <?php
 
-namespace Attributes\Http;
+namespace Enums;
 
 /**
  * Represents the accepting HTTP methods.

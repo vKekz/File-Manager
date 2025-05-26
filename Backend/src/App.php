@@ -1,26 +1,28 @@
-﻿<?php
+<?php
 
+use Contracts\Api\ApiRequest;
 use Controllers\ApiController;
-use Controllers\Contracts\Api\ApiRequest;
 use Controllers\User\UserController;
+use Enums\HttpMethod;
+use Services\User\UserService;
 
 /**
- * Represents the main Application that will forward all requests to the corresponding controller.
+ * Represents the main Application that will handle the request.
  */
 class App
 {
-    private array $controllers;
+    private array $controllers = [];
 
     function __construct()
     {
-        $this->controllers = [];
-        $this->registerController(new UserController);
+        $userService = new UserService();
+        $this->registerController(new UserController($userService));
     }
 
     /**
      * Forwards a given request to the corresponding controller that handles the request.
      */
-    public function forwardRequestToController(string $route, string $method): void
+    public function handleRequest(string $route, string $method): void
     {
         if (empty($route))
         {
@@ -34,20 +36,19 @@ class App
             return;
         }
 
-        $controller->handleRequest(new ApiRequest($route, $method));
+        $controller->handleRequest(new ApiRequest($route, HttpMethod::getFromName($method)));
     }
 
     private function registerController(ApiController $controller): void
     {
-        $route = $controller->getRoute();
-        $this->controllers[$route] = $controller;
+        $this->controllers[$controller->route] = $controller;
     }
 
     private function findControllerByRoute(string $route): ?ApiController
     {
         foreach ($this->controllers as $controller)
         {
-            if (str_starts_with($route, $controller->getRoute()))
+            if (str_starts_with($route, $controller->route))
             {
                 return $controller;
             }

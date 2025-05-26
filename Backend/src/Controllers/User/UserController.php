@@ -2,10 +2,12 @@
 
 namespace Controllers\User;
 
-use Attributes\Http\Methods\HttpGetAttribute;
+use Attributes\Http\Types\HttpGet;
+use Attributes\Http\Types\HttpPost;
+use Attributes\Parameter\BodyParameter;
+use Contracts\Api\OkResponse;
+use Contracts\User\RegisterUserRequest;
 use Controllers\ApiController;
-use Controllers\Contracts\Api\Responses\OkResponse;
-use Services\User\UserService;
 use Services\User\UserServiceInterface;
 
 /**
@@ -14,18 +16,22 @@ use Services\User\UserServiceInterface;
 class UserController extends ApiController
 {
     private const ROUTE = "api/user";
-    private readonly UserServiceInterface $userService;
 
-    function __construct()
+    function __construct(private readonly UserServiceInterface $userService)
     {
         parent::__construct(self::ROUTE);
-
-        $this->userService = new UserService();
     }
 
-    #[HttpGetAttribute("all")]
+    #[HttpGet("/all")]
     public function getUsers(): OkResponse
     {
         return new OkResponse($this->userService->getUsers());
+    }
+
+    #[HttpPost("/register")]
+    public function registerUser(#[BodyParameter] RegisterUserRequest $request): OkResponse
+    {
+        $response = $this->userService->registerUser($request);
+        return new OkResponse($response);
     }
 }

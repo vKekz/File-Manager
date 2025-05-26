@@ -1,8 +1,6 @@
 <?php
 
-namespace Controllers\Contracts\Api\Responses;
-
-use Controllers\Contracts\Api\ApiResponse;
+namespace Contracts\Api;
 
 /**
  * Represents an API response with the HTTP status code 200.

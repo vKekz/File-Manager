@@ -1,16 +1,16 @@
 <?php
 
-namespace Attributes\Http\Methods;
+namespace Attributes\Http\Types;
 
 use Attribute;
-use Attributes\Http\HttpMethod;
 use Attributes\Http\HttpMethodAttribute;
+use Enums\HttpMethod;
 
 /**
  * Marks a method to support the HTTP DELETE method.
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class HttpDeleteAttribute extends HttpMethodAttribute
+class HttpDelete extends HttpMethodAttribute
 {
     function __construct(string $route = "")
     {

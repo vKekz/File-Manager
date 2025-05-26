@@ -6,10 +6,22 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Attributes\\Controllers\\HttpGetAttribute' => $baseDir . '/src/Attributes/Controllers/HttpGetAttribute.php',
+    'Attributes\\Http\\HttpMethodAttribute' => $baseDir . '/src/Attributes/Http/HttpMethodAttribute.php',
+    'Attributes\\Http\\Types\\HttpDelete' => $baseDir . '/src/Attributes/Http/Types/HttpDelete.php',
+    'Attributes\\Http\\Types\\HttpGet' => $baseDir . '/src/Attributes/Http/Types/HttpGet.php',
+    'Attributes\\Http\\Types\\HttpPatch' => $baseDir . '/src/Attributes/Http/Types/HttpPatch.php',
+    'Attributes\\Http\\Types\\HttpPost' => $baseDir . '/src/Attributes/Http/Types/HttpPost.php',
+    'Attributes\\Parameter\\BodyParameter' => $baseDir . '/src/Attributes/Parameter/BodyParameter.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Contracts\\Api\\ApiRequest' => $baseDir . '/src/Contracts/Api/ApiRequest.php',
+    'Contracts\\Api\\ApiResponse' => $baseDir . '/src/Contracts/Api/ApiResponse.php',
+    'Contracts\\Api\\OkResponse' => $baseDir . '/src/Contracts/Api/OkResponse.php',
+    'Contracts\\User\\RegisterUserRequest' => $baseDir . '/src/Contracts/User/RegisterUserRequest.php',
+    'Contracts\\User\\RegisterUserResponse' => $baseDir . '/src/Contracts/User/RegisterUserResponse.php',
     'Controllers\\ApiController' => $baseDir . '/src/Controllers/ApiController.php',
+    'Controllers\\ApiControllerMethod' => $baseDir . '/src/Controllers/ApiControllerMethod.php',
     'Controllers\\User\\UserController' => $baseDir . '/src/Controllers/User/UserController.php',
+    'Enums\\HttpMethod' => $baseDir . '/src/Enums/HttpMethod.php',
     'Services\\User\\UserService' => $baseDir . '/src/Services/User/UserService.php',
     'Services\\User\\UserServiceInterface' => $baseDir . '/src/Services/User/UserServiceInterface.php',
 );
