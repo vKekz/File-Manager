@@ -1,13 +1,8 @@
 {
   "autoload": {
     "psr-4": {
-      "Attributes\\": "src/Attributes/",
-      "Controllers\\": "src/Controllers/",
-      "Services\\": "src/Services/",
-      "Contracts\\": "src/Contracts/",
-      "Enums\\": "src/Enums/",
-      "Database\\": "src/Database/",
-      "Entities\\": "src/Entities/"
+      "App\\": "src/App/",
+      "Core\\": "src/Core/"
     }
   },
   "require": {
