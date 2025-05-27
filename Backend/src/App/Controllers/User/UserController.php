@@ -6,6 +6,8 @@ use Core\Attributes\Http\HttpGet;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\BodyParameter;
 use Core\Attributes\Parameter\QueryParameter;
+use Core\Contracts\Api\ApiResponse;
+use Core\Contracts\Api\NotFoundResponse;
 use Core\Contracts\Api\OkResponse;
 use Core\Controllers\ApiController;
 use App\Contracts\User\RegisterUserRequest;
@@ -24,9 +26,10 @@ class UserController extends ApiController
     }
 
     #[HttpGet]
-    public function getUserById(#[QueryParameter] string $id): OkResponse
+    public function getUserById(#[QueryParameter] string $id): ApiResponse
     {
-        return new OkResponse($this->userService->getUserById($id));
+        $userEntity = $this->userService->getUserById($id);
+        return $userEntity != null ? new OkResponse($userEntity) : new NotFoundResponse(null);
     }
 
     #[HttpPost("/register")]

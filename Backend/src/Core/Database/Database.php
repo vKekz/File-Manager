@@ -31,15 +31,42 @@ readonly class Database
         return $this->connection->close();
     }
 
-    public function selectQuery(string $query, string $types, mixed ...$args): mysqli_result | false
+    public function fetchData(string $table, string ...$attributes): array
+    {
+        $attributes = count($attributes) == 0 ? "*" : join(", ", $attributes);
+        $query = $this->selectQuery("SELECT " . $attributes . " FROM " . $table);
+        if (!$query)
+        {
+            return [];
+        }
+
+        $data = [];
+        while ($row = $query->fetch_assoc())
+        {
+            $data[] = $row;
+        }
+
+        $query->free();
+        return $data;
+    }
+
+    private function selectQuery(string $query, string $types = "", mixed ...$args): mysqli_result | false
     {
         $statement = $this->connection->prepare($query);
-        $statement->bind_param($types, ...$args);
+        if (!empty($types))
+        {
+            $statement->bind_param($types, ...$args);
+        }
 
         if ($statement->execute())
         {
             $result = $statement->get_result();
             $statement->close();
+
+            if ($result->num_rows == 0)
+            {
+                return false;
+            }
 
             return $result;
         }

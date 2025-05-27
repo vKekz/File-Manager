@@ -8,12 +8,14 @@ use Core\Database\Database;
 /**
  * @inheritdoc
  */
-readonly class UserRepository implements UserRepositoryInterface
+class UserRepository implements UserRepositoryInterface
 {
     public const TABLE_NAME = "user_entities";
+    private array $userEntities;
 
-    function __construct(private Database $database)
+    function __construct(private readonly Database $database)
     {
+        $this->userEntities = [];
     }
 
     /**
@@ -21,7 +23,8 @@ readonly class UserRepository implements UserRepositoryInterface
      */
     function findById(string $id): ?UserEntity
     {
-        return null;
+        $this->fetchUsers();
+        return array_key_exists($id, $this->userEntities) ? $this->userEntities[$id] : null;
     }
 
     /**
@@ -29,5 +32,14 @@ readonly class UserRepository implements UserRepositoryInterface
      */
     function save(UserEntity $entity): void
     {
+    }
+
+    private function fetchUsers(): void
+    {
+        $data = $this->database->fetchData(self::TABLE_NAME);
+        foreach ($data as $entry)
+        {
+            $this->userEntities[$entry["Id"]] = UserEntity::fromQuery($entry);
+        }
     }
 }
