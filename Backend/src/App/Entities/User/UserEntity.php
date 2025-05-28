@@ -8,8 +8,8 @@ namespace App\Entities\User;
 readonly class UserEntity
 {
     function __construct(
-        public string $id,
-        public string $userName,
+        public int $id,
+        public string $username,
         public string $email,
         public string $passwordHash)
     {

@@ -30,12 +30,14 @@ class ComposerStaticInit3fc97ab8604a44ad2c8111ce6849f29e
 
     public static $classMap = array (
         'App\\App' => __DIR__ . '/../..' . '/src/App/App.php',
+        'App\\Contracts\\User\\LoginUserRequest' => __DIR__ . '/../..' . '/src/App/Contracts/User/LoginUserRequest.php',
         'App\\Contracts\\User\\RegisterUserRequest' => __DIR__ . '/../..' . '/src/App/Contracts/User/RegisterUserRequest.php',
         'App\\Contracts\\User\\RegisterUserResponse' => __DIR__ . '/../..' . '/src/App/Contracts/User/RegisterUserResponse.php',
         'App\\Controllers\\User\\UserController' => __DIR__ . '/../..' . '/src/App/Controllers/User/UserController.php',
         'App\\Entities\\User\\UserEntity' => __DIR__ . '/../..' . '/src/App/Entities/User/UserEntity.php',
         'App\\Repositories\\User\\UserRepository' => __DIR__ . '/../..' . '/src/App/Repositories/User/UserRepository.php',
         'App\\Repositories\\User\\UserRepositoryInterface' => __DIR__ . '/../..' . '/src/App/Repositories/User/UserRepositoryInterface.php',
+        'App\\Services\\Hash\\HashServiceInterface' => __DIR__ . '/../..' . '/src/App/Services/Hash/HashServiceInterface.php',
         'App\\Services\\User\\UserService' => __DIR__ . '/../..' . '/src/App/Services/User/UserService.php',
         'App\\Services\\User\\UserServiceInterface' => __DIR__ . '/../..' . '/src/App/Services/User/UserServiceInterface.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
@@ -49,14 +51,15 @@ class ComposerStaticInit3fc97ab8604a44ad2c8111ce6849f29e
         'Core\\Attributes\\Parameter\\QueryParameter' => __DIR__ . '/../..' . '/src/Core/Attributes/Parameter/QueryParameter.php',
         'Core\\Contracts\\Api\\ApiRequest' => __DIR__ . '/../..' . '/src/Core/Contracts/Api/ApiRequest.php',
         'Core\\Contracts\\Api\\ApiResponse' => __DIR__ . '/../..' . '/src/Core/Contracts/Api/ApiResponse.php',
+        'Core\\Contracts\\Api\\NotFoundResponse' => __DIR__ . '/../..' . '/src/Core/Contracts/Api/NotFoundResponse.php',
         'Core\\Contracts\\Api\\OkResponse' => __DIR__ . '/../..' . '/src/Core/Contracts/Api/OkResponse.php',
+        'Core\\Contracts\\Api\\ServerErrorResponse' => __DIR__ . '/../..' . '/src/Core/Contracts/Api/ServerErrorResponse.php',
         'Core\\Controllers\\ApiController' => __DIR__ . '/../..' . '/src/Core/Controllers/ApiController.php',
         'Core\\Controllers\\ApiControllerMethod' => __DIR__ . '/../..' . '/src/Core/Controllers/ApiControllerMethod.php',
         'Core\\Controllers\\ApiControllerMethodParameter' => __DIR__ . '/../..' . '/src/Core/Controllers/ApiControllerMethodParameter.php',
         'Core\\Database\\Database' => __DIR__ . '/../..' . '/src/Core/Database/Database.php',
         'Core\\Enums\\HttpMethod' => __DIR__ . '/../..' . '/src/Core/Enums/HttpMethod.php',
         'Core\\Enums\\ParameterType' => __DIR__ . '/../..' . '/src/Core/Enums/ParameterType.php',
-        'Core\\Utilities\\JsonDeserializableInterface' => __DIR__ . '/../..' . '/src/Core/Utilities/JsonDeserializableInterface.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

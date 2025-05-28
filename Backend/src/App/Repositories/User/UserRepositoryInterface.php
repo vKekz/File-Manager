@@ -13,9 +13,13 @@ interface UserRepositoryInterface
     /**
      * Attempts to find a user entity by the given ID.
      */
-    function findById(string $id): ?UserEntity;
+    function findById(int $id): ?UserEntity;
     /**
-     * Attempts to save a user entity to the repository.
+     * Attempts to add a user entity to the repository.
      */
-    function trySave(UserEntity $entity): bool;
+    function tryAdd(UserEntity $entity): bool;
+    /**
+     * Attempts to remove a user entity to the repository.
+     */
+    function tryRemove(int $id): bool;
 }

@@ -7,7 +7,7 @@ namespace Core\Contracts\Api;
  */
 class NotFoundResponse extends ApiResponse
 {
-    function __construct(mixed $data)
+    function __construct(mixed $data = "")
     {
         parent::__construct($data, 404);
     }

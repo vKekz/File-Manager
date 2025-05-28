@@ -36,6 +36,7 @@ abstract class ApiController
             return;
         }
 
+        // TODO: Error if parameter is missing
         $arguments = [];
         foreach ($method->parameters as $parameter)
         {

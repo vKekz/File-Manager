@@ -4,7 +4,6 @@ namespace Core\Database;
 
 use mysqli;
 use mysqli_result;
-use App\Repositories\User\UserRepository;
 use mysqli_stmt;
 
 readonly class Database
@@ -24,7 +23,6 @@ readonly class Database
         }
 
         $this->createDatabase();
-        $this->createUserEntityTable();
     }
 
     public function close(): bool
@@ -32,11 +30,31 @@ readonly class Database
         return $this->connection->close();
     }
 
+    public function createTable(string $tableName, string $attributes): void
+    {
+        $query = "CREATE TABLE IF NOT EXISTS $tableName $attributes";
+        $statement = $this->connection->prepare($query);
+
+        if (!$statement->execute())
+        {
+            $statement->close();
+            die("Failed creating table: $tableName");
+        }
+
+        $statement->close();
+    }
+
     public function fetchData(string $table, string ...$attributes): array
     {
         $attributes = count($attributes) == 0 ? "*" : join(", ", $attributes);
         $query = "SELECT $attributes FROM $table";
         $result = $this->selectQuery($query);
+
+        // Return empty array if result was false
+        if (!$result)
+        {
+            return [];
+        }
 
         $data = [];
         while ($row = $result->fetch_assoc())
@@ -55,7 +73,28 @@ readonly class Database
         $valuesQuery = join(", ", $marks);
         $query = "INSERT INTO $table ($attributes) VALUES ($valuesQuery)";
 
-        return $this->insertQuery($query, ...$values);
+        return $this->executePreparedQuery($query, ...$values);
+    }
+
+    public function deleteData(string $table, string $condition, string ...$values): bool
+    {
+        $query = "DELETE FROM $table $condition";
+        return $this->executePreparedQuery($query, ...$values);
+    }
+
+    private function createDatabase(): void
+    {
+        $query = "CREATE DATABASE IF NOT EXISTS " . self::DATABASE_NAME;
+        $statement = $this->connection->prepare($query);
+
+        if (!$statement->execute())
+        {
+            $statement->close();
+            die("Failed creating database: " . self::DATABASE_NAME);
+        }
+
+        $statement->close();
+        $this->connection->select_db(self::DATABASE_NAME);
     }
 
     private function bindParameters(mysqli_stmt $statement, mixed ...$args): mysqli_stmt
@@ -99,7 +138,7 @@ readonly class Database
         return false;
     }
 
-    private function insertQuery(string $query, mixed ...$args): bool
+    private function executePreparedQuery(string $query, mixed ...$args): bool
     {
         $statement = $this->connection->prepare($query);
         $statement = $this->bindParameters($statement, $args);
@@ -107,45 +146,5 @@ readonly class Database
         $result = $statement->execute();
         $statement->close();
         return $result;
-    }
-
-    private function createDatabase(): void
-    {
-        $query = "CREATE DATABASE IF NOT EXISTS " . self::DATABASE_NAME;
-        $statement = $this->connection->prepare($query);
-
-        if (!$statement->execute())
-        {
-            $statement->close();
-            die("Failed creating database: " . self::DATABASE_NAME);
-        }
-
-        $statement->close();
-        $this->connection->select_db(self::DATABASE_NAME);
-    }
-
-    private function createUserEntityTable(): void
-    {
-        $attributes = "(
-            Id varchar(50) PRIMARY KEY,
-            UserName varchar(16),
-            Email varchar(50),
-            PasswordHash varchar(255)
-        )";
-        $this->createTable(UserRepository::TABLE_NAME, $attributes);
-    }
-
-    private function createTable(string $tableName, string $attributes): void
-    {
-        $query = "CREATE TABLE IF NOT EXISTS $tableName $attributes";
-        $statement = $this->connection->prepare($query);
-
-        if (!$statement->execute())
-        {
-            $statement->close();
-            die("Failed creating table: $tableName");
-        }
-
-        $statement->close();
     }
 }

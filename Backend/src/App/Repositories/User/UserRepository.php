@@ -10,7 +10,7 @@ use Core\Database\Database;
  */
 class UserRepository implements UserRepositoryInterface
 {
-    public const TABLE_NAME = "user_entities";
+    private const TABLE_NAME = "user_entities";
     private array $userEntities;
 
     function __construct(private readonly Database $database)
@@ -19,9 +19,10 @@ class UserRepository implements UserRepositoryInterface
 
         // TODO: Lazy load
         $this->fetchUsers();
+        $this->createTable();
     }
 
-    public function getUsers(): array
+    function getUsers(): array
     {
         return $this->userEntities;
     }
@@ -29,7 +30,7 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findById(string $id): ?UserEntity
+    function findById(int $id): ?UserEntity
     {
         return array_key_exists($id, $this->userEntities) ? $this->userEntities[$id] : null;
     }
@@ -37,12 +38,35 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @inheritdoc
      */
-    function trySave(UserEntity $entity): bool
+    function tryAdd(UserEntity $entity): bool
     {
         $attributes = ["Id", "Email", "UserName", "PasswordHash"];
-        $values = [$entity->id, $entity->email, $entity->userName, $entity->passwordHash];
+        $values = [$entity->id, $entity->email, $entity->username, $entity->passwordHash];
+
+        $this->userEntities[$entity->id] = $entity;
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function tryRemove(int $id): bool
+    {
+        $condition = "WHERE Id = ?";
+        if (!$this->database->deleteData(self::TABLE_NAME, $condition, $id))
+        {
+            return false;
+        }
+
+        if (!array_key_exists($id, $this->userEntities))
+        {
+            return false;
+        }
+
+        unset($this->userEntities[$id]);
+
+        return true;
     }
 
     private function fetchUsers(): void
@@ -52,5 +76,16 @@ class UserRepository implements UserRepositoryInterface
         {
             $this->userEntities[$entry["Id"]] = UserEntity::fromArray($entry);
         }
+    }
+
+    private function createTable(): void
+    {
+        $attributes = "(
+            Id bigint PRIMARY KEY,
+            UserName varchar(16),
+            Email varchar(50),
+            PasswordHash varchar(255)
+        )";
+        $this->database->createTable(self::TABLE_NAME, $attributes);
     }
 }

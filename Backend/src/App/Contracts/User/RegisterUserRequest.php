@@ -2,17 +2,15 @@
 
 namespace App\Contracts\User;
 
-use Core\Utilities\JsonDeserializableInterface;
-
-readonly class RegisterUserRequest implements JsonDeserializableInterface
+readonly class RegisterUserRequest
 {
-    function __construct(public string $userName, public string $email, public string $password)
+    function __construct(public string $username, public string $email, public string $password)
     {
     }
 
     public static function deserialize(string $json): RegisterUserRequest
     {
         $decoded = json_decode($json, true);
-        return new self($decoded["userName"], $decoded["email"], $decoded["password"]);
+        return new self($decoded["username"], $decoded["email"], $decoded["password"]);
     }
 }
