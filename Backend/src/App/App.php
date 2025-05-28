@@ -2,13 +2,13 @@
 
 namespace App;
 
+use App\Controllers\User\UserController;
+use App\Repositories\User\UserRepository;
+use App\Services\User\UserService;
 use Core\Contracts\Api\ApiRequest;
 use Core\Controllers\ApiController;
 use Core\Database\Database;
 use Core\Enums\HttpMethod;
-use App\Controllers\User\UserController;
-use App\Repositories\User\UserRepository;
-use App\Services\User\UserService;
 
 /**
  * Represents the main Application that will handle the request.
@@ -40,7 +40,7 @@ class App
         $controller = $this->findControllerByRoute($route);
         if ($controller == null)
         {
-            http_response_code(500);
+            http_response_code(405);
             return;
         }
 

@@ -16,6 +16,14 @@ class UserRepository implements UserRepositoryInterface
     function __construct(private readonly Database $database)
     {
         $this->userEntities = [];
+
+        // TODO: Lazy load
+        $this->fetchUsers();
+    }
+
+    public function getUsers(): array
+    {
+        return $this->userEntities;
     }
 
     /**
@@ -23,15 +31,18 @@ class UserRepository implements UserRepositoryInterface
      */
     function findById(string $id): ?UserEntity
     {
-        $this->fetchUsers();
         return array_key_exists($id, $this->userEntities) ? $this->userEntities[$id] : null;
     }
 
     /**
      * @inheritdoc
      */
-    function save(UserEntity $entity): void
+    function trySave(UserEntity $entity): bool
     {
+        $attributes = ["Id", "Email", "UserName", "PasswordHash"];
+        $values = [$entity->id, $entity->email, $entity->userName, $entity->passwordHash];
+
+        return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
 
     private function fetchUsers(): void
@@ -39,7 +50,7 @@ class UserRepository implements UserRepositoryInterface
         $data = $this->database->fetchData(self::TABLE_NAME);
         foreach ($data as $entry)
         {
-            $this->userEntities[$entry["Id"]] = UserEntity::fromQuery($entry);
+            $this->userEntities[$entry["Id"]] = UserEntity::fromArray($entry);
         }
     }
 }

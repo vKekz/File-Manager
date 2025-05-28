@@ -5,6 +5,7 @@ namespace Core\Database;
 use mysqli;
 use mysqli_result;
 use App\Repositories\User\UserRepository;
+use mysqli_stmt;
 
 readonly class Database
 {
@@ -34,29 +35,52 @@ readonly class Database
     public function fetchData(string $table, string ...$attributes): array
     {
         $attributes = count($attributes) == 0 ? "*" : join(", ", $attributes);
-        $query = $this->selectQuery("SELECT " . $attributes . " FROM " . $table);
-        if (!$query)
-        {
-            return [];
-        }
+        $query = "SELECT $attributes FROM $table";
+        $result = $this->selectQuery($query);
 
         $data = [];
-        while ($row = $query->fetch_assoc())
+        while ($row = $result->fetch_assoc())
         {
             $data[] = $row;
         }
 
-        $query->free();
+        $result->free();
         return $data;
     }
 
-    private function selectQuery(string $query, string $types = "", mixed ...$args): mysqli_result | false
+    public function insertData(string $table, array $attributes, array $values): bool
+    {
+        $attributes = join(", ", $attributes);
+        $marks = str_split(str_repeat("?", count($values)));
+        $valuesQuery = join(", ", $marks);
+        $query = "INSERT INTO $table ($attributes) VALUES ($valuesQuery)";
+
+        return $this->insertQuery($query, ...$values);
+    }
+
+    private function bindParameters(mysqli_stmt $statement, mixed ...$args): mysqli_stmt
+    {
+        $arguments = $args[0];
+        if (count($arguments) == 0)
+        {
+            return $statement;
+        }
+
+        $types = "";
+        foreach ($arguments as $arg)
+        {
+            $type = str_split(gettype($arg))[0] ?? "?";
+            $types = "$types$type";
+        }
+
+        $statement->bind_param($types, ...$arguments);
+        return $statement;
+    }
+
+    private function selectQuery(string $query, mixed ...$args): mysqli_result | false
     {
         $statement = $this->connection->prepare($query);
-        if (!empty($types))
-        {
-            $statement->bind_param($types, ...$args);
-        }
+        $statement = $this->bindParameters($statement, $args);
 
         if ($statement->execute())
         {
@@ -73,6 +97,16 @@ readonly class Database
 
         $statement->close();
         return false;
+    }
+
+    private function insertQuery(string $query, mixed ...$args): bool
+    {
+        $statement = $this->connection->prepare($query);
+        $statement = $this->bindParameters($statement, $args);
+
+        $result = $statement->execute();
+        $statement->close();
+        return $result;
     }
 
     private function createDatabase(): void
@@ -103,13 +137,13 @@ readonly class Database
 
     private function createTable(string $tableName, string $attributes): void
     {
-        $query = "CREATE TABLE IF NOT EXISTS " . $tableName . $attributes;
+        $query = "CREATE TABLE IF NOT EXISTS $tableName $attributes";
         $statement = $this->connection->prepare($query);
 
         if (!$statement->execute())
         {
             $statement->close();
-            die("Failed creating table: " . $tableName);
+            die("Failed creating table: $tableName");
         }
 
         $statement->close();

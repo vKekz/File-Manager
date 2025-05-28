@@ -32,6 +32,13 @@ class UserController extends ApiController
         return $userEntity != null ? new OkResponse($userEntity) : new NotFoundResponse(null);
     }
 
+    #[HttpGet("/list")]
+    public function getUsers(): OkResponse
+    {
+        $userEntities = $this->userService->getUsers();
+        return new OkResponse($userEntities);
+    }
+
     #[HttpPost("/register")]
     public function registerUser(#[BodyParameter] string $payload): OkResponse
     {

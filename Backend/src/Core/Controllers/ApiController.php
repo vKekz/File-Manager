@@ -32,7 +32,7 @@ abstract class ApiController
         $method = $this->findControllerMethodByRequest($request);
         if ($method == null)
         {
-            http_response_code(500);
+            http_response_code(405);
             return;
         }
 

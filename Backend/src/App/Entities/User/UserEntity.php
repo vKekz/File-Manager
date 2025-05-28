@@ -2,28 +2,22 @@
 
 namespace App\Entities\User;
 
-use Core\Utilities\Deserializer;
-
 /**
  * Represents a user entity.
  */
-class UserEntity extends Deserializer
+readonly class UserEntity
 {
-    public string $id;
-    public string $userName;
-    public string $email;
-    public string $passwordHash;
+    function __construct(
+        public string $id,
+        public string $userName,
+        public string $email,
+        public string $passwordHash)
+    {
+    }
 
-    public static function fromQuery(array $data): UserEntity
+    public static function fromArray(array $data): UserEntity
     {
         // TODO: different naming policies are a problem
-
-        $user = new self();
-        $user->id = $data["Id"];
-        $user->userName = $data["UserName"];
-        $user->email = $data["Email"];
-        $user->passwordHash = $data["PasswordHash"];
-
-        return $user;
+        return new self($data["Id"], $data["UserName"], $data["Email"], $data["PasswordHash"]);
     }
 }

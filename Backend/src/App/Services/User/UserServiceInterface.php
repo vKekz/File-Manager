@@ -11,6 +11,13 @@ use App\Entities\User\UserEntity;
  */
 interface UserServiceInterface
 {
+    function getUsers();
+    /**
+     * Attempts to find a user by the given ID, otherwise returns null.
+     */
     function getUserById(string $id): ?UserEntity;
+    /**
+     * Registers a new user.
+     */
     function registerUser(RegisterUserRequest $request): RegisterUserResponse;
 }

@@ -16,13 +16,24 @@ readonly class UserService implements UserServiceInterface
     {
     }
 
-    function registerUser(RegisterUserRequest $request): RegisterUserResponse
+    public function getUsers(): array
     {
-        return new RegisterUserResponse($request->email);
+        return $this->userRepository->getUsers();
     }
 
     function getUserById(string $id): ?UserEntity
     {
         return $this->userRepository->findById($id);
+    }
+
+    function registerUser(RegisterUserRequest $request): RegisterUserResponse
+    {
+        $id = random_int(0, PHP_INT_MAX);
+        $passwordHash = password_hash($request->password, PASSWORD_ARGON2ID);
+        $userEntity = new UserEntity($id, $request->userName, $request->email, $passwordHash);
+
+        $this->userRepository->trySave($userEntity);
+
+        return new RegisterUserResponse($id);
     }
 }

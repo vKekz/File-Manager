@@ -9,12 +9,13 @@ use App\Entities\User\UserEntity;
  */
 interface UserRepositoryInterface
 {
+    function getUsers(): array;
     /**
      * Attempts to find a user entity by the given ID.
      */
     function findById(string $id): ?UserEntity;
     /**
-     * Saves a user entity to the repository.
+     * Attempts to save a user entity to the repository.
      */
-    function save(UserEntity $entity): void;
+    function trySave(UserEntity $entity): bool;
 }
