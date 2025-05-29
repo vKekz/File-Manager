@@ -6,7 +6,7 @@ use Core\Enums\ParameterType;
 
 readonly class ApiControllerMethodParameter
 {
-    function __construct(public string $name, public ParameterType $parameterType)
+    function __construct(public string $name, public ParameterType $type)
     {
     }
 }

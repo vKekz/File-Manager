@@ -5,6 +5,9 @@ namespace Core\Controllers;
 use Core\Attributes\Http\HttpAttribute;
 use Core\Attributes\Parameter\ParameterAttribute;
 use Core\Contracts\Api\ApiRequest;
+use Core\Contracts\Api\ApiResponse;
+use Core\Contracts\Api\BadRequestResponse;
+use Core\Controllers\Context\HttpContext;
 use Core\Enums\ParameterType;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -15,12 +18,15 @@ use ReflectionMethod;
  */
 abstract class ApiController
 {
+    private readonly HttpContext $httpContext;
     private readonly ReflectionClass $reflection;
     private array $routes = [];
 
     function __construct(public readonly string $endpoint)
     {
+        $this->httpContext = new HttpContext();
         $this->reflection = new ReflectionClass($this);
+
         $this->registerRoutes();
     }
 
@@ -36,26 +42,20 @@ abstract class ApiController
             return;
         }
 
-        // TODO: Error if parameter is missing
-        $arguments = [];
-        foreach ($method->parameters as $parameter)
+        // Fill context properties
+        $headers = getallheaders();
+        $this->httpContext->requestHeaders = $headers;
+        $this->httpContext->requestQueryParameters = $_GET;
+
+        $arguments = $this->tryFindRequestArguments($method);
+        if ($arguments instanceof ApiResponse)
         {
-            switch ($parameter->parameterType)
-            {
-                case ParameterType::Body:
-                    $arguments[] = file_get_contents("php://input");
-                break;
-                case ParameterType::Query:
-                    $arguments[] = $_GET[$parameter->name];
-                break;
-            }
+            $arguments->write();
+            return;
         }
 
-        // https://wiki.php.net/rfc/argument_unpacking
         $response = $method->call(...$arguments);
-        header("Content-Type: application/json; charset=utf-8", true, $response->statusCode);
-
-        echo json_encode($response->data, JSON_PRETTY_PRINT);
+        $response->write();
     }
 
     private function findControllerMethodByRequest(ApiRequest $request): ?ApiControllerMethod
@@ -94,13 +94,13 @@ abstract class ApiController
                 continue;
             }
 
-            $parameters = $this->getParametersForMethod($method);
+            $parameters = $this->findMethodParameters($method);
             $route = $this->endpoint . $httpAttribute->route;
             $this->routes[$httpAttribute->method->name][$route] = new ApiControllerMethod($this, $method->name, $parameters);
         }
     }
 
-    private function getParametersForMethod(ReflectionMethod $method): array
+    private function findMethodParameters(ReflectionMethod $method): array
     {
         $parameters = [];
         foreach ($method->getParameters() as $parameter)
@@ -117,9 +117,51 @@ abstract class ApiController
                 continue;
             }
 
-            $parameters[] = new ApiControllerMethodParameter($parameter->getName(), $parameterAttribute->parameterType);
+            $name = empty($parameterAttribute->realName) ? $parameter->getName() : $parameterAttribute->realName;
+            $parameters[] = new ApiControllerMethodParameter($name, $parameterAttribute->type);
         }
 
         return $parameters;
+    }
+
+    private function tryFindRequestArguments(ApiControllerMethod $method): array | ApiResponse
+    {
+        $arguments = [];
+        foreach ($method->parameters as $parameter)
+        {
+            $name = $parameter->name;
+            switch ($parameter->type)
+            {
+                case ParameterType::Body:
+                    $requestBody = file_get_contents("php://input");
+                    if (!$requestBody)
+                    {
+                        return new BadRequestResponse("Request body is missing");
+                    }
+
+                    $arguments[] = $requestBody;
+                    break;
+                case ParameterType::Query:
+                    $queryParameters = $this->httpContext->requestQueryParameters;
+                    if (!array_key_exists($name, $queryParameters))
+                    {
+                        return new BadRequestResponse("Query parameter $name is missing");
+                    }
+
+                    $arguments[] = $queryParameters[$name];
+                    break;
+                case ParameterType::Header:
+                    $requestHeaders = $this->httpContext->requestHeaders;
+                    if (!array_key_exists($name, $requestHeaders))
+                    {
+                        return new BadRequestResponse("Header $name is missing");
+                    }
+
+                    $arguments[] = $requestHeaders[$name];
+                    break;
+            }
+        }
+
+        return $arguments;
     }
 }

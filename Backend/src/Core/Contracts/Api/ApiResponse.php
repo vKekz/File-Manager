@@ -7,7 +7,13 @@ namespace Core\Contracts\Api;
  */
 abstract class ApiResponse
 {
-    function __construct(public mixed $data, public int $statusCode)
+    function __construct(public mixed $message, public int $statusCode)
     {
+    }
+
+    public function write(): void
+    {
+        header("Content-Type: application/json; charset=utf-8", true, $this->statusCode);
+        echo json_encode($this->message, JSON_PRETTY_PRINT);
     }
 }

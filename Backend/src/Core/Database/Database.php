@@ -15,13 +15,6 @@ readonly class Database
     {
         // TODO: .env
         $this->connection = new mysqli("localhost", "root", "");
-
-        $error = $this->connection->connect_error;
-        if ($error)
-        {
-            die("Failed establishing connection to database: " . $error);
-        }
-
         $this->createDatabase();
     }
 
@@ -44,11 +37,14 @@ readonly class Database
         $statement->close();
     }
 
-    public function fetchData(string $table, string ...$attributes): array
+    public function fetchData(string $table, array $attributes = [], string $condition = "", string ...$values): array
     {
         $attributes = count($attributes) == 0 ? "*" : join(", ", $attributes);
-        $query = "SELECT $attributes FROM $table";
-        $result = $this->selectQuery($query);
+        $query = "SELECT $attributes FROM $table $condition";
+
+        $result = count($values) == 0 ?
+            $this->selectQuery($query) :
+            $this->selectQuery($query, join(", ", $values));
 
         // Return empty array if result was false
         if (!$result)
@@ -68,9 +64,16 @@ readonly class Database
 
     public function insertData(string $table, array $attributes, array $values): bool
     {
+        // Join attributes by comma "Attr, Attr, ..., Attr"
         $attributes = join(", ", $attributes);
+
+        // Create array of marks ["?", ..., "?"]
         $marks = str_split(str_repeat("?", count($values)));
+
+        // Join marks by comma "?, ?, ..., ?"
         $valuesQuery = join(", ", $marks);
+
+        // Finally generate query
         $query = "INSERT INTO $table ($attributes) VALUES ($valuesQuery)";
 
         return $this->executePreparedQuery($query, ...$values);
@@ -99,27 +102,27 @@ readonly class Database
 
     private function bindParameters(mysqli_stmt $statement, mixed ...$args): mysqli_stmt
     {
-        $arguments = $args[0];
-        if (count($arguments) == 0)
+        if (count($args) == 0)
         {
             return $statement;
         }
 
+        // Generate string of types for SQL query e.g. "sis"
         $types = "";
-        foreach ($arguments as $arg)
+        foreach ($args as $arg)
         {
             $type = str_split(gettype($arg))[0] ?? "?";
             $types = "$types$type";
         }
 
-        $statement->bind_param($types, ...$arguments);
+        $statement->bind_param($types, ...$args);
         return $statement;
     }
 
     private function selectQuery(string $query, mixed ...$args): mysqli_result | false
     {
         $statement = $this->connection->prepare($query);
-        $statement = $this->bindParameters($statement, $args);
+        $statement = $this->bindParameters($statement, ...$args);
 
         if ($statement->execute())
         {
@@ -141,7 +144,7 @@ readonly class Database
     private function executePreparedQuery(string $query, mixed ...$args): bool
     {
         $statement = $this->connection->prepare($query);
-        $statement = $this->bindParameters($statement, $args);
+        $statement = $this->bindParameters($statement, ...$args);
 
         $result = $statement->execute();
         $statement->close();

@@ -4,6 +4,6 @@ namespace App\Services\Hash;
 
 interface HashServiceInterface
 {
-    function hashPassword(string $input);
-    function verifyPassword(string $hash);
+    function generatePasswordHash(string $input): string;
+    function verifyPassword( string $hash, string $userPassword): bool;
 }

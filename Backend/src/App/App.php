@@ -4,6 +4,7 @@ namespace App;
 
 use App\Controllers\User\UserController;
 use App\Repositories\User\UserRepository;
+use App\Services\Hash\HashService;
 use App\Services\User\UserService;
 use Core\Contracts\Api\ApiRequest;
 use Core\Controllers\ApiController;
@@ -22,8 +23,9 @@ class App
     {
         $this->database = new Database();
 
+        $hashService = new HashService();
         $userRepository = new UserRepository($this->database);
-        $userService = new UserService($userRepository);
+        $userService = new UserService($userRepository, $hashService);
         $this->registerController(new UserController($userService));
     }
 

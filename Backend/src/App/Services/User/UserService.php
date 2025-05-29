@@ -7,6 +7,9 @@ use App\Contracts\User\RegisterUserRequest;
 use App\Contracts\User\RegisterUserResponse;
 use App\Entities\User\UserEntity;
 use App\Repositories\User\UserRepositoryInterface;
+use App\Services\Hash\HashServiceInterface;
+use Core\Contracts\Api\ApiResponse;
+use Core\Contracts\Api\BadRequestResponse;
 use Core\Contracts\Api\ServerErrorResponse;
 use Random\RandomException;
 
@@ -15,14 +18,14 @@ use Random\RandomException;
  */
 readonly class UserService implements UserServiceInterface
 {
-    function __construct(private UserRepositoryInterface $userRepository)
+    function __construct(private UserRepositoryInterface $userRepository, private HashServiceInterface $hashService)
     {
     }
 
     /**
      * @inheritdoc
      */
-    public function getUsers(): array
+    function getUsers(): array
     {
         return $this->userRepository->getUsers();
     }
@@ -30,7 +33,7 @@ readonly class UserService implements UserServiceInterface
     /**
      * @inheritdoc
      */
-    function getUserById(string $id): ?UserEntity
+    function getUserById(int $id): ?UserEntity
     {
         return $this->userRepository->findById($id);
     }
@@ -38,11 +41,11 @@ readonly class UserService implements UserServiceInterface
     /**
      * @inheritdoc
      */
-    function registerUser(RegisterUserRequest $request): RegisterUserResponse | ServerErrorResponse
+    function registerUser(RegisterUserRequest $request): RegisterUserResponse | ApiResponse
     {
-        if ($this->isEmailRegistered($request->email))
+        if ($this->userRepository->findByEmail($request->email))
         {
-            return new ServerErrorResponse("Email already registered");
+            return new BadRequestResponse("Email has been used already");
         }
 
         try
@@ -53,13 +56,12 @@ readonly class UserService implements UserServiceInterface
             return new ServerErrorResponse("Could not generate ID");
         }
 
-        // TODO: Move to separate service
-        // TODO: Session
-        $passwordHash = password_hash($request->password, PASSWORD_ARGON2ID);
-        $userEntity = new UserEntity($id, $request->username, $request->email, $passwordHash);
+        $hash = $this->hashService->generatePasswordHash($request->password);
+        $userEntity = new UserEntity($id, $request->username, $request->email, $hash);
 
         $this->userRepository->tryAdd($userEntity);
 
+        // TODO: Session
         return new RegisterUserResponse($id);
     }
 
@@ -68,29 +70,26 @@ readonly class UserService implements UserServiceInterface
      */
     function loginUser(LoginUserRequest $request)
     {
-        // TODO: Check if user exists
-        // TODO: Verify password
+        $foundUserEntity = $this->userRepository->findByEmail($request->email);
+        if ($foundUserEntity == null)
+        {
+            return new BadRequestResponse();
+        }
+
+        if (!$this->hashService->verifyPassword($foundUserEntity->passwordHash, $request->password))
+        {
+            return new BadRequestResponse();
+        }
+
         // TODO: Session
+        return $foundUserEntity->id;
     }
 
     /**
      * @inheritdoc
      */
-    function deleteUser(string $id): bool
+    function deleteUser(int $id): bool
     {
         return $this->userRepository->tryRemove($id);
-    }
-
-    private function isEmailRegistered(string $email): bool
-    {
-        foreach ($this->userRepository->getUsers() as $userEntity)
-        {
-            if (strcmp($userEntity->email, $email) == 0)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

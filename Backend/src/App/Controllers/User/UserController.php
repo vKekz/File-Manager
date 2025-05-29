@@ -13,7 +13,6 @@ use Core\Attributes\Parameter\QueryParameter;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\NotFoundResponse;
 use Core\Contracts\Api\OkResponse;
-use Core\Contracts\Api\ServerErrorResponse;
 use Core\Controllers\ApiController;
 
 // TODO: Authorization
@@ -29,13 +28,6 @@ class UserController extends ApiController
         parent::__construct(self::END_POINT);
     }
 
-    #[HttpGet]
-    function getUserById(#[QueryParameter] string $id): ApiResponse
-    {
-        $userEntity = $this->userService->getUserById($id);
-        return $userEntity != null ? new OkResponse($userEntity) : new NotFoundResponse("User not found");
-    }
-
     #[HttpGet("/list")]
     function getUsers(): OkResponse
     {
@@ -43,25 +35,11 @@ class UserController extends ApiController
         return new OkResponse($userEntities);
     }
 
-    #[HttpPost("/register")]
-    function registerUser(#[BodyParameter] string $payload): ApiResponse
+    #[HttpGet]
+    function getUserById(#[QueryParameter] int $id): ApiResponse
     {
-        $request = RegisterUserRequest::deserialize($payload);
-        $response = $this->userService->registerUser($request);
-        if ($response instanceof ServerErrorResponse)
-        {
-            return $response;
-        }
-
-        return new OkResponse($response);
-    }
-
-    #[HttpPost("/login")]
-    function loginUser(#[BodyParameter] string $payload): ApiResponse
-    {
-        $request = LoginUserRequest::deserialize($payload);
-        $response = $this->userService->loginUser($request);
-        return new OkResponse($response);
+        $userEntity = $this->userService->getUserById($id);
+        return $userEntity != null ? new OkResponse($userEntity) : new NotFoundResponse("User not found");
     }
 
     #[HttpDelete]
@@ -69,5 +47,26 @@ class UserController extends ApiController
     {
         $response = $this->userService->deleteUser($id);
         return $response ? new OkResponse($id) : new NotFoundResponse("User not found");
+    }
+
+    #[HttpPost("/auth/register")]
+    function registerUser(#[BodyParameter] string $payload): ApiResponse
+    {
+        $request = RegisterUserRequest::deserialize($payload);
+        $response = $this->userService->registerUser($request);
+        if ($response instanceof ApiResponse)
+        {
+            return $response;
+        }
+
+        return new OkResponse($response);
+    }
+
+    #[HttpPost("/auth/login")]
+    function loginUser(#[BodyParameter] string $payload): ApiResponse
+    {
+        $request = LoginUserRequest::deserialize($payload);
+        $response = $this->userService->loginUser($request);
+        return new OkResponse($response);
     }
 }

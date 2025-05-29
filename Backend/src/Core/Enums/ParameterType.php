@@ -6,4 +6,5 @@ enum ParameterType
 {
     case Query;
     case Body;
+    case Header;
 }

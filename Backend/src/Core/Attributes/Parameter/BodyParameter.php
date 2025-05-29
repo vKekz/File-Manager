@@ -11,8 +11,8 @@ use Core\Enums\ParameterType;
 #[Attribute(Attribute::TARGET_PARAMETER)]
 class BodyParameter extends ParameterAttribute
 {
-    function __construct()
+    function __construct(public string $realName = "")
     {
-        parent::__construct(ParameterType::Body);
+        parent::__construct($realName, ParameterType::Body);
     }
 }

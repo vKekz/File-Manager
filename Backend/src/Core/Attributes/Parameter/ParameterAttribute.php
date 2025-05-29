@@ -9,7 +9,7 @@ use Core\Enums\ParameterType;
  */
 abstract class ParameterAttribute
 {
-    function __construct(public readonly ParameterType $parameterType)
+    function __construct(public string $realName, public readonly ParameterType $type)
     {
     }
 }

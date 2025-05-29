@@ -11,20 +11,18 @@ use Core\Database\Database;
 class UserRepository implements UserRepositoryInterface
 {
     private const TABLE_NAME = "user_entities";
-    private array $userEntities;
 
     function __construct(private readonly Database $database)
     {
-        $this->userEntities = [];
-
-        // TODO: Lazy load
-        $this->fetchUsers();
         $this->createTable();
     }
 
+    /**
+     * @inheritdoc
+     */
     function getUsers(): array
     {
-        return $this->userEntities;
+        return $this->database->fetchData(self::TABLE_NAME);
     }
 
     /**
@@ -32,7 +30,31 @@ class UserRepository implements UserRepositoryInterface
      */
     function findById(int $id): ?UserEntity
     {
-        return array_key_exists($id, $this->userEntities) ? $this->userEntities[$id] : null;
+        $condition = "WHERE Id = ?";
+        $data = $this->database->fetchData(self::TABLE_NAME, condition: $condition, values: $id);
+
+        if (count($data) == 0)
+        {
+            return null;
+        }
+
+        return UserEntity::fromArray($data[0]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function findByEmail(string $email): ?UserEntity
+    {
+        $condition = "WHERE Email = ?";
+        $data = $this->database->fetchData(self::TABLE_NAME, condition: $condition, values: $email);
+
+        if (count($data) == 0)
+        {
+            return null;
+        }
+
+        return UserEntity::fromArray($data[0]);
     }
 
     /**
@@ -43,8 +65,6 @@ class UserRepository implements UserRepositoryInterface
         $attributes = ["Id", "Email", "UserName", "PasswordHash"];
         $values = [$entity->id, $entity->email, $entity->username, $entity->passwordHash];
 
-        $this->userEntities[$entity->id] = $entity;
-
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
 
@@ -53,29 +73,18 @@ class UserRepository implements UserRepositoryInterface
      */
     function tryRemove(int $id): bool
     {
+        if (!$this->findById($id))
+        {
+            return false;
+        }
+
         $condition = "WHERE Id = ?";
         if (!$this->database->deleteData(self::TABLE_NAME, $condition, $id))
         {
             return false;
         }
 
-        if (!array_key_exists($id, $this->userEntities))
-        {
-            return false;
-        }
-
-        unset($this->userEntities[$id]);
-
         return true;
-    }
-
-    private function fetchUsers(): void
-    {
-        $data = $this->database->fetchData(self::TABLE_NAME);
-        foreach ($data as $entry)
-        {
-            $this->userEntities[$entry["Id"]] = UserEntity::fromArray($entry);
-        }
     }
 
     private function createTable(): void
