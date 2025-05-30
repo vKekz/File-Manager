@@ -14,7 +14,7 @@ use Core\DependencyInjection\ServiceContainer;
 
 // Register services
 $serviceContainer = new ServiceContainer();
-$serviceContainer->register(Database::class, Database::class);
+$serviceContainer->register(Database::class);
 $serviceContainer->register(HashServiceInterface::class, HashService::class);
 $serviceContainer->register(UserRepositoryInterface::class, UserRepository::class);
 $serviceContainer->register(UserServiceInterface::class, UserService::class);

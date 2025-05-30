@@ -1,1 +1,81 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --primary-color: #8075ff;
+
+  --dark-theme-surface-color: #121212;
+  --dark-theme-accent-color: #282828;
+  --dark-theme-font-color: #fff;
+}
+
+body {
+  background-color: var(--dark-theme-surface-color);
+
+  font-family: "Ubuntu", sans-serif;
+  font-size: 1rem;
+  color: var(--dark-theme-font-color);
+
+  margin: 0;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/assets/fonts/ubuntu/Ubuntu-Regular.woff2") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/assets/fonts/ubuntu/Ubuntu-Bold.woff2") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/assets/fonts/ubuntu/Ubuntu-BoldItalic.woff2") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/assets/fonts/ubuntu/Ubuntu-Italic.woff2") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/assets/fonts/ubuntu/Ubuntu-Light.woff2") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/assets/fonts/ubuntu/Ubuntu-LightItalic.woff2") format("woff");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/assets/fonts/ubuntu/Ubuntu-Medium.woff2") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  src: url("/assets/fonts/ubuntu/Ubuntu-MediumItalic.woff2") format("woff");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}

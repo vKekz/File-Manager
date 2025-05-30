@@ -6,7 +6,7 @@ use App\Controllers\User\UserController;
 use App\Services\User\UserServiceInterface;
 use Core\Contracts\Api\ApiRequest;
 use Core\Controllers\ApiController;
-use Core\DependencyInjection\ServiceContainerInterface;
+use Core\DependencyInjection\ServiceContainer;
 use Core\Enums\HttpMethod;
 
 /**
@@ -16,7 +16,7 @@ class App
 {
     private array $controllers = [];
 
-    function __construct(ServiceContainerInterface $serviceContainer)
+    function __construct(ServiceContainer $serviceContainer)
     {
         $userService = $serviceContainer->resolve(UserServiceInterface::class);
         $this->registerController(new UserController($userService));

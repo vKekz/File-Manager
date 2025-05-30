@@ -5,23 +5,23 @@ namespace Core\DependencyInjection;
 use ReflectionClass;
 
 /**
- * @inheritdoc
+ * Represents the container that resolves registered services.
  */
-class ServiceContainer implements ServiceContainerInterface
+class ServiceContainer
 {
     private array $services = [];
-    private array $resolved = [];
+    private array $cachedClasses = [];
 
     /**
-     * @inheritdoc
+     * Registers a class for the given interface.
      */
-    function register(mixed $interface, mixed $class): void
+    function register(mixed $interface, mixed $class = null): void
     {
-        $this->services[$interface] = $class;
+        $this->services[$interface] = $class ?? $interface;
     }
 
     /**
-     * @inheritdoc
+     * Returns a resolved class for the given interface.
      */
     function resolve(mixed $interface): mixed
     {
@@ -68,12 +68,12 @@ class ServiceContainer implements ServiceContainerInterface
 
     private function get(mixed $interface): mixed
     {
-        $resolved = $this->resolved[$interface] ?? $this->resolve($interface);
+        $resolved = $this->cachedClasses[$interface] ?? $this->resolve($interface);
 
         // Cache resolved class
-        if (!isset($this->resolved[$interface]))
+        if (!isset($this->cachedClasses[$interface]))
         {
-            $this->resolved[$interface] = $resolved;
+            $this->cachedClasses[$interface] = $resolved;
         }
 
         return $resolved;
