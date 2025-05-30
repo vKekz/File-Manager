@@ -1,16 +1,21 @@
 import { ApplicationConfig, InjectionToken, provideZoneChangeDetection } from "@angular/core";
 import { provideRouter } from "@angular/router";
-
 import { routes } from "./app.routes";
+import { provideHttpClient } from "@angular/common/http";
 
-export const BASE_URL_API = new InjectionToken("BASE_URL_API");
+export const API_URL = new InjectionToken("API_URL");
 
-const baseUrlProvider = {
-  provide: BASE_URL_API,
-  useValue: `${window.location.host}/File-Manager/Backend/public/api/`,
+const apiUrlProvider = {
+  provide: API_URL,
+  useValue: `http://${location.hostname}/File-Manager/Backend/public/api`,
   deps: [],
 };
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), baseUrlProvider],
+  providers: [
+    apiUrlProvider,
+    provideHttpClient(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+  ],
 };
