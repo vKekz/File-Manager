@@ -4,10 +4,10 @@ namespace Core\Controllers;
 
 use Core\Attributes\Http\HttpAttribute;
 use Core\Attributes\Parameter\ParameterAttribute;
+use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiRequest;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequestResponse;
-use Core\Controllers\Context\HttpContext;
 use Core\Enums\ParameterType;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -19,14 +19,11 @@ use ReflectionMethod;
 abstract class ApiController
 {
     private readonly HttpContext $httpContext;
-    private readonly ReflectionClass $reflection;
     private array $routes = [];
 
     function __construct(public readonly string $endpoint)
     {
         $this->httpContext = new HttpContext();
-        $this->reflection = new ReflectionClass($this);
-
         $this->registerRoutes();
     }
 
@@ -38,11 +35,12 @@ abstract class ApiController
         $method = $this->findControllerMethodByRequest($request);
         if ($method == null)
         {
+            // Method not allowed if route does not exist
             http_response_code(405);
             return;
         }
 
-        // Fill context properties
+        // Pass context properties
         $headers = getallheaders();
         $this->httpContext->requestHeaders = $headers;
         $this->httpContext->requestQueryParameters = $_GET;
@@ -54,6 +52,7 @@ abstract class ApiController
             return;
         }
 
+        // Finally call method and write response
         $response = $method->call(...$arguments);
         $response->write();
     }
@@ -79,9 +78,13 @@ abstract class ApiController
 
     private function registerRoutes(): void
     {
-        $methods = $this->reflection->getMethods();
+        $reflection = new ReflectionClass($this);
+        $methods = $reflection->getMethods();
+
+        // Go through each method of the controller
         foreach ($methods as $method)
         {
+            // Check for HTTP attributes
             $attributes = $method->getAttributes(HttpAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
             if (count($attributes) == 0)
             {
@@ -94,17 +97,23 @@ abstract class ApiController
                 continue;
             }
 
+            // Register route as a child of the HTTP method
+            // e.g. dict[GET][route] = method
             $parameters = $this->findMethodParameters($method);
             $route = $this->endpoint . $httpAttribute->route;
             $this->routes[$httpAttribute->method->name][$route] = new ApiControllerMethod($this, $method->name, $parameters);
         }
     }
 
+    /**
+     * Returns an array of parameters for the given controller method.
+     */
     private function findMethodParameters(ReflectionMethod $method): array
     {
         $parameters = [];
         foreach ($method->getParameters() as $parameter)
         {
+            // Check for the parameter attribute
             $parameterAttributes = $parameter->getAttributes(ParameterAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
             if (count($parameterAttributes) == 0)
             {
@@ -117,6 +126,7 @@ abstract class ApiController
                 continue;
             }
 
+            // Parameters might be named differently than in the incoming request
             $name = empty($parameterAttribute->realName) ? $parameter->getName() : $parameterAttribute->realName;
             $parameters[] = new ApiControllerMethodParameter($name, $parameterAttribute->type);
         }
@@ -124,7 +134,10 @@ abstract class ApiController
         return $parameters;
     }
 
-    private function tryFindRequestArguments(ApiControllerMethod $method): array | ApiResponse
+    /**
+     * Attempts to find the arguments for the calling controller method from the HTTP request. Returns status 400 on failure.
+     */
+    private function tryFindRequestArguments(ApiControllerMethod $method): array | BadRequestResponse
     {
         $arguments = [];
         foreach ($method->parameters as $parameter)
