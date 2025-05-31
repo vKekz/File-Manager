@@ -12,7 +12,7 @@ import { Router } from "@angular/router";
 })
 export class HomeComponent implements OnInit {
   protected readonly iconSize: number = 128;
-  protected readonly brandName: WritableSignal<string> = signal("");
+  protected readonly brandName: WritableSignal<string> = signal("S");
 
   constructor(private readonly router: Router) {}
 
@@ -25,12 +25,12 @@ export class HomeComponent implements OnInit {
   }
 
   private async animateBrandName() {
-    const finalTitle = "File Manager";
+    const finalTitle = "Shelfy";
     const length = finalTitle.length;
 
-    for (let i = 0; i < length; i++) {
+    for (let i = 1; i < length; i++) {
+      await delay(175);
       this.brandName.update((value) => value + finalTitle[i]);
-      await delay(150);
     }
   }
 }

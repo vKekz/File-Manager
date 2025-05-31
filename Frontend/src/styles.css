@@ -1,22 +1,24 @@
 :root {
   --primary-color: #8075ff;
+
   --warning-color: #ff8383;
   --warning-color-opacity-25: rgba(255, 131, 131, 0.25);
 
-  --dark-theme-surface-color: #121212;
-  --dark-theme-accent-color: #282828;
+  --dark-theme-background-color: #121212;
+  --dark-theme-secondary-background-color: #282828;
 
   --dark-theme-font-color: #ffffff;
   --dark-theme-secondary-font-color: #afafaf;
 
   --transition-delay: 200ms;
+
   --border-radius: 1rem;
   --border-radius-light: 0.5rem;
   --border-radius-lighter: 0.25rem;
 }
 
 body {
-  background-color: var(--dark-theme-surface-color);
+  background-color: var(--dark-theme-background-color);
 
   font-family: "Ubuntu", sans-serif;
   font-size: 1rem;

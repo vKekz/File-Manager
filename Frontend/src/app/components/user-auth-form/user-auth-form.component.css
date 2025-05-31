@@ -31,7 +31,7 @@
 }
 
 .auth-body {
-  background-color: var(--dark-theme-accent-color);
+  background-color: var(--dark-theme-secondary-background-color);
 
   display: flex;
   flex-direction: column;
@@ -50,7 +50,7 @@
 }
 
 .auth-input input {
-  background-color: var(--dark-theme-surface-color);
+  background-color: var(--dark-theme-background-color);
   color: var(--dark-theme-font-color);
 
   padding: 0.4rem;
@@ -69,7 +69,7 @@
 .auth-input input:-webkit-autofill:focus,
 .auth-input input:-webkit-autofill:active {
   -webkit-text-fill-color: var(--dark-theme-font-color);
-  -webkit-box-shadow: 0 0 0 40px var(--dark-theme-surface-color) inset !important;
+  -webkit-box-shadow: 0 0 0 40px var(--dark-theme-background-color) inset !important;
 }
 
 .auth-submit {

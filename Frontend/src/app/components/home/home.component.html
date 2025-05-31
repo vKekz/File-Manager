@@ -1,16 +1,19 @@
 <div class="container">
   <div class="sub-container left">
     <div class="brand-container content">
-      <app-icon [width]="iconSize" [height]="iconSize"></app-icon>
-      <div class="brand-name">{{ brandName() }}</div>
+      <div class="brand-name-container">
+        <app-icon [width]="iconSize" [height]="iconSize"></app-icon>
+        <div class="brand-name">{{ brandName() }}</div>
+      </div>
+      <div class="brand-description">Modern web-based file manager</div>
     </div>
   </div>
   <div class="sub-container right">
-    <div class="start-container content">
+    <div class="slogan-container content">
       <div class="slogan">Alles an einem Ort.</div>
       <div class="sub-slogan">Deine Dateien und Ordner – sicher und einfach verwaltet.</div>
       <div>
-        <app-button (click)="this.goToLogin()" text="Weiter zum Login"></app-button>
+        <app-button (click)="this.goToLogin()" text="Zum Login"></app-button>
       </div>
     </div>
   </div>

@@ -14,12 +14,15 @@
   width: 100%;
 }
 
-.start-container {
+.slogan-container {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 95%;
+  margin: auto;
 }
 
+.brand-description,
 .sub-slogan {
   font-size: 1.25rem;
   color: var(--dark-theme-secondary-font-color);
@@ -41,6 +44,11 @@
 
 .brand-container {
   display: flex;
+  flex-direction: column;
+}
+
+.brand-name-container {
+  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -53,12 +61,16 @@
   font-weight: 500;
 }
 
-@media screen and (max-width: 959px) {
+@media screen and (max-width: 960px) {
   .container {
     flex-direction: column;
   }
 
   .brand-container {
+    gap: 0.5rem;
+  }
+
+  .brand-name-container {
     flex-direction: column;
   }
 

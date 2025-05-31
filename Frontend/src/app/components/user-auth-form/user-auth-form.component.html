@@ -27,9 +27,9 @@
       </div>
       <div class="auth-change">
         @if (type == AuthFormEnum.LOGIN) {
-          Neu hier? <a href="/signup">Erstelle ein neues Konto</a>
+          Neu hier? <a (click)="goToOtherAuthForm()">Erstelle ein neues Konto</a>
         } @else if (type == AuthFormEnum.SIGNUP) {
-          Du hast bereits ein Konto? <a href="/login">Hier anmelden</a>
+          Du hast bereits ein Konto? <a (click)="goToOtherAuthForm()">Hier anmelden</a>
         }
       </div>
     </div>

@@ -15,4 +15,5 @@ button {
 
 button:hover {
   filter: grayscale(75%);
+  transition: var(--transition-delay);
 }
