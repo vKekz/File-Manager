@@ -1,27 +1,35 @@
 import { Component, OnInit, signal, WritableSignal } from "@angular/core";
 import { IconComponent } from "../icon/icon.component";
 import { delay } from "../../../helpers/timeout.helper";
+import { ButtonComponent } from "../button/button.component";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-home",
-  imports: [IconComponent],
+  imports: [IconComponent, ButtonComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.css",
 })
 export class HomeComponent implements OnInit {
   protected readonly iconSize: number = 128;
-  protected readonly title: WritableSignal<string> = signal("");
+  protected readonly brandName: WritableSignal<string> = signal("");
+
+  constructor(private readonly router: Router) {}
 
   async ngOnInit() {
-    await this.startAnimation();
+    await this.animateBrandName();
   }
 
-  private async startAnimation() {
+  protected async goToLogin() {
+    await this.router.navigateByUrl("/login");
+  }
+
+  private async animateBrandName() {
     const finalTitle = "File Manager";
     const length = finalTitle.length;
 
     for (let i = 0; i < length; i++) {
-      this.title.update((value) => value + finalTitle[i]);
+      this.brandName.update((value) => value + finalTitle[i]);
       await delay(150);
     }
   }

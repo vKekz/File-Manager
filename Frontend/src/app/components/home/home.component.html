@@ -2,10 +2,16 @@
   <div class="sub-container left">
     <div class="brand-container content">
       <app-icon [width]="iconSize" [height]="iconSize"></app-icon>
-      <div class="brand-name">{{ title() }}</div>
+      <div class="brand-name">{{ brandName() }}</div>
     </div>
   </div>
   <div class="sub-container right">
-    <div class="content">Login</div>
+    <div class="start-container content">
+      <div class="slogan">Alles an einem Ort.</div>
+      <div class="sub-slogan">Deine Dateien und Ordner – sicher und einfach verwaltet.</div>
+      <div>
+        <app-button (click)="this.goToLogin()" text="Weiter zum Login"></app-button>
+      </div>
+    </div>
   </div>
 </div>

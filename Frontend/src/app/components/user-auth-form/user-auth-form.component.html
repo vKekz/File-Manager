@@ -1,0 +1,37 @@
+<div class="container">
+  <div>
+    <app-icon [height]="iconSize" [width]="iconSize"></app-icon>
+  </div>
+  <div class="auth-text">
+    {{ type == AuthFormEnum.LOGIN ? "Melde dich mit deinem Konto an" : "Erstelle ein neues Konto" }}
+  </div>
+  <div class="auth-form">
+    <!--    <div class="auth-errors"></div>-->
+    <div class="auth-body">
+      @if (type == AuthFormEnum.SIGNUP) {
+        <div class="auth-input">
+          <label for="name">Name</label>
+          <input name="name" id="name" type="text" />
+        </div>
+      }
+      <div class="auth-input">
+        <label for="email">E-Mail</label>
+        <input name="email" id="email" type="email" />
+      </div>
+      <div class="auth-input">
+        <label for="password">Passwort</label>
+        <input name="password" id="password" type="password" />
+      </div>
+      <div class="auth-submit">
+        <app-button [text]="type == AuthFormEnum.LOGIN ? 'Anmelden' : 'Konto erstellen'"></app-button>
+      </div>
+      <div class="auth-change">
+        @if (type == AuthFormEnum.LOGIN) {
+          Neu hier? <a href="/signup">Erstelle ein neues Konto</a>
+        } @else if (type == AuthFormEnum.SIGNUP) {
+          Du hast bereits ein Konto? <a href="/login">Hier anmelden</a>
+        }
+      </div>
+    </div>
+  </div>
+</div>

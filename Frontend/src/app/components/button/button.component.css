@@ -1,0 +1,18 @@
+button {
+  background-color: var(--primary-color);
+  color: var(--dark-theme-font-color);
+
+  font-family: "Ubuntu", sans-serif;
+  font-size: 1.25rem;
+
+  outline: none;
+
+  border: none;
+  border-radius: var(--border-radius-light);
+
+  cursor: pointer;
+}
+
+button:hover {
+  filter: grayscale(75%);
+}

@@ -1,4 +1,5 @@
 import { Component, Input } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-icon",
@@ -12,4 +13,10 @@ export class IconComponent {
 
   @Input()
   public height: number = 256;
+
+  constructor(private readonly router: Router) {}
+
+  protected async goToHome() {
+    await this.router.navigateByUrl("/");
+  }
 }
