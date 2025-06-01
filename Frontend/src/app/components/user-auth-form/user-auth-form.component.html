@@ -5,22 +5,22 @@
   <div class="auth-text">
     {{ type == AuthFormEnum.LOGIN ? "Melde dich mit deinem Konto an" : "Erstelle ein neues Konto" }}
   </div>
-  <div class="auth-form">
-    <!--    <div class="auth-errors"></div>-->
+  <form (submit)="handleSubmit($event)" class="auth-form">
+    <div class="auth-errors">Incorrect credentials</div>
     <div class="auth-body">
       @if (type == AuthFormEnum.SIGNUP) {
         <div class="auth-input">
-          <label for="name">Name</label>
-          <input name="name" id="name" type="text" />
+          <label for="username">Benutzername</label>
+          <input name="username" id="username" type="text" #userNameInput />
         </div>
       }
       <div class="auth-input">
         <label for="email">E-Mail</label>
-        <input name="email" id="email" type="email" />
+        <input name="email" id="email" type="email" #emailInput />
       </div>
       <div class="auth-input">
         <label for="password">Passwort</label>
-        <input name="password" id="password" type="password" />
+        <input name="password" id="password" type="password" #passwordInput />
       </div>
       <div class="auth-submit">
         <app-button [text]="type == AuthFormEnum.LOGIN ? 'Anmelden' : 'Konto erstellen'"></app-button>
@@ -33,5 +33,5 @@
         }
       </div>
     </div>
-  </div>
+  </form>
 </div>
