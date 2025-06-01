@@ -30,6 +30,10 @@ interface UserServiceInterface
      */
     function loginUser(LoginUserRequest $request);
     /**
+     * Logout a user.
+     */
+    function logoutUser();
+    /**
      * Attempts to delete the user with the given ID.
      */
     function deleteUser(int $id): bool;

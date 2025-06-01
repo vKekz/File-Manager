@@ -8,17 +8,20 @@ use App\Contracts\User\RegisterUserResponse;
 use App\Entities\User\UserEntity;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\Hash\HashServiceInterface;
+use App\Services\Session\SessionServiceInterface;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequestResponse;
 use Core\Contracts\Api\ServerErrorResponse;
-use Random\RandomException;
 
 /**
  * @inheritdoc
  */
 readonly class UserService implements UserServiceInterface
 {
-    function __construct(private UserRepositoryInterface $userRepository, private HashServiceInterface $hashService)
+    function __construct(
+        private UserRepositoryInterface $userRepository,
+        private SessionServiceInterface $sessionService,
+        private HashServiceInterface $hashService)
     {
     }
 
@@ -43,17 +46,17 @@ readonly class UserService implements UserServiceInterface
      */
     function registerUser(RegisterUserRequest $request): RegisterUserResponse | ApiResponse
     {
+        // TODO: Input validation
+
         if ($this->userRepository->findByEmail($request->email))
         {
-            return new BadRequestResponse("Email has been used already");
+            return new BadRequestResponse("The email you have provided is already associated with an account");
         }
 
-        try
+        $id = $this->hashService->generateUniqueId();
+        if (!$id)
         {
-            $id = random_int(0, PHP_INT_MAX);
-        } catch (RandomException)
-        {
-            return new ServerErrorResponse("Could not generate ID");
+            return new ServerErrorResponse("Could not generate User ID");
         }
 
         $hash = $this->hashService->generatePasswordHash($request->password);
@@ -73,16 +76,26 @@ readonly class UserService implements UserServiceInterface
         $foundUserEntity = $this->userRepository->findByEmail($request->email);
         if ($foundUserEntity == null)
         {
-            return new BadRequestResponse();
+            return new BadRequestResponse("Incorrect credentials");
         }
 
         if (!$this->hashService->verifyPassword($foundUserEntity->passwordHash, $request->password))
         {
-            return new BadRequestResponse();
+            return new BadRequestResponse("Incorrect credentials");
         }
+
+        var_dump($this->sessionService->createSession($foundUserEntity));
 
         // TODO: Session
         return $foundUserEntity->id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function logoutUser()
+    {
+        // TODO: Implement logoutUser() method.
     }
 
     /**

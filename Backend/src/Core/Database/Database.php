@@ -2,19 +2,26 @@
 
 namespace Core\Database;
 
+use Core\Enums\EnvironmentKey;
+use Core\Environment\Environment;
 use mysqli;
 use mysqli_result;
 use mysqli_stmt;
 
 readonly class Database
 {
-    private const DATABASE_NAME = "file_manager";
+    private string $database;
     private mysqli $connection;
 
-    function __construct()
+    function __construct(Environment $environment)
     {
-        // TODO: .env
-        $this->connection = new mysqli("localhost", "root", "");
+        $this->connection = new mysqli(
+            $environment->get(EnvironmentKey::DB_HOST),
+            $environment->get(EnvironmentKey::DB_USER),
+            $environment->get(EnvironmentKey::DB_PASSWORD)
+        );
+        $this->database = $environment->get(EnvironmentKey::DB_NAME);
+
         $this->createDatabase();
     }
 
@@ -87,17 +94,17 @@ readonly class Database
 
     private function createDatabase(): void
     {
-        $query = "CREATE DATABASE IF NOT EXISTS " . self::DATABASE_NAME;
+        $query = "CREATE DATABASE IF NOT EXISTS $this->database";
         $statement = $this->connection->prepare($query);
 
         if (!$statement->execute())
         {
             $statement->close();
-            die("Failed creating database: " . self::DATABASE_NAME);
+            die("Failed creating database: $this->database");
         }
 
         $statement->close();
-        $this->connection->select_db(self::DATABASE_NAME);
+        $this->connection->select_db($this->database);
     }
 
     private function bindParameters(mysqli_stmt $statement, mixed ...$args): mysqli_stmt

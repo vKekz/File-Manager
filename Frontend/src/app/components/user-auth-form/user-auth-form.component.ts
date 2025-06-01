@@ -3,6 +3,7 @@ import { AuthFormEnum } from "../../../enums/auth-form.enum";
 import { ButtonComponent } from "../button/button.component";
 import { IconComponent } from "../icon/icon.component";
 import { Router } from "@angular/router";
+import { UserService } from "../../../services/user.service";
 
 @Component({
   selector: "app-user-auth-form",
@@ -26,15 +27,35 @@ export class UserAuthFormComponent {
   protected readonly iconSize: number = 64;
   protected readonly AuthFormEnum = AuthFormEnum;
 
-  constructor(private readonly router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly userService: UserService
+  ) {}
 
-  protected handleSubmit(event: Event) {
+  protected async handleSubmit(event: Event) {
     const submitEvent = event as SubmitEvent;
     submitEvent.preventDefault();
 
-    const userName = (this.userNameInput?.nativeElement as HTMLInputElement).value;
     const email = (this.emailInput?.nativeElement as HTMLInputElement).value;
     const password = (this.passwordInput?.nativeElement as HTMLInputElement).value;
+
+    if (!email || !password) {
+      return;
+    }
+
+    switch (this.type) {
+      case AuthFormEnum.LOGIN:
+        console.log(await this.userService.loginUser(email, password));
+        break;
+      case AuthFormEnum.SIGNUP:
+        const userName = (this.userNameInput?.nativeElement as HTMLInputElement).value;
+        if (!userName) {
+          return;
+        }
+
+        console.log(await this.userService.registerUser(userName, email, password));
+        break;
+    }
   }
 
   protected async goToOtherAuthForm() {

@@ -39,14 +39,14 @@ class ServiceContainer
         $constructor = $reflection->getConstructor();
         if ($constructor == null)
         {
-            return new $class;
+            return $this->get($interface, false);
         }
 
         // Check for parameters in constructor
         $parameters = $constructor->getParameters();
         if (count($parameters) == 0)
         {
-            return new $class;
+            return $this->get($interface, false);
         }
 
         // Go through each parameter and resolve (will traverse children as well)
@@ -66,16 +66,32 @@ class ServiceContainer
         return new $class(...$dependencies);
     }
 
-    private function get(mixed $interface): mixed
+    private function get(mixed $interface, bool $resolve = true): mixed
     {
-        $resolved = $this->cachedClasses[$interface] ?? $this->resolve($interface);
-
-        // Cache resolved class
-        if (!isset($this->cachedClasses[$interface]))
+        // This was needed because services/classes that don't have a constructor
+        // were not cached correctly but rather instantiated multiple times
+        if (!$resolve)
         {
-            $this->cachedClasses[$interface] = $resolved;
+            $className = $this->services[$interface];
+            $classInstance = new $className();
+            $this->cacheService($interface, $classInstance);
+
+            return $classInstance;
         }
 
+        $resolved = $this->cachedClasses[$interface] ?? $this->resolve($interface);
+        $this->cacheService($interface, $resolved);
+
         return $resolved;
+    }
+
+    private function cacheService(mixed $interface, mixed $resolved): void
+    {
+        if (isset($this->cachedClasses[$interface]))
+        {
+            return;
+        }
+
+        $this->cachedClasses[$interface] = $resolved;
     }
 }

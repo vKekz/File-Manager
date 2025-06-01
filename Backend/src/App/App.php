@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Controllers\User\UserController;
-use App\Services\User\UserServiceInterface;
+use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiRequest;
 use Core\Controllers\ApiController;
 use Core\DependencyInjection\ServiceContainer;
@@ -14,12 +14,13 @@ use Core\Enums\HttpMethod;
  */
 class App
 {
+    private readonly HttpContext $httpContext;
     private array $controllers = [];
 
     function __construct(ServiceContainer $serviceContainer)
     {
-        $userService = $serviceContainer->resolve(UserServiceInterface::class);
-        $this->registerController(new UserController($userService));
+        $this->httpContext = $serviceContainer->resolve(HttpContext::class);
+        $this->registerController($serviceContainer->resolve(UserController::class));
     }
 
     /**
@@ -39,7 +40,7 @@ class App
             return;
         }
 
-        $controller->handleRequest(new ApiRequest($route, HttpMethod::getFromName($method)));
+        $controller->handleRequest(new ApiRequest($route, HttpMethod::getFromName($method)), $this->httpContext);
     }
 
     private function registerController(ApiController $controller): void

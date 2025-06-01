@@ -10,7 +10,7 @@ use Core\Database\Database;
  */
 class UserRepository implements UserRepositoryInterface
 {
-    private const TABLE_NAME = "user_entities";
+    public const TABLE_NAME = "user_entities";
 
     function __construct(private readonly Database $database)
     {
@@ -90,11 +90,11 @@ class UserRepository implements UserRepositoryInterface
     private function createTable(): void
     {
         $attributes = "(
-            Id bigint PRIMARY KEY,
-            UserName varchar(16),
-            Email varchar(50),
-            PasswordHash varchar(255)
-        )";
+            Id bigint PRIMARY KEY NOT NULL,
+            UserName varchar(32) NOT NULL,
+            Email varchar(320) NOT NULL,
+            PasswordHash varchar(1024) NOT NULL
+        );";
         $this->database->createTable(self::TABLE_NAME, $attributes);
     }
 }
