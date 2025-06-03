@@ -2,9 +2,9 @@
 
 namespace App\Services\User;
 
+use App\Contracts\Session\SessionResponse;
 use App\Contracts\User\LoginUserRequest;
 use App\Contracts\User\RegisterUserRequest;
-use App\Contracts\User\RegisterUserResponse;
 use App\Entities\User\UserEntity;
 use Core\Contracts\Api\ApiResponse;
 
@@ -24,11 +24,11 @@ interface UserServiceInterface
     /**
      * Registers a new user.
      */
-    function registerUser(RegisterUserRequest $request): RegisterUserResponse | ApiResponse;
+    function registerUser(RegisterUserRequest $request): SessionResponse | ApiResponse;
     /**
      * Login a user.
      */
-    function loginUser(LoginUserRequest $request);
+    function loginUser(LoginUserRequest $request): SessionResponse | ApiResponse;
     /**
      * Logout a user.
      */

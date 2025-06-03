@@ -7,7 +7,7 @@ namespace Core\Contracts\Api;
  */
 class OkResponse extends ApiResponse
 {
-    function __construct(mixed $message)
+    function __construct(mixed $message = "")
     {
         parent::__construct($message, 200);
     }

@@ -11,13 +11,14 @@ readonly class UserEntity
         public int $id,
         public string $username,
         public string $email,
-        public string $passwordHash)
+        public string $passwordHash,
+        public string $createdAt,
+    )
     {
     }
 
     public static function fromArray(array $data): UserEntity
     {
-        // TODO: different naming policies are a problem
-        return new self($data["Id"], $data["UserName"], $data["Email"], $data["PasswordHash"]);
+        return new self($data["Id"], $data["UserName"], $data["Email"], $data["PasswordHash"], $data["CreatedAt"]);
     }
 }

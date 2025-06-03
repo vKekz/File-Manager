@@ -13,7 +13,8 @@ abstract class ApiResponse
 
     public function write(): void
     {
-        header("Content-Type: application/json; charset=utf-8", true, $this->statusCode);
-        echo json_encode($this->message, JSON_PRETTY_PRINT);
+        // TODO: Status code cancels response in angular, so for now always 200
+        header("Content-Type: application/json; charset=utf-8", true, 200);
+        echo json_encode($this->statusCode == 200 ? $this->message : $this, JSON_PRETTY_PRINT);
     }
 }

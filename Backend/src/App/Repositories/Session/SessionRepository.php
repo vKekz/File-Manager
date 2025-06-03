@@ -39,8 +39,8 @@ class SessionRepository implements SessionRepositoryInterface
      */
     function tryAdd(SessionEntity $entity): bool
     {
-        $attributes = ["Id", "UserId", "SessionId", "Hash"];
-        $values = [$entity->id, $entity->userId, $entity->sessionId, $entity->hash];
+        $attributes = ["Id", "UserId", "DeviceData", "CreatedAt", "ExpiresAt"];
+        $values = [$entity->id, $entity->userId, $entity->deviceData, $entity->createdAt, $entity->expiresAt];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -58,10 +58,11 @@ class SessionRepository implements SessionRepositoryInterface
         $attributes = "(
             Id bigint PRIMARY KEY NOT NULL,
             UserId bigint NOT NULL,
-            SessionId varchar(256) NOT NULL,
-            Hash varchar(1024) NOT NULL,
+            DeviceData varchar(256) NOT NULL,
+            CreatedAt DATETIME NOT NULL,
+            ExpiresAt DATETIME NOT NULL,
             FOREIGN KEY (UserId) REFERENCES " . UserRepository::TABLE_NAME . "(Id)
-        )";
+        );";
         $this->database->createTable(self::TABLE_NAME, $attributes);
     }
 }

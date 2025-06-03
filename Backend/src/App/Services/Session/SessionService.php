@@ -5,44 +5,95 @@ namespace App\Services\Session;
 use App\Entities\Session\SessionEntity;
 use App\Entities\User\UserEntity;
 use App\Repositories\Session\SessionRepositoryInterface;
-use App\Services\Hash\HashServiceInterface;
+use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\Token\Payload;
+use App\Services\Token\SessionToken;
+use App\Services\Token\TokenServiceInterface;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ServerErrorResponse;
+use DateInterval;
+use DateTime;
+use Exception;
 
 readonly class SessionService implements SessionServiceInterface
 {
-    function __construct(private SessionRepositoryInterface $sessionRepository, private HttpContext $httpContext, private HashServiceInterface $hashService)
+    function __construct(
+        private SessionRepositoryInterface $sessionRepository,
+        private CryptographicServiceInterface $cryptographicService,
+        private TokenServiceInterface $tokenService,
+        private HttpContext $httpContext
+    )
     {
     }
 
-    // TODO: Validate session
-
-    function createSession(UserEntity $userEntity): SessionEntity | ServerErrorResponse
+    function createSession(UserEntity $userEntity): SessionToken | ServerErrorResponse
     {
-        $id = $this->hashService->generateUniqueId();
+        // TODO: Check if session exists
+        $authorizationToken = $this->httpContext->authorizationToken;
+
+        $id = $this->cryptographicService->generateUniqueId();
         if (!$id)
         {
             return new ServerErrorResponse("Could not generate session ID");
         }
 
-        // TODO: Check if session exists
-        if (!session_start())
+        $sessionEntity = new SessionEntity(
+            $id,
+            $userEntity->id,
+            $this->httpContext->requestUserAgent,
+            (new DateTime())->format(DATE_ISO8601_EXPANDED),
+            (new DateTime())->add(new DateInterval("P1W"))->format(DATE_ISO8601_EXPANDED)
+        );
+
+        if (!$this->sessionRepository->tryAdd($sessionEntity))
         {
-            return new ServerErrorResponse("Could not start session");
+            return new ServerErrorResponse("Could not create session for user $userEntity->id");
         }
 
-        $sessionId = session_id();
-        if (!$sessionId)
+        return $this->tokenService->generateSessionToken($sessionEntity);
+    }
+
+    /**
+     * @throws Exception
+     */
+    function validateAccessToken(string $accessToken): bool
+    {
+        $sessionToken = SessionToken::fromToken($accessToken);
+        $decrypted = $this->cryptographicService->decrypt($sessionToken->payload);
+        if (!$decrypted)
         {
-            return new ServerErrorResponse("Could not retrieve session ID");
+            return false;
         }
 
-        $data = $userEntity->id . $this->httpContext->requestAddress . $this->httpContext->requestUserAgent;
-        $hash = $this->hashService->generateHash($data);
-        $sessionEntity = new SessionEntity($id, $userEntity->id, $sessionId, $hash);
+        $json = json_decode($decrypted, true);
+        $payload = Payload::fromArray($json);
 
-        $this->sessionRepository->tryAdd($sessionEntity);
+        $sessionId = $payload->sessionId;
+        $sessionEntity = $this->sessionRepository->findById($sessionId);
+        if (!$sessionEntity)
+        {
+            return false;
+        }
 
-        return $sessionEntity;
+        $signature = base64_decode($sessionToken->signature);
+        $recreatedSignature = $this->cryptographicService->generateHash($sessionToken->payload, true);
+
+        if (!hash_equals($signature, $recreatedSignature))
+        {
+            return false;
+        }
+
+        $createdAt = new DateTime($sessionEntity->createdAt);
+        $expiresAt = new DateTime($sessionEntity->expiresAt);
+
+        if ($createdAt->getTimestamp() > $expiresAt->getTimestamp())
+        {
+            echo "Expired";
+            return false;
+        }
+
+        // TODO: Remove session from DB
+
+        return true;
     }
 }

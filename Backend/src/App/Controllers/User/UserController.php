@@ -67,6 +67,11 @@ class UserController extends ApiController
     {
         $request = LoginUserRequest::deserialize($payload);
         $response = $this->userService->loginUser($request);
+        if ($response instanceof ApiResponse)
+        {
+            return $response;
+        }
+
         return new OkResponse($response);
     }
 }

@@ -59,13 +59,9 @@ readonly class Database
             return [];
         }
 
-        $data = [];
-        while ($row = $result->fetch_assoc())
-        {
-            $data[] = $row;
-        }
-
+        $data = $result->fetch_all(MYSQLI_ASSOC);;
         $result->free();
+
         return $data;
     }
 

@@ -62,8 +62,8 @@ class UserRepository implements UserRepositoryInterface
      */
     function tryAdd(UserEntity $entity): bool
     {
-        $attributes = ["Id", "Email", "UserName", "PasswordHash"];
-        $values = [$entity->id, $entity->email, $entity->username, $entity->passwordHash];
+        $attributes = ["Id", "Email", "UserName", "PasswordHash", "CreatedAt"];
+        $values = [$entity->id, $entity->email, $entity->username, $entity->passwordHash, $entity->createdAt];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -93,7 +93,8 @@ class UserRepository implements UserRepositoryInterface
             Id bigint PRIMARY KEY NOT NULL,
             UserName varchar(32) NOT NULL,
             Email varchar(320) NOT NULL,
-            PasswordHash varchar(1024) NOT NULL
+            PasswordHash varchar(1024) NOT NULL,
+            CreatedAt DATETIME NOT NULL
         );";
         $this->database->createTable(self::TABLE_NAME, $attributes);
     }

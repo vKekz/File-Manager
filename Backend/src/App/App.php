@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Controllers\Token\TokenController;
 use App\Controllers\User\UserController;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiRequest;
@@ -21,6 +22,7 @@ class App
     {
         $this->httpContext = $serviceContainer->resolve(HttpContext::class);
         $this->registerController($serviceContainer->resolve(UserController::class));
+        $this->registerController($serviceContainer->resolve(TokenController::class));
     }
 
     /**

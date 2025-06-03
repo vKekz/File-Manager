@@ -2,6 +2,7 @@
 
 namespace Core\Environment;
 
+use Core\Configuration\Configuration;
 use Core\Enums\EnvironmentKey;
 
 /**
@@ -11,7 +12,7 @@ class Environment
 {
     private array $variables = [];
 
-    function __construct()
+    function __construct(private readonly Configuration $configuration)
     {
         $this->load();
     }
@@ -26,7 +27,7 @@ class Environment
 
     private function load(): void
     {
-        $file = file_get_contents(dirname(__DIR__, 3) . "/.env");
+        $file = file_get_contents(dirname(__DIR__, 3) . "/" . $this->configuration->environmentFile);
         $lines = explode(PHP_EOL, $file);
         foreach ($lines as $line)
         {

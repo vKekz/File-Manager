@@ -1,9 +1,11 @@
-import { Component, ElementRef, Input, ViewChild } from "@angular/core";
+import { Component, ElementRef, Input, signal, ViewChild, WritableSignal } from "@angular/core";
 import { AuthFormEnum } from "../../../enums/auth-form.enum";
 import { ButtonComponent } from "../button/button.component";
 import { IconComponent } from "../icon/icon.component";
 import { Router } from "@angular/router";
 import { UserService } from "../../../services/user.service";
+import { ApiResponse } from "../../../contracts/api/api.response";
+import { SessionResponse } from "../../../contracts/session.response";
 
 @Component({
   selector: "app-user-auth-form",
@@ -27,6 +29,8 @@ export class UserAuthFormComponent {
   protected readonly iconSize: number = 64;
   protected readonly AuthFormEnum = AuthFormEnum;
 
+  protected readonly authResponse: WritableSignal<ApiResponse | null> = signal(null);
+
   constructor(
     private readonly router: Router,
     private readonly userService: UserService
@@ -43,9 +47,10 @@ export class UserAuthFormComponent {
       return;
     }
 
+    let response: ApiResponse | SessionResponse;
     switch (this.type) {
       case AuthFormEnum.LOGIN:
-        console.log(await this.userService.loginUser(email, password));
+        response = await this.userService.loginUser(email, password);
         break;
       case AuthFormEnum.SIGNUP:
         const userName = (this.userNameInput?.nativeElement as HTMLInputElement).value;
@@ -53,9 +58,16 @@ export class UserAuthFormComponent {
           return;
         }
 
-        console.log(await this.userService.registerUser(userName, email, password));
+        response = await this.userService.registerUser(userName, email, password);
         break;
     }
+
+    if ("message" in response && "statusCode" in response) {
+      this.authResponse.set(response);
+      return;
+    }
+
+    localStorage.setItem("access_token", response.accessToken);
   }
 
   protected async goToOtherAuthForm() {
