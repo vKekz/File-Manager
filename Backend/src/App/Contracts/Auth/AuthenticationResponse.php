@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Contracts\Session;
+namespace App\Contracts\Auth;
 
 use App\Dtos\Users\UserDto;
 
-readonly class SessionResponse
+readonly class AuthenticationResponse
 {
     function __construct(public UserDto $user, public string $accessToken)
     {

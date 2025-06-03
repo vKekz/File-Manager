@@ -15,15 +15,23 @@ class ServiceContainer
     /**
      * Registers a class for the given interface.
      */
-    function register(mixed $interface, mixed $class = null): void
+    public function register(mixed $interface, mixed $class): void
     {
-        $this->services[$interface] = $class ?? $interface;
+        $this->services[$interface] = $class;
+    }
+
+    /**
+     * Registers a class as a singleton.
+     */
+    public function addSingleton(mixed $class): void
+    {
+        $this->services[$class] = $class;
     }
 
     /**
      * Returns a resolved class for the given interface.
      */
-    function resolve(mixed $interface): mixed
+    public function resolve(mixed $interface): mixed
     {
         // Get registered class for interface
         $class = $this->services[$interface];

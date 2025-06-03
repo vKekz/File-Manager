@@ -1,6 +1,6 @@
 import { UserDto } from "../dtos/user.dto";
 
-export interface SessionResponse {
-  userDto: UserDto;
+export interface AuthResponse {
+  user: UserDto;
   accessToken: string;
 }

@@ -2,8 +2,7 @@
 
 namespace App;
 
-use App\Controllers\Token\TokenController;
-use App\Controllers\User\UserController;
+use App\Controllers\Auth\AuthController;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiRequest;
 use Core\Controllers\ApiController;
@@ -21,8 +20,7 @@ class App
     function __construct(ServiceContainer $serviceContainer)
     {
         $this->httpContext = $serviceContainer->resolve(HttpContext::class);
-        $this->registerController($serviceContainer->resolve(UserController::class));
-        $this->registerController($serviceContainer->resolve(TokenController::class));
+        $this->registerController($serviceContainer->resolve(AuthController::class));
     }
 
     /**

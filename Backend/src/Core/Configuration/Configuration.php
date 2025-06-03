@@ -16,6 +16,11 @@ class Configuration
      * Will be set to ".env" by default.
      */
     public string $environmentFile;
+    /**
+     * Gets the lifetime of the user authentication token.
+     * Will be set to "PT1H" (1 hour) by default.
+     */
+    public string $authenticationTokenLifetime = "PT1H";
 
     function __construct()
     {

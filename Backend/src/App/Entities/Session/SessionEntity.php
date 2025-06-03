@@ -2,13 +2,16 @@
 
 namespace App\Entities\Session;
 
+/**
+ * Represents a session entity.
+ */
 readonly class SessionEntity
 {
     function __construct(
         public int $id,
         public int $userId,
         public string $deviceData,
-        public string $createdAt,
+        public string $issuedAt,
         public string $expiresAt
     )
     {
@@ -16,6 +19,6 @@ readonly class SessionEntity
 
     public static function fromArray(array $data): SessionEntity
     {
-        return new self($data["Id"], $data["UserId"], $data["DeviceData"], $data["CreatedAt"], $data["ExpiresAt"]);
+        return new self($data["Id"], $data["UserId"], $data["DeviceData"], $data["IssuedAt"], $data["ExpiresAt"]);
     }
 }

@@ -7,7 +7,7 @@ use Core\Attributes\Parameter\ParameterAttribute;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiRequest;
 use Core\Contracts\Api\ApiResponse;
-use Core\Contracts\Api\BadRequestResponse;
+use Core\Contracts\Api\BadRequest;
 use Core\Enums\ParameterType;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -130,7 +130,7 @@ abstract class ApiController
     /**
      * Attempts to find the arguments for the calling controller method from the HTTP request. Returns status 400 on failure.
      */
-    private function tryFindRequestArguments(ApiControllerMethod $method, HttpContext $httpContext): array | BadRequestResponse
+    private function tryFindRequestArguments(ApiControllerMethod $method, HttpContext $httpContext): array | BadRequest
     {
         $arguments = [];
         foreach ($method->parameters as $parameter)
@@ -142,7 +142,7 @@ abstract class ApiController
                     $requestBody = file_get_contents("php://input");
                     if (!$requestBody)
                     {
-                        return new BadRequestResponse("Request body is missing");
+                        return new BadRequest("Request body is missing");
                     }
 
                     $arguments[] = $requestBody;
@@ -151,7 +151,7 @@ abstract class ApiController
                     $queryParameters = $httpContext->requestQueryParameters;
                     if (!array_key_exists($name, $queryParameters))
                     {
-                        return new BadRequestResponse("Query parameter $name is missing");
+                        return new BadRequest("Query parameter $name is missing");
                     }
 
                     $arguments[] = $queryParameters[$name];
@@ -160,7 +160,7 @@ abstract class ApiController
                     $requestHeaders = $httpContext->requestHeaders;
                     if (!array_key_exists($name, $requestHeaders))
                     {
-                        return new BadRequestResponse("Header $name is missing");
+                        return new BadRequest("Header $name is missing");
                     }
 
                     $arguments[] = $requestHeaders[$name];

@@ -3,11 +3,10 @@
 namespace App\Services\Session;
 
 use App\Entities\User\UserEntity;
-use App\Services\Token\SessionToken;
-use Core\Contracts\Api\ServerErrorResponse;
+use App\Services\Session\Domain\SessionToken;
+use Core\Contracts\Api\InternalServerError;
 
 interface SessionServiceInterface
 {
-    function createSession(UserEntity $userEntity): SessionToken | ServerErrorResponse;
-    function validateAccessToken(string $accessToken): bool;
+    function createSession(UserEntity $userEntity): SessionToken | InternalServerError;
 }

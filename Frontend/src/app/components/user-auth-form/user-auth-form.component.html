@@ -6,8 +6,8 @@
     {{ type == AuthFormEnum.LOGIN ? "Melde dich mit deinem Konto an" : "Erstelle ein neues Konto" }}
   </div>
   <form (submit)="handleSubmit($event)" class="auth-form">
-    @if (this.authResponse() !== null) {
-      <div class="auth-errors">{{ this.authResponse()?.message }}</div>
+    @if (this.authController.apiResponse() !== null) {
+      <div class="auth-errors">{{ this.authController.apiResponse()?.message }}</div>
     }
     <div class="auth-body">
       @if (type == AuthFormEnum.SIGNUP) {

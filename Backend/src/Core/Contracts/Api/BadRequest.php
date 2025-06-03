@@ -2,10 +2,10 @@
 
 namespace Core\Contracts\Api;
 
-class ServerErrorResponse extends ApiResponse
+class BadRequest extends ApiResponse
 {
     function __construct(mixed $message = "")
     {
-        parent::__construct($message, 500);
+        parent::__construct($message, 400);
     }
 }

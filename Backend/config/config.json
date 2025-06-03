@@ -1,4 +1,5 @@
 {
   "frontendUrl": "http://localhost:4200",
-  "environmentFile": ".env"
+  "environmentFile": ".env",
+  "authenticationTokenLifetime": "PT1H"
 }
