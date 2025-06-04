@@ -7,6 +7,7 @@ use App\Entities\User\UserEntity;
 use App\Repositories\Session\SessionRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
 use App\Services\Session\Domain\SessionToken;
+use App\Services\Token\TokenHandlerInterface;
 use Core\Configuration\Configuration;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\InternalServerError;
@@ -19,6 +20,7 @@ readonly class SessionService implements SessionServiceInterface
     function __construct(
         private SessionRepositoryInterface $sessionRepository,
         private CryptographicServiceInterface $cryptographicService,
+        private TokenHandlerInterface $tokenHandler,
         private HttpContext $httpContext,
         private Configuration $configuration
     )
@@ -52,6 +54,6 @@ readonly class SessionService implements SessionServiceInterface
             return new InternalServerError("Could not create session for user $userEntity->id");
         }
 
-        return $this->cryptographicService->generateSessionToken($sessionEntity);
+        return $this->tokenHandler->generateSessionToken($sessionEntity);
     }
 }

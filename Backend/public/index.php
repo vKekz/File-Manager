@@ -14,6 +14,8 @@ use App\Services\Session\SessionService;
 use App\Services\Session\SessionServiceInterface;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\AuthServiceInterface;
+use App\Services\Token\TokenHandler;
+use App\Services\Token\TokenHandlerInterface;
 use Core\Configuration\Configuration;
 use Core\Context\HttpContext;
 use Core\Database\Database;
@@ -26,11 +28,14 @@ $serviceContainer->addSingleton(Configuration::class);
 $serviceContainer->addSingleton(Environment::class);
 $serviceContainer->addSingleton(HttpContext::class);
 $serviceContainer->addSingleton(Database::class);
+
 $serviceContainer->register(CryptographicServiceInterface::class, CryptographicService::class);
 $serviceContainer->register(SessionRepositoryInterface::class, SessionRepository::class);
 $serviceContainer->register(SessionServiceInterface::class, SessionService::class);
 $serviceContainer->register(UserRepositoryInterface::class, UserRepository::class);
 $serviceContainer->register(AuthServiceInterface::class, AuthService::class);
+$serviceContainer->register(TokenHandlerInterface::class, TokenHandler::class);
+
 $serviceContainer->addSingleton(AuthController::class);
 
 // Run app

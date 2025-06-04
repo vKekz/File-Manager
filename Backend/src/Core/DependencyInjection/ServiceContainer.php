@@ -25,7 +25,7 @@ class ServiceContainer
      */
     public function addSingleton(mixed $class): void
     {
-        $this->services[$class] = $class;
+        $this->register($class, $class);
     }
 
     /**

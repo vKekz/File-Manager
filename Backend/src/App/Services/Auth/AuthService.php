@@ -12,6 +12,7 @@ use App\Repositories\User\UserRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
 use App\Services\Session\Enums\ClaimKey;
 use App\Services\Session\SessionServiceInterface;
+use App\Services\Token\TokenHandlerInterface;
 use App\Validation\User\EmailValidator;
 use App\Validation\User\PasswordValidator;
 use App\Validation\User\UsernameValidator;
@@ -30,7 +31,8 @@ readonly class AuthService implements AuthServiceInterface
         private UserRepositoryInterface $userRepository,
         private SessionRepositoryInterface $sessionRepository,
         private SessionServiceInterface $sessionService,
-        private CryptographicServiceInterface $cryptographicService
+        private CryptographicServiceInterface $cryptographicService,
+        private TokenHandlerInterface $tokenHandler
     )
     {
     }
@@ -139,7 +141,7 @@ readonly class AuthService implements AuthServiceInterface
      */
     function validate(string $accessToken): AuthenticationResponse | ApiResponse
     {
-        $payload = $this->cryptographicService->verifyAccessToken($accessToken);
+        $payload = $this->tokenHandler->verifyAccessToken($accessToken);
         if (!$payload)
         {
             return new Unauthorized("Invalid access token");

@@ -2,10 +2,6 @@
 
 namespace App\Services\Cryptographic;
 
-use App\Entities\Session\SessionEntity;
-use App\Services\Session\Domain\Payload;
-use App\Services\Session\Domain\SessionToken;
-
 /**
  * Represents the service that is used for cryptographically secure functions.
  */
@@ -35,12 +31,4 @@ interface CryptographicServiceInterface
      * Signs the given data using a secret key.
      */
     function sign(string $data, string $algorithm = "sha256", bool $binary = false): string;
-    /**
-     * Generates a session token for the given session entity.
-     */
-    function generateSessionToken(SessionEntity $sessionEntity): SessionToken;
-    /**
-     * Returns the payload for the access token if it verifies successfully, otherwise returns false.
-     */
-    function verifyAccessToken(string $accessToken): Payload | false;
 }
