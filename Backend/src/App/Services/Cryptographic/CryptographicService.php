@@ -35,7 +35,7 @@ readonly class CryptographicService implements CryptographicServiceInterface
     {
         try
         {
-            return random_int(0, PHP_INT_MAX);
+            return random_int(1, PHP_INT_MAX);
         } catch (RandomException)
         {
             return false;

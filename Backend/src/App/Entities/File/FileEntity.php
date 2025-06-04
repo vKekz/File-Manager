@@ -7,7 +7,12 @@ namespace App\Entities\File;
  */
 readonly class FileEntity
 {
-    function __construct(public int $id, public string $path)
+    function __construct(
+        public int $id,
+        public int $directoryId,
+        public string $name,
+        public string $hash
+    )
     {
     }
 }

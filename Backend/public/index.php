@@ -4,12 +4,16 @@ require_once "bootstrap.php";
 
 use App\App;
 use App\Controllers\Auth\AuthController;
+use App\Repositories\Directory\DirectoryRepository;
+use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\Session\SessionRepository;
 use App\Repositories\Session\SessionRepositoryInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\Cryptographic\CryptographicService;
 use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\Directory\DirectoryService;
+use App\Services\Directory\DirectoryServiceInterface;
 use App\Services\Session\SessionService;
 use App\Services\Session\SessionServiceInterface;
 use App\Services\Auth\AuthService;
@@ -35,6 +39,8 @@ $serviceContainer->register(SessionServiceInterface::class, SessionService::clas
 $serviceContainer->register(UserRepositoryInterface::class, UserRepository::class);
 $serviceContainer->register(AuthServiceInterface::class, AuthService::class);
 $serviceContainer->register(TokenHandlerInterface::class, TokenHandler::class);
+$serviceContainer->register(DirectoryRepositoryInterface::class, DirectoryRepository::class);
+$serviceContainer->register(DirectoryServiceInterface::class, DirectoryService::class);
 
 $serviceContainer->addSingleton(AuthController::class);
 

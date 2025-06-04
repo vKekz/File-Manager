@@ -8,7 +8,7 @@ namespace App\Services\Cryptographic;
 interface CryptographicServiceInterface
 {
     /**
-     * Attempts to generate a unique number ID, otherwise returns false on failure.
+     * Attempts to generate a unique number ID between 1 and PHP_INT_MAX, otherwise returns false on failure.
      */
     function generateUniqueId(): int | false;
     /**
