@@ -1,6 +1,6 @@
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from "@angular/router";
 import { AuthController } from "../controllers/auth.controller";
-import { HOME_ROUTE } from "../constants/route.constants";
+import { DASHBOARD_ROUTE } from "../constants/route.constants";
 import { Injectable } from "@angular/core";
 
 /**
@@ -16,6 +16,6 @@ export class SessionGuard implements CanActivate {
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
-    return !this.authController.isAuthenticated() ? true : this.router.parseUrl(HOME_ROUTE);
+    return !this.authController.isAuthenticated() ? true : this.router.parseUrl(DASHBOARD_ROUTE);
   }
 }

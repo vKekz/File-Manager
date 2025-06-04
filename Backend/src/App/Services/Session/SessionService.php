@@ -6,7 +6,7 @@ use App\Entities\Session\SessionEntity;
 use App\Entities\User\UserEntity;
 use App\Repositories\Session\SessionRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
-use App\Services\Session\Domain\SessionToken;
+use App\Services\Session\Token\SessionToken;
 use App\Services\Token\TokenHandlerInterface;
 use Core\Configuration\Configuration;
 use Core\Context\HttpContext;

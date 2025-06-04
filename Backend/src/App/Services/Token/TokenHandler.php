@@ -4,9 +4,9 @@ namespace App\Services\Token;
 
 use App\Entities\Session\SessionEntity;
 use App\Services\Cryptographic\CryptographicServiceInterface;
-use App\Services\Session\Domain\Header;
-use App\Services\Session\Domain\Payload;
-use App\Services\Session\Domain\SessionToken;
+use App\Services\Session\Token\Header;
+use App\Services\Session\Token\Payload;
+use App\Services\Session\Token\SessionToken;
 use App\Services\Session\Enums\ClaimKey;
 use DateTime;
 use Exception;

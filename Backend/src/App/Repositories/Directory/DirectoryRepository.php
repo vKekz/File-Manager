@@ -5,6 +5,9 @@ namespace App\Repositories\Directory;
 use App\Entities\Directory\DirectoryEntity;
 use Core\Database\Database;
 
+/**
+ * @inheritdoc
+ */
 class DirectoryRepository implements DirectoryRepositoryInterface
 {
     public const TABLE_NAME = "directory_entities";
@@ -14,6 +17,9 @@ class DirectoryRepository implements DirectoryRepositoryInterface
         $this->createTable();
     }
 
+    /**
+     * @inheritdoc
+     */
     function findById(int $id): ?DirectoryEntity
     {
         $condition = "WHERE Id = ?";
@@ -25,6 +31,36 @@ class DirectoryRepository implements DirectoryRepositoryInterface
         }
 
         return DirectoryEntity::fromArray($data[0]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function tryAdd(DirectoryEntity $entity): bool
+    {
+        $attributes = ["Id", "ParentId", "Name", "Path", "CreatedAt"];
+        $values = [$entity->id, $entity->parentId, $entity->name, $entity->path, $entity->createdAt];
+
+        return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function tryRemove(int $id): bool
+    {
+        if (!$this->findById($id))
+        {
+            return false;
+        }
+
+        $condition = "WHERE Id = ?";
+        if (!$this->database->deleteData(self::TABLE_NAME, $condition, $id))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private function createTable(): void

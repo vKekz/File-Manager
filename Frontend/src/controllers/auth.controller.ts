@@ -26,7 +26,7 @@ export class AuthController {
   }
 
   public async validate() {
-    const accessToken = localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    const accessToken = this.getAccessToken();
     if (!accessToken) {
       return;
     }
@@ -46,6 +46,10 @@ export class AuthController {
     }
 
     return JSON.parse(rawUser) as UserDto;
+  }
+
+  public getAccessToken(): string | null {
+    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }
 
   private handleResponse(response: ApiResponse | AuthResponse): ApiResponse | AuthResponse {

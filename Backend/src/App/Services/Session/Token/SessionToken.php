@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Session\Domain;
+namespace App\Services\Session\Token;
 
 /**
  * Represents a customized token that is issued for user sessions.

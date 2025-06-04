@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Session\Domain;
+namespace App\Services\Session\Token;
 
 readonly class Header
 {

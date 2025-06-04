@@ -3,8 +3,8 @@
 namespace App\Services\Token;
 
 use App\Entities\Session\SessionEntity;
-use App\Services\Session\Domain\Payload;
-use App\Services\Session\Domain\SessionToken;
+use App\Services\Session\Token\Payload;
+use App\Services\Session\Token\SessionToken;
 
 /**
  * Represents the handler that is used to generate and verify session tokens.

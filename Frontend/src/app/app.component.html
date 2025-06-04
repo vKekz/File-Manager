@@ -1,3 +1,6 @@
 <main>
   <router-outlet />
+  @if (this.canShowFooter()) {
+    <app-footer-nav></app-footer-nav>
+  }
 </main>
