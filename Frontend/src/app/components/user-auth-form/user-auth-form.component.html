@@ -3,7 +3,7 @@
     <app-icon [height]="iconSize" [width]="iconSize"></app-icon>
   </div>
   <div class="auth-text">
-    {{ type == AuthFormEnum.LOGIN ? "Melde dich mit deinem Konto an" : "Erstelle ein neues Konto" }}
+    {{ type == AuthFormEnum.LOGIN ? "Bei Shelfy anmelden" : "Bei Shelfy registrieren" }}
   </div>
   <form (submit)="handleSubmit($event)" class="auth-form">
     @if (this.authController.apiResponse() !== null) {
@@ -29,7 +29,7 @@
       </div>
       <div class="auth-change">
         @if (type == AuthFormEnum.LOGIN) {
-          Neu hier? <a (click)="goToOtherAuthForm()">Erstelle ein neues Konto</a>
+          Neu bei Shelfy? <a (click)="goToOtherAuthForm()">Neues Konto erstellen</a>
         } @else if (type == AuthFormEnum.SIGNUP) {
           Du hast bereits ein Konto? <a (click)="goToOtherAuthForm()">Hier anmelden</a>
         }

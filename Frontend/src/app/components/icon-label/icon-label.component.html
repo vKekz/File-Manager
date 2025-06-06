@@ -1,6 +1,10 @@
-<div class="container">
+<div (click)="this.goToRoute()" class="container">
   <div>
-    <i class="bi bi-{{ this.iconName }}"></i>
+    @if (this.isOnRoute()) {
+      <i class="bi bi-{{ this.iconName + '-fill' }}"></i>
+    } @else {
+      <i class="bi bi-{{ this.iconName }}"></i>
+    }
   </div>
   <div class="label">
     {{ label }}

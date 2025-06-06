@@ -1,5 +1,14 @@
-export const HOME_ROUTE = "";
-export const LOGIN_ROUTE = "login";
-export const SIGNUP_ROUTE = "signup";
-export const PROFILE_ROUTE = "profile";
-export const DASHBOARD_ROUTE = "dashboard";
+export const APP_ROUTES = {
+  home: "",
+  login: "login",
+  signup: "signup",
+  profile: "profile",
+  storage: "storage",
+};
+
+export const API_ROUTES = {
+  auth: "auth",
+};
+
+export type AppRoute = (typeof APP_ROUTES)[keyof typeof APP_ROUTES];
+export type ApiRoute = (typeof API_ROUTES)[keyof typeof API_ROUTES];

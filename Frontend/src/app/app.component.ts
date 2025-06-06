@@ -1,27 +1,31 @@
 import { Component, OnInit } from "@angular/core";
-import { Router, RouterOutlet } from "@angular/router";
+import { RouterOutlet } from "@angular/router";
 import { AuthController } from "../controllers/auth.controller";
-import { FooterNavComponent } from "./components/footer-nav/footer-nav.component";
-import { LOGIN_ROUTE, SIGNUP_ROUTE } from "../constants/route.constants";
+import { BottomNavComponent } from "./components/bottom-nav/bottom-nav.component";
+import { APP_ROUTES } from "../constants/route.constants";
+import { RouteHandler } from "../services/route.handler";
 
 @Component({
   selector: "app-root",
-  imports: [RouterOutlet, FooterNavComponent],
+  imports: [RouterOutlet, BottomNavComponent],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.css",
 })
 export class AppComponent implements OnInit {
-  constructor(private readonly authController: AuthController) {}
+  constructor(
+    private readonly authController: AuthController,
+    private readonly routeHandler: RouteHandler
+  ) {}
 
   async ngOnInit() {
     await this.authController.validate();
   }
 
-  protected canShowFooter() {
+  protected canShowBottomNav() {
     return (
-      location.pathname !== "/" &&
-      !location.pathname.startsWith(`${LOGIN_ROUTE}`) &&
-      !location.pathname.startsWith(`${SIGNUP_ROUTE}`)
+      !this.routeHandler.isOnRoute(APP_ROUTES.home) &&
+      !this.routeHandler.isOnRoute(APP_ROUTES.login) &&
+      !this.routeHandler.isOnRoute(APP_ROUTES.signup)
     );
   }
 }

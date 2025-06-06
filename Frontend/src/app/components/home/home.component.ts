@@ -2,9 +2,9 @@ import { Component, OnInit, signal, WritableSignal } from "@angular/core";
 import { IconComponent } from "../icon/icon.component";
 import { delay } from "../../../helpers/timeout.helper";
 import { ButtonComponent } from "../button/button.component";
-import { Router } from "@angular/router";
 import { AuthController } from "../../../controllers/auth.controller";
-import { DASHBOARD_ROUTE, LOGIN_ROUTE } from "../../../constants/route.constants";
+import { APP_ROUTES } from "../../../constants/route.constants";
+import { RouteHandler } from "../../../services/route.handler";
 
 @Component({
   selector: "app-home",
@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
   protected readonly brandName: WritableSignal<string> = signal("S");
 
   constructor(
-    private readonly router: Router,
+    private readonly routeHandler: RouteHandler,
     protected readonly authController: AuthController
   ) {}
 
@@ -26,11 +26,11 @@ export class HomeComponent implements OnInit {
   }
 
   protected goToLogin() {
-    return this.router.navigateByUrl(`/${LOGIN_ROUTE}`);
+    return this.routeHandler.goToRoute(APP_ROUTES.login);
   }
 
   protected goToDashboard() {
-    return this.router.navigateByUrl(`/${DASHBOARD_ROUTE}`);
+    return this.routeHandler.goToRoute(APP_ROUTES.storage);
   }
 
   private async animateBrandName() {

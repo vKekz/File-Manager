@@ -6,9 +6,19 @@
 }
 
 .label {
-  font-size: 1rem;
+  color: var(--dark-theme-secondary-font-color);
 }
 
 i {
   font-size: 1.5rem;
+}
+
+@media screen and (max-width: 960px) {
+  .label {
+    font-size: 0.75rem;
+  }
+
+  i {
+    font-size: 1.25rem;
+  }
 }

@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
-import { Router } from "@angular/router";
+import { RouteHandler } from "../../../services/route.handler";
+import { APP_ROUTES } from "../../../constants/route.constants";
 
 @Component({
   selector: "app-icon",
@@ -14,9 +15,9 @@ export class IconComponent {
   @Input()
   public height: number = 256;
 
-  constructor(private readonly router: Router) {}
+  constructor(private readonly routeHandler: RouteHandler) {}
 
-  protected async goToHome() {
-    await this.router.navigateByUrl("/");
+  protected goToHome() {
+    return this.routeHandler.goToRoute(APP_ROUTES.home);
   }
 }

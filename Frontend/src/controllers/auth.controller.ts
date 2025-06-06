@@ -3,6 +3,8 @@ import { ApiResponse } from "../contracts/api.response";
 import { AuthResponse } from "../contracts/auth.response";
 import { AuthService } from "../services/auth.service";
 import { UserDto } from "../dtos/user.dto";
+import { RouteHandler } from "../services/route.handler";
+import { APP_ROUTES } from "../constants/route.constants";
 
 @Injectable({
   providedIn: "root",
@@ -13,7 +15,10 @@ export class AuthController {
 
   public readonly apiResponse: WritableSignal<ApiResponse | null> = signal(null);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly routeHandler: RouteHandler
+  ) {}
 
   public async registerUser(username: string, email: string, password: string) {
     const response = await this.authService.registerUser(username, email, password);
@@ -36,7 +41,7 @@ export class AuthController {
   }
 
   public isAuthenticated(): boolean {
-    return this.getUser() !== null;
+    return this.getUser() !== null && this.getAccessToken() !== null;
   }
 
   public getUser(): UserDto | null {
@@ -52,7 +57,11 @@ export class AuthController {
     return localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }
 
-  private handleResponse(response: ApiResponse | AuthResponse): ApiResponse | AuthResponse {
+  public resetResponse() {
+    this.apiResponse.set(null);
+  }
+
+  private async handleResponse(response: ApiResponse | AuthResponse) {
     if ("message" in response) {
       this.apiResponse.set(response);
 
@@ -63,6 +72,8 @@ export class AuthController {
 
       localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
       sessionStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+
+      await this.routeHandler.goToRoute(APP_ROUTES.storage);
     }
 
     return response;

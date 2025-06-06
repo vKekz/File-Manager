@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { API_URL } from "../app/app.config";
-import { API_ROUTE_AUTH } from "../constants/api-route.constants";
 import { ApiResponse } from "../contracts/api.response";
 import { firstValueFrom } from "rxjs";
 import { AuthResponse } from "../contracts/auth.response";
+import { API_ROUTES } from "../constants/route.constants";
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
     @Inject(API_URL) apiUrl: string,
     private readonly httpClient: HttpClient
   ) {
-    this.userEndpoint = `${apiUrl}${API_ROUTE_AUTH}`;
+    this.userEndpoint = `${apiUrl}/${API_ROUTES.auth}`;
   }
 
   public async registerUser(username: string, email: string, password: string) {

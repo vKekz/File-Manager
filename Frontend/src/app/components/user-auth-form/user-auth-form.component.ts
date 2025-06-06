@@ -39,26 +39,20 @@ export class UserAuthFormComponent {
     const email = (this.emailInput?.nativeElement as HTMLInputElement).value;
     const password = (this.passwordInput?.nativeElement as HTMLInputElement).value;
 
-    if (!email || !password) {
-      return;
-    }
-
     switch (this.type) {
       case AuthFormEnum.LOGIN:
         await this.authController.loginUser(email, password);
         break;
       case AuthFormEnum.SIGNUP:
         const userName = (this.userNameInput?.nativeElement as HTMLInputElement).value;
-        if (!userName) {
-          return;
-        }
-
         await this.authController.registerUser(userName, email, password);
         break;
     }
   }
 
   protected async goToOtherAuthForm() {
+    this.authController.resetResponse();
+
     const route = this.type == AuthFormEnum.LOGIN ? "/signup" : "/login";
     await this.router.navigateByUrl(route);
   }
