@@ -10,10 +10,6 @@ use App\Entities\User\UserEntity;
 interface UserRepositoryInterface
 {
     /**
-     * Returns an array of all users.
-     */
-    function getUsers(): array;
-    /**
      * Attempts to find a user entity by the given ID. Returns null on failure.
      */
     function findById(int $id): ?UserEntity;

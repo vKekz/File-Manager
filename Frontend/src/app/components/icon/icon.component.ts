@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { RouteHandler } from "../../../services/route.handler";
+import { RouteHandler } from "../../../handlers/route.handler";
 import { APP_ROUTES } from "../../../constants/route.constants";
 
 @Component({

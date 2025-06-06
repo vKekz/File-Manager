@@ -1,10 +1,11 @@
 import { Component, Input } from "@angular/core";
 import { APP_ROUTES, AppRoute } from "../../../constants/route.constants";
-import { RouteHandler } from "../../../services/route.handler";
+import { RouteHandler } from "../../../handlers/route.handler";
+import { NgClass } from "@angular/common";
 
 @Component({
   selector: "app-icon-label",
-  imports: [],
+  imports: [NgClass],
   templateUrl: "./icon-label.component.html",
   styleUrl: "./icon-label.component.css",
 })

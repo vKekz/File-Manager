@@ -12,6 +12,10 @@ use Core\Contracts\Api\ApiResponse;
 interface DirectoryServiceInterface
 {
     /**
+     * Returns an array of directories.
+     */
+    function getDirectories(): array | ApiResponse;
+    /**
      * Creates a new directory.
      */
     function createDirectory(CreateDirectoryRequest $request): DirectoryEntity | ApiResponse;

@@ -17,7 +17,8 @@ class UsernameValidator extends Validator
         $username = htmlspecialchars($input);
 
         // Usernames should have between 4 and 16 characters
-        if (strlen($username) < 4 || strlen($username) > 16)
+        $length = strlen($username);
+        if ($length < 4 || $length > 16)
         {
             return false;
         }

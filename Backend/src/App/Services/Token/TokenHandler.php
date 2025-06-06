@@ -56,8 +56,13 @@ readonly class TokenHandler implements TokenHandlerInterface
      * @inheritdoc
      * @throws Exception
      */
-    function verifyAccessToken(string $accessToken): Payload | false
+    function verifyAccessToken(?string $accessToken): Payload | false
     {
+        if ($accessToken === null || strlen($accessToken) === 0)
+        {
+            return false;
+        }
+
         // Check for 3 parts split by "."
         $parts = explode(".", $accessToken, 3);
         if (count($parts) !== 3)

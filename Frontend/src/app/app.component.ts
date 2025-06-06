@@ -3,7 +3,7 @@ import { RouterOutlet } from "@angular/router";
 import { AuthController } from "../controllers/auth.controller";
 import { BottomNavComponent } from "./components/bottom-nav/bottom-nav.component";
 import { APP_ROUTES } from "../constants/route.constants";
-import { RouteHandler } from "../services/route.handler";
+import { RouteHandler } from "../handlers/route.handler";
 
 @Component({
   selector: "app-root",

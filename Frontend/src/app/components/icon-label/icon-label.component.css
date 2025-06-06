@@ -5,6 +5,11 @@
   align-items: center;
 }
 
+.selected > i,
+.container:hover > i {
+  color: var(--primary-color);
+}
+
 .label {
   color: var(--dark-theme-secondary-font-color);
 }

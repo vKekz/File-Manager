@@ -14,6 +14,17 @@ interface DirectoryRepositoryInterface
      */
     function findById(int $id): ?DirectoryEntity;
     /**
+     * Returns an array of directory entities that are owned by the given user.
+     */
+    function findByUserId(int $userId): array;
+    /**
+     * Returns an array of directory entities
+     * where each entity is in the given parent directory, has the given name and is owned by the given user.
+     *
+     * Will be called when creating a new directory to check if the name is already used.
+     */
+    function findByNameForUserWithParentId(int $parentId, int $userId, string $name): array;
+    /**
      * Attempts to add a directory entity to the repository. Returns true on success.
      */
     function tryAdd(DirectoryEntity $entity): bool;

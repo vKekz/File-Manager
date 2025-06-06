@@ -3,6 +3,7 @@
 namespace App\Repositories\Directory;
 
 use App\Entities\Directory\DirectoryEntity;
+use App\Repositories\User\UserRepository;
 use Core\Database\Database;
 
 /**
@@ -20,10 +21,19 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     /**
      * @inheritdoc
      */
+    function findByUserId(int $userId): array
+    {
+        $condition = "WHERE UserId = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId);
+    }
+
+    /**
+     * @inheritdoc
+     */
     function findById(int $id): ?DirectoryEntity
     {
         $condition = "WHERE Id = ?";
-        $data = $this->database->fetchData(self::TABLE_NAME, condition: $condition, values: $id);
+        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $id);
 
         if (count($data) == 0)
         {
@@ -36,10 +46,19 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     /**
      * @inheritdoc
      */
+    function findByNameForUserWithParentId(int $parentId, int $userId, string $name): array
+    {
+        $condition = "WHERE ParentId = ? AND UserId = ? AND Name = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $parentId, $userId, $name);
+    }
+
+    /**
+     * @inheritdoc
+     */
     function tryAdd(DirectoryEntity $entity): bool
     {
-        $attributes = ["Id", "ParentId", "Name", "Path", "CreatedAt"];
-        $values = [$entity->id, $entity->parentId, $entity->name, $entity->path, $entity->createdAt];
+        $attributes = ["Id", "ParentId", "UserId", "Name", "Path", "CreatedAt"];
+        $values = [$entity->id, $entity->parentId, $entity->userId, $entity->name, $entity->path, $entity->createdAt];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -67,11 +86,12 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     {
         $attributes = "(
             Id bigint PRIMARY KEY NOT NULL,
-            ParentId bigint,
+            ParentId bigint NOT NULL,
+            UserId bigint NOT NULL,
             Name varchar(255) NOT NULL,
             Path varchar(255) NOT NULL,
             CreatedAt datetime NOT NULL,
-            FOREIGN KEY (ParentId) REFERENCES " . self::TABLE_NAME . "(Id)
+            FOREIGN KEY (UserId) REFERENCES " . UserRepository::TABLE_NAME . "(Id)
         );";
         $this->database->createTable(self::TABLE_NAME, $attributes);
     }

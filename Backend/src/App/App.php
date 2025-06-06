@@ -3,9 +3,11 @@
 namespace App;
 
 use App\Controllers\Auth\AuthController;
+use App\Controllers\Directory\DirectoryController;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiRequest;
 use Core\Controllers\ApiController;
+use Core\Database\Database;
 use Core\DependencyInjection\ServiceContainer;
 use Core\Enums\HttpMethod;
 
@@ -17,10 +19,11 @@ class App
     private readonly HttpContext $httpContext;
     private array $controllers = [];
 
-    function __construct(ServiceContainer $serviceContainer)
+    function __construct(private readonly ServiceContainer $serviceContainer)
     {
         $this->httpContext = $serviceContainer->resolve(HttpContext::class);
         $this->registerController($serviceContainer->resolve(AuthController::class));
+        $this->registerController($serviceContainer->resolve(DirectoryController::class));
     }
 
     /**
@@ -41,6 +44,13 @@ class App
         }
 
         $controller->handleRequest(new ApiRequest($route, HttpMethod::getFromName($method)), $this->httpContext);
+        $this->cleanup();
+    }
+
+    private function cleanup(): void
+    {
+        $database = $this->serviceContainer->resolve(Database::class);
+        $database->close();
     }
 
     private function registerController(ApiController $controller): void

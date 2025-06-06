@@ -4,7 +4,7 @@ import { delay } from "../../../helpers/timeout.helper";
 import { ButtonComponent } from "../button/button.component";
 import { AuthController } from "../../../controllers/auth.controller";
 import { APP_ROUTES } from "../../../constants/route.constants";
-import { RouteHandler } from "../../../services/route.handler";
+import { RouteHandler } from "../../../handlers/route.handler";
 
 @Component({
   selector: "app-home",
@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
     return this.routeHandler.goToRoute(APP_ROUTES.login);
   }
 
-  protected goToDashboard() {
+  protected goToStorage() {
     return this.routeHandler.goToRoute(APP_ROUTES.storage);
   }
 

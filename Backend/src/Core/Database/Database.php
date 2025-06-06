@@ -25,9 +25,9 @@ readonly class Database
         $this->createDatabase();
     }
 
-    public function close(): bool
+    public function close(): void
     {
-        return $this->connection->close();
+        $this->connection->close();
     }
 
     public function createTable(string $tableName, string $attributes): void
@@ -44,14 +44,14 @@ readonly class Database
         $statement->close();
     }
 
-    public function fetchData(string $table, array $attributes = [], string $condition = "", string ...$values): array
+    public function fetchData(string $table, array $attributes, string $condition = "", mixed ...$values): array
     {
         $attributes = count($attributes) == 0 ? "*" : join(", ", $attributes);
         $query = "SELECT $attributes FROM $table $condition";
 
         $result = count($values) == 0 ?
             $this->selectQuery($query) :
-            $this->selectQuery($query, join(", ", $values));
+            $this->selectQuery($query, ...$values);
 
         // Return empty array if result was false
         if (!$result)

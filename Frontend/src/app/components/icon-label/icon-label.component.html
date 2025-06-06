@@ -1,11 +1,5 @@
-<div (click)="this.goToRoute()" class="container">
-  <div>
-    @if (this.isOnRoute()) {
-      <i class="bi bi-{{ this.iconName + '-fill' }}"></i>
-    } @else {
-      <i class="bi bi-{{ this.iconName }}"></i>
-    }
-  </div>
+<div (click)="this.goToRoute()" class="container" [ngClass]="this.isOnRoute() ? 'selected' : ''">
+  <i [ngClass]="'bi bi-' + this.iconName + (this.isOnRoute() ? '-fill' : '')"> </i>
   <div class="label">
     {{ label }}
   </div>

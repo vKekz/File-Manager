@@ -4,17 +4,14 @@ namespace App\Controllers\Auth;
 
 use App\Contracts\User\UserLoginRequest;
 use App\Contracts\User\UserRegisterRequest;
-use App\Services\Cryptographic\CryptographicServiceInterface;
 use App\Services\Auth\AuthServiceInterface;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\BodyParameter;
-use Core\Attributes\Parameter\HeaderParameter;
-use Core\Authorization\AuthorizationToken;
+use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\Ok;
 use Core\Controllers\ApiController;
 
-// TODO: Authorization
 /**
  * Represents the controller that is used for the user authentication.
  */
@@ -24,6 +21,7 @@ class AuthController extends ApiController
 
     function __construct(
         private readonly AuthServiceInterface $authService,
+        private readonly HttpContext $httpContext
     )
     {
         parent::__construct(self::END_POINT);
@@ -46,10 +44,10 @@ class AuthController extends ApiController
     }
 
     #[HttpPost("/validate")]
-    function validateToken(#[HeaderParameter("Authorization")] string $authorization): ApiResponse
+    function validateSession(): ApiResponse
     {
-        $authorizationToken = AuthorizationToken::fromHeader($authorization);
-        $payload = $this->authService->validate($authorizationToken->token);
+        $authorizationToken = $this->httpContext->authorizationToken;
+        $payload = $this->authService->validateSession($authorizationToken?->token);
         return new Ok($payload);
     }
 }

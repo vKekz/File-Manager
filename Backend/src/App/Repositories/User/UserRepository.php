@@ -20,18 +20,10 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @inheritdoc
      */
-    function getUsers(): array
-    {
-        return $this->database->fetchData(self::TABLE_NAME);
-    }
-
-    /**
-     * @inheritdoc
-     */
     function findById(int $id): ?UserEntity
     {
         $condition = "WHERE Id = ?";
-        $data = $this->database->fetchData(self::TABLE_NAME, condition: $condition, values: $id);
+        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $id);
 
         if (count($data) == 0)
         {
@@ -47,7 +39,7 @@ class UserRepository implements UserRepositoryInterface
     function findByEmail(string $email): ?UserEntity
     {
         $condition = "WHERE Email = ?";
-        $data = $this->database->fetchData(self::TABLE_NAME, condition: $condition, values: $email);
+        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $email);
 
         if (count($data) == 0)
         {

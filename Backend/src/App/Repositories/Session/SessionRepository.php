@@ -24,7 +24,7 @@ class SessionRepository implements SessionRepositoryInterface
     function findById(int $id): ?SessionEntity
     {
         $condition = "WHERE Id = ?";
-        $data = $this->database->fetchData(self::TABLE_NAME, condition: $condition, values: $id);
+        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $id);
 
         if (count($data) == 0)
         {

@@ -14,7 +14,7 @@
       <div class="sub-slogan">Deine Dateien und Ordner – sicher und einfach verwaltet.</div>
       <div>
         @if (this.authController.isAuthenticated()) {
-          <app-button (click)="this.goToDashboard()" text="Zum Dashboard"></app-button>
+          <app-button (click)="this.goToStorage()" text="Zu deinen Dateien"></app-button>
         } @else {
           <app-button (click)="this.goToLogin()" text="Zum Login"></app-button>
         }

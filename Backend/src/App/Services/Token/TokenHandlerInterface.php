@@ -18,5 +18,5 @@ interface TokenHandlerInterface
     /**
      * Returns the payload for the access token if it verifies successfully, otherwise returns false.
      */
-    function verifyAccessToken(string $accessToken): Payload | false;
+    function verifyAccessToken(?string $accessToken): Payload | false;
 }

@@ -8,43 +8,43 @@ import { API_ROUTES } from "../constants/route.constants";
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
-  private readonly userEndpoint: string;
+  private readonly endpoint: string;
 
   constructor(
     @Inject(API_URL) apiUrl: string,
     private readonly httpClient: HttpClient
   ) {
-    this.userEndpoint = `${apiUrl}/${API_ROUTES.auth}`;
+    this.endpoint = `${apiUrl}/${API_ROUTES.auth}`;
   }
 
-  public async registerUser(username: string, email: string, password: string) {
-    const route = `${this.userEndpoint}/register`;
+  public registerUser(username: string, email: string, password: string) {
+    const route = `${this.endpoint}/register`;
     const payload = {
       username: username,
       email: email,
       password: password,
-    };
+    } as const;
     const request = this.httpClient.post<AuthResponse | ApiResponse>(route, payload);
-    return await firstValueFrom(request);
+    return firstValueFrom(request);
   }
 
-  public async loginUser(email: string, password: string) {
-    const route = `${this.userEndpoint}/login`;
+  public loginUser(email: string, password: string) {
+    const route = `${this.endpoint}/login`;
     const payload = {
       email: email,
       password: password,
-    };
+    } as const;
     const request = this.httpClient.post<AuthResponse | ApiResponse>(route, payload);
-    return await firstValueFrom(request);
+    return firstValueFrom(request);
   }
 
-  public async validate($accessToken: string) {
-    const route = `${this.userEndpoint}/validate`;
+  public validate($accessToken: string) {
+    const route = `${this.endpoint}/validate`;
     const request = this.httpClient.post<AuthResponse | ApiResponse>(route, "", {
       headers: {
         Authorization: `Bearer ${$accessToken}`,
       },
     });
-    return await firstValueFrom(request);
+    return firstValueFrom(request);
   }
 }

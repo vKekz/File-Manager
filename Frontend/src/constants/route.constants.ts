@@ -8,6 +8,7 @@ export const APP_ROUTES = {
 
 export const API_ROUTES = {
   auth: "auth",
+  directory: "directory",
 };
 
 export type AppRoute = (typeof APP_ROUTES)[keyof typeof APP_ROUTES];

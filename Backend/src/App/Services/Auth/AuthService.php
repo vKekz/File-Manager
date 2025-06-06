@@ -12,10 +12,12 @@ use App\Repositories\User\UserRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
 use App\Services\Session\Enums\ClaimKey;
 use App\Services\Session\SessionServiceInterface;
+use App\Services\Session\Token\Payload;
 use App\Services\Token\TokenHandlerInterface;
 use App\Validation\User\EmailValidator;
 use App\Validation\User\PasswordValidator;
 use App\Validation\User\UsernameValidator;
+use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
 use Core\Contracts\Api\InternalServerError;
@@ -32,7 +34,8 @@ readonly class AuthService implements AuthServiceInterface
         private SessionRepositoryInterface $sessionRepository,
         private SessionServiceInterface $sessionService,
         private CryptographicServiceInterface $cryptographicService,
-        private TokenHandlerInterface $tokenHandler
+        private TokenHandlerInterface $tokenHandler,
+        private HttpContext $httpContext
     )
     {
     }
@@ -139,7 +142,7 @@ readonly class AuthService implements AuthServiceInterface
     /**
      * @inheritdoc
      */
-    function validate(string $accessToken): AuthenticationResponse | ApiResponse
+    function validateSession(?string $accessToken): AuthenticationResponse | ApiResponse
     {
         $payload = $this->tokenHandler->verifyAccessToken($accessToken);
         if (!$payload)
@@ -168,5 +171,14 @@ readonly class AuthService implements AuthServiceInterface
             $userDto,
             $accessToken
         );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function validateAuthHeader(): Payload | false
+    {
+        $authorizationToken = $this->httpContext->authorizationToken;
+        return $this->tokenHandler->verifyAccessToken($authorizationToken?->token);
     }
 }

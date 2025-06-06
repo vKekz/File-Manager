@@ -3,7 +3,7 @@ import { ApiResponse } from "../contracts/api.response";
 import { AuthResponse } from "../contracts/auth.response";
 import { AuthService } from "../services/auth.service";
 import { UserDto } from "../dtos/user.dto";
-import { RouteHandler } from "../services/route.handler";
+import { RouteHandler } from "../handlers/route.handler";
 import { APP_ROUTES } from "../constants/route.constants";
 
 @Injectable({
@@ -22,12 +22,14 @@ export class AuthController {
 
   public async registerUser(username: string, email: string, password: string) {
     const response = await this.authService.registerUser(username, email, password);
-    return this.handleResponse(response);
+    await this.handleResponse(response, true);
+    return response;
   }
 
   public async loginUser(email: string, password: string) {
     const response = await this.authService.loginUser(email, password);
-    return this.handleResponse(response);
+    await this.handleResponse(response, true);
+    return response;
   }
 
   public async validate() {
@@ -37,7 +39,11 @@ export class AuthController {
     }
 
     const response = await this.authService.validate(accessToken);
-    return this.handleResponse(response);
+    if (!(await this.handleResponse(response))) {
+      await this.routeHandler.goToRoute(APP_ROUTES.home);
+    }
+
+    return response;
   }
 
   public isAuthenticated(): boolean {
@@ -61,21 +67,24 @@ export class AuthController {
     this.apiResponse.set(null);
   }
 
-  private async handleResponse(response: ApiResponse | AuthResponse) {
+  private async handleResponse(response: ApiResponse | AuthResponse, routeOnSuccess: boolean = false) {
     if ("message" in response) {
       this.apiResponse.set(response);
 
       localStorage.removeItem(this.ACCESS_TOKEN_KEY);
       sessionStorage.removeItem(this.USER_KEY);
-    } else {
-      this.apiResponse.set(null);
+      return false;
+    }
 
-      localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
-      sessionStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+    this.resetResponse();
 
+    localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
+    sessionStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+
+    if (routeOnSuccess) {
       await this.routeHandler.goToRoute(APP_ROUTES.storage);
     }
 
-    return response;
+    return true;
   }
 }
