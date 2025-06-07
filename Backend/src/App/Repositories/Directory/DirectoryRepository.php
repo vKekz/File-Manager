@@ -21,16 +21,32 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findByUserId(int $userId): array
+    function findByUserId(string $userId, string $parentId): array
     {
-        $condition = "WHERE UserId = ?";
-        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId);
+        $condition = "WHERE UserId = ? AND ParentId = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId, $parentId);
     }
 
     /**
      * @inheritdoc
      */
-    function findById(int $id): ?DirectoryEntity
+    function findRootForUser(string $userId): ?DirectoryEntity
+    {
+        $condition = "WHERE UserId = ? AND IsRoot = ?";
+        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId, 1);
+
+        if (count($data) == 0)
+        {
+            return null;
+        }
+
+        return DirectoryEntity::fromArray($data[0]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function findById(string $id): ?DirectoryEntity
     {
         $condition = "WHERE Id = ?";
         $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $id);
@@ -46,7 +62,7 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findByNameForUserWithParentId(int $parentId, int $userId, string $name): array
+    function findByNameForUserWithParentId(string $parentId, string $userId, string $name): array
     {
         $condition = "WHERE ParentId = ? AND UserId = ? AND Name = ?";
         return $this->database->fetchData(self::TABLE_NAME, [], $condition, $parentId, $userId, $name);
@@ -57,8 +73,8 @@ class DirectoryRepository implements DirectoryRepositoryInterface
      */
     function tryAdd(DirectoryEntity $entity): bool
     {
-        $attributes = ["Id", "ParentId", "UserId", "Name", "Path", "CreatedAt"];
-        $values = [$entity->id, $entity->parentId, $entity->userId, $entity->name, $entity->path, $entity->createdAt];
+        $attributes = ["Id", "ParentId", "UserId", "Name", "Path", "CreatedAt", "IsRoot"];
+        $values = [$entity->id, $entity->parentId, $entity->userId, $entity->name, $entity->path, $entity->createdAt, (int)$entity->isRoot];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -66,7 +82,7 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     /**
      * @inheritdoc
      */
-    function tryRemove(int $id): bool
+    function tryRemove(string $id): bool
     {
         if (!$this->findById($id))
         {
@@ -85,12 +101,13 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     private function createTable(): void
     {
         $attributes = "(
-            Id bigint PRIMARY KEY NOT NULL,
-            ParentId bigint NOT NULL,
-            UserId bigint NOT NULL,
+            Id varchar(36) PRIMARY KEY NOT NULL,
+            ParentId varchar(36) NOT NULL,
+            UserId varchar(36) NOT NULL,
             Name varchar(255) NOT NULL,
             Path varchar(255) NOT NULL,
             CreatedAt datetime NOT NULL,
+            IsRoot boolean NOT NULL,
             FOREIGN KEY (UserId) REFERENCES " . UserRepository::TABLE_NAME . "(Id)
         );";
         $this->database->createTable(self::TABLE_NAME, $attributes);

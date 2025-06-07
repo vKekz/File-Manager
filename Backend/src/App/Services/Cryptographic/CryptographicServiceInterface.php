@@ -8,15 +8,21 @@ namespace App\Services\Cryptographic;
 interface CryptographicServiceInterface
 {
     /**
-     * Attempts to generate a unique number ID between 1 and PHP_INT_MAX, otherwise returns false on failure.
+     * Attempts to generate a UUID v4, otherwise returns false on failure.
+     *
+     * @see https://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_(random)
      */
-    function generateUniqueId(): int | false;
+    function generateUuid(): string | false;
     /**
      * Encrypts the given data using the cryptographic standard "AES".
+     *
+     * @see https://www.php.net/manual/en/function.openssl-encrypt.php
      */
     function encrypt(string $data): string;
     /**
      * Decrypts the given input, otherwise returns false on failure.
+     *
+     * @see https://www.php.net/manual/en/function.openssl-decrypt.php
      */
     function decrypt(string $input): string | false;
     /**
@@ -30,5 +36,5 @@ interface CryptographicServiceInterface
     /**
      * Signs the given data using a secret key.
      */
-    function sign(string $data, string $algorithm = "sha256", bool $binary = false): string;
+    function sign(string $data, string $algorithm, bool $binary = false): string;
 }

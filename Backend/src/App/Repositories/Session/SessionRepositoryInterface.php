@@ -12,7 +12,7 @@ interface SessionRepositoryInterface
     /**
      * Attempts to find a session entity by the given ID, otherwise returns null on failure.
      */
-    function findById(int $id): ?SessionEntity;
+    function findById(string $id): ?SessionEntity;
     /**
      * Attempts to add a session entity to the repository. Returns true on success.
      */
@@ -20,5 +20,5 @@ interface SessionRepositoryInterface
     /**
      * Attempts to remove a session entity from the repository. Returns true on success.
      */
-    function tryRemove(int $id): bool;
+    function tryRemove(string $id): bool;
 }

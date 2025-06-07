@@ -17,6 +17,9 @@ use Core\Enums\HttpMethod;
 class App
 {
     private readonly HttpContext $httpContext;
+    /**
+     * @var ApiController[]
+     */
     private array $controllers = [];
 
     function __construct(private readonly ServiceContainer $serviceContainer)

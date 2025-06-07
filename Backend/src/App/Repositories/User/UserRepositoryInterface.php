@@ -12,7 +12,7 @@ interface UserRepositoryInterface
     /**
      * Attempts to find a user entity by the given ID. Returns null on failure.
      */
-    function findById(int $id): ?UserEntity;
+    function findById(string $id): ?UserEntity;
     /**
      * Attempts to find a user entity by the given email. Returns null on failure.
      */
@@ -24,5 +24,5 @@ interface UserRepositoryInterface
     /**
      * Attempts to remove a user entity from the repository. Returns true on success.
      */
-    function tryRemove(int $id): bool;
+    function tryRemove(string $id): bool;
 }

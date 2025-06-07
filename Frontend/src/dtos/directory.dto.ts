@@ -1,5 +1,6 @@
 export interface DirectoryDto {
-  id: number;
+  id: string;
+  parentId: string;
   name: string;
   path: string;
 }

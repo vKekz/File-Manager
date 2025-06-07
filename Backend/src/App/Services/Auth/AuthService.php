@@ -70,18 +70,19 @@ readonly class AuthService implements AuthServiceInterface
             return new BadRequest("The email you have provided is already associated with an account");
         }
 
-        $id = $this->cryptographicService->generateUniqueId();
+        $id = $this->cryptographicService->generateUuid();
         if (!$id)
         {
             return new InternalServerError("Unexpected server error");
         }
 
         $hash = $this->cryptographicService->generatePasswordHash($password);
+        $encryptedHash = $this->cryptographicService->encrypt($hash);
         $userEntity = new UserEntity(
             $id,
             $username,
             $email,
-            $hash,
+            $encryptedHash,
             (new DateTime())
                 ->format(DATE_ISO8601_EXPANDED)
         );
@@ -91,16 +92,17 @@ readonly class AuthService implements AuthServiceInterface
             return new InternalServerError("Unexpected server error");
         }
 
-        $userDto = new UserDto(
-            $userEntity->username,
-            $userEntity->email
-        );
         $sessionToken = $this->sessionService->createSession($userEntity);
         if ($sessionToken instanceof ApiResponse)
         {
             return $sessionToken;
         }
 
+        $userDto = new UserDto(
+            $userEntity->id,
+            $userEntity->username,
+            $userEntity->email
+        );
         return new AuthenticationResponse(
             $userDto,
             $sessionToken->accessToken
@@ -118,21 +120,23 @@ readonly class AuthService implements AuthServiceInterface
             return new BadRequest("Incorrect credentials");
         }
 
-        if (!$this->cryptographicService->verifyPassword($userEntity->passwordHash, $request->password))
+        $decryptedPassword = $this->cryptographicService->decrypt($userEntity->passwordHash);
+        if (!$this->cryptographicService->verifyPassword($decryptedPassword, $request->password))
         {
             return new BadRequest("Incorrect credentials");
         }
 
-        $userDto = new UserDto(
-            $userEntity->username,
-            $userEntity->email
-        );
         $sessionToken = $this->sessionService->createSession($userEntity);
         if ($sessionToken instanceof ApiResponse)
         {
             return $sessionToken;
         }
 
+        $userDto = new UserDto(
+            $userEntity->id,
+            $userEntity->username,
+            $userEntity->email
+        );
         return new AuthenticationResponse(
             $userDto,
             $sessionToken->accessToken
@@ -163,6 +167,7 @@ readonly class AuthService implements AuthServiceInterface
         }
 
         $userDto = new UserDto(
+            $userEntity->id,
             $userEntity->username,
             $userEntity->email,
         );

@@ -10,5 +10,5 @@ abstract class Validator
     /**
      * Returns true if the given input validates correctly.
      */
-    public abstract static function validate(mixed $input): bool;
+    abstract static function validate(mixed $input): bool;
 }

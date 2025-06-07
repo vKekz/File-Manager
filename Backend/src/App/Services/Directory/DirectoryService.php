@@ -3,7 +3,9 @@
 namespace App\Services\Directory;
 
 use App\Contracts\Directory\CreateDirectoryRequest;
+use App\Dtos\Directory\DirectoryDto;
 use App\Entities\Directory\DirectoryEntity;
+use App\Mapper\Directory\DirectoryMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Services\Auth\AuthServiceInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
@@ -12,6 +14,7 @@ use App\Validation\Directory\DirectoryNameValidator;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
 use Core\Contracts\Api\InternalServerError;
+use Core\Contracts\Api\NotFound;
 use Core\Contracts\Api\Unauthorized;
 use DateTime;
 
@@ -23,7 +26,8 @@ readonly class DirectoryService implements DirectoryServiceInterface
     function __construct(
         private DirectoryRepositoryInterface $directoryRepository,
         private CryptographicServiceInterface $cryptographicService,
-        private AuthServiceInterface $authService
+        private AuthServiceInterface $authService,
+        private DirectoryMapper $directoryMapper
     )
     {
     }
@@ -31,7 +35,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
     /**
      * @inheritdoc
      */
-    function getDirectories(): array | ApiResponse
+    function getDirectoryById(string $id): DirectoryDto|ApiResponse
     {
         $payload = $this->authService->validateAuthHeader();
         if (!$payload)
@@ -39,16 +43,26 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new Unauthorized("Invalid access token");
         }
 
+        $directoryEntity = $this->directoryRepository->findById($id);
+        if ($directoryEntity == null)
+        {
+            return new NotFound("Directory not found");
+        }
+
         // Get user ID by token claims
         $userId = $payload->getClaim(ClaimKey::Subject);
+        if ($directoryEntity->userId != $userId)
+        {
+            return new BadRequest("Directory is owned by another user");
+        }
 
-        return $this->directoryRepository->findByUserId($userId);
+        return $this->directoryMapper->mapSingle($directoryEntity);
     }
 
     /**
      * @inheritdoc
      */
-    function createDirectory(CreateDirectoryRequest $request): DirectoryEntity | ApiResponse
+    function getChildrenOfParentDirectory(string $parentId): array | ApiResponse
     {
         $payload = $this->authService->validateAuthHeader();
         if (!$payload)
@@ -62,6 +76,31 @@ readonly class DirectoryService implements DirectoryServiceInterface
         // Make sure to create default root directory for user
         $this->createRootDirectoryForUser($userId);
 
+        $parentDirectory = $this->directoryRepository->findById($parentId);
+        if (!$parentDirectory)
+        {
+            return new BadRequest("Parent directory does not exist");
+        }
+
+        if ($parentDirectory->userId != $userId)
+        {
+            return new BadRequest("Parent directory is owned by another user");
+        }
+
+        return $this->directoryMapper->mapArray($this->directoryRepository->findByUserId($userId, $parentId));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function createDirectory(CreateDirectoryRequest $request): DirectoryEntity | ApiResponse
+    {
+        $payload = $this->authService->validateAuthHeader();
+        if (!$payload)
+        {
+            return new Unauthorized("Invalid access token");
+        }
+
         $name = $request->name;
         if (!DirectoryNameValidator::validate($name))
         {
@@ -69,21 +108,29 @@ readonly class DirectoryService implements DirectoryServiceInterface
                 "Directory name cannot be empty or contain any of the following special characters: " . DirectoryNameValidator::getInvalidCharactersFormatted());
         }
 
-        // Check if the name is already used in the current directory
+        // Check if the parent directory exists and is owned by the user
         $parentId = $request->parentId;
-        $directoriesWithIdenticalName = $this->directoryRepository->findByNameForUserWithParentId($parentId, $userId, $name);
-        if (count($directoriesWithIdenticalName) !== 0)
-        {
-            return new BadRequest("A directory with the name already exists");
-        }
-
         $parentDirectory = $this->directoryRepository->findById($parentId);
         if (!$parentDirectory)
         {
             return new BadRequest("Parent directory does not exist");
         }
 
-        $id = $this->cryptographicService->generateUniqueId();
+        // Get user ID by token claims
+        $userId = $payload->getClaim(ClaimKey::Subject);
+        if ($parentDirectory->userId != $userId)
+        {
+            return new BadRequest("Parent directory is owned by another user");
+        }
+
+        // Check if the name is already used in the current directory
+        $directoriesWithIdenticalName = $this->directoryRepository->findByNameForUserWithParentId($parentId, $userId, $name);
+        if (count($directoriesWithIdenticalName) !== 0)
+        {
+            return new BadRequest("A directory with the name already exists");
+        }
+
+        $id = $this->cryptographicService->generateUuid();
         if (!$id)
         {
             return new InternalServerError("Unexpected server error");
@@ -104,14 +151,23 @@ readonly class DirectoryService implements DirectoryServiceInterface
         return $directoryEntity;
     }
 
-    private function createRootDirectoryForUser(int $userId): void
+    private function createRootDirectoryForUser(string $userId): void
     {
-        $rootDirectory = DirectoryEntity::root($userId);
-        if ($this->directoryRepository->findById($rootDirectory->id))
+        if ($this->directoryRepository->findRootForUser($userId))
         {
             return;
         }
 
+        // For simplicity, root directories will have the user ID as the primary key
+        $rootDirectory = new DirectoryEntity(
+            $userId,
+            0,
+            $userId,
+            "Root",
+            "$userId",
+            (new DateTime())->format(DATE_ISO8601_EXPANDED),
+            true
+        );
         $this->directoryRepository->tryAdd($rootDirectory);
     }
 }

@@ -3,11 +3,12 @@
 namespace App\Services\Token;
 
 use App\Entities\Session\SessionEntity;
+use App\Services\Cryptographic\CryptographicService;
 use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\Session\Enums\ClaimKey;
 use App\Services\Session\Token\Header;
 use App\Services\Session\Token\Payload;
 use App\Services\Session\Token\SessionToken;
-use App\Services\Session\Enums\ClaimKey;
 use DateTime;
 use Exception;
 
@@ -16,11 +17,6 @@ use Exception;
  */
 readonly class TokenHandler implements TokenHandlerInterface
 {
-    /**
-     * Default token hashing algorithm.
-     */
-    private const HASH_ALGORITHM = "sha256";
-
     function __construct(private CryptographicServiceInterface $cryptographicService)
     {
     }
@@ -30,7 +26,7 @@ readonly class TokenHandler implements TokenHandlerInterface
      */
     function generateSessionToken(SessionEntity $sessionEntity): SessionToken
     {
-        $algorithm = self::HASH_ALGORITHM;
+        $algorithm = CryptographicService::HASH_ALGORITHM;
         $header = new Header($algorithm);
         $payload = new Payload(
             [

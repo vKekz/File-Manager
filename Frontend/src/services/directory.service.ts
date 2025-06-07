@@ -16,9 +16,15 @@ export class DirectoryService {
     this.endpoint = `${apiUrl}/${API_ROUTES.directory}`;
   }
 
-  public getDirectories() {
-    const route = `${this.endpoint}`;
+  public getDirectoryById(id: string) {
+    const route = `${this.endpoint}?id=${id}`;
     const request = this.httpClient.get<DirectoryDto>(route);
+    return firstValueFrom(request);
+  }
+
+  public getChildrenOfParentDirectory(parentId: string) {
+    const route = `${this.endpoint}/children?parentId=${parentId}`;
+    const request = this.httpClient.get<DirectoryDto[]>(route);
     return firstValueFrom(request);
   }
 

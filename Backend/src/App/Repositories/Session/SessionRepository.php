@@ -21,7 +21,7 @@ class SessionRepository implements SessionRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findById(int $id): ?SessionEntity
+    function findById(string $id): ?SessionEntity
     {
         $condition = "WHERE Id = ?";
         $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $id);
@@ -48,7 +48,7 @@ class SessionRepository implements SessionRepositoryInterface
     /**
      * @inheritdoc
      */
-    function tryRemove(int $id): bool
+    function tryRemove(string $id): bool
     {
         return false;
     }
@@ -56,8 +56,8 @@ class SessionRepository implements SessionRepositoryInterface
     private function createTable(): void
     {
         $attributes = "(
-            Id bigint PRIMARY KEY NOT NULL,
-            UserId bigint NOT NULL,
+            Id varchar(36) PRIMARY KEY NOT NULL,
+            UserId varchar(36) NOT NULL,
             DeviceData varchar(256) NOT NULL,
             IssuedAt DATETIME NOT NULL,
             ExpiresAt DATETIME NOT NULL,

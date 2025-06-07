@@ -20,7 +20,7 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findById(int $id): ?UserEntity
+    function findById(string $id): ?UserEntity
     {
         $condition = "WHERE Id = ?";
         $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $id);
@@ -63,7 +63,7 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @inheritdoc
      */
-    function tryRemove(int $id): bool
+    function tryRemove(string $id): bool
     {
         if (!$this->findById($id))
         {
@@ -82,7 +82,7 @@ class UserRepository implements UserRepositoryInterface
     private function createTable(): void
     {
         $attributes = "(
-            Id bigint PRIMARY KEY NOT NULL,
+            Id varchar(36) PRIMARY KEY NOT NULL,
             UserName varchar(32) NOT NULL,
             Email varchar(320) NOT NULL,
             PasswordHash varchar(1024) NOT NULL,

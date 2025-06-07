@@ -15,6 +15,9 @@ use DateInterval;
 use DateTime;
 use Exception;
 
+/**
+ * @inheritdoc
+ */
 readonly class SessionService implements SessionServiceInterface
 {
     function __construct(
@@ -28,11 +31,12 @@ readonly class SessionService implements SessionServiceInterface
     }
 
     /**
+     * @inheritdoc
      * @throws Exception
      */
     function createSession(UserEntity $userEntity): SessionToken | InternalServerError
     {
-        $id = $this->cryptographicService->generateUniqueId();
+        $id = $this->cryptographicService->generateUuid();
         if (!$id)
         {
             return new InternalServerError("Could not generate session ID");

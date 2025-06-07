@@ -5,6 +5,7 @@ require_once "bootstrap.php";
 use App\App;
 use App\Controllers\Auth\AuthController;
 use App\Controllers\Directory\DirectoryController;
+use App\Mapper\Directory\DirectoryMapper;
 use App\Repositories\Directory\DirectoryRepository;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\Session\SessionRepository;
@@ -33,6 +34,7 @@ $serviceContainer->addSingleton(Configuration::class);
 $serviceContainer->addSingleton(Environment::class);
 $serviceContainer->addSingleton(HttpContext::class);
 $serviceContainer->addSingleton(Database::class);
+$serviceContainer->addSingleton(DirectoryMapper::class);
 
 $serviceContainer->register(CryptographicServiceInterface::class, CryptographicService::class);
 $serviceContainer->register(SessionRepositoryInterface::class, SessionRepository::class);

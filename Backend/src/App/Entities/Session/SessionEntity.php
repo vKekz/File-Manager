@@ -3,13 +3,13 @@
 namespace App\Entities\Session;
 
 /**
- * Represents a session entity.
+ * Represents the database entity for sessions.
  */
 readonly class SessionEntity
 {
     function __construct(
-        public int $id,
-        public int $userId,
+        public string $id,
+        public string $userId,
         public string $deviceData,
         public string $issuedAt,
         public string $expiresAt

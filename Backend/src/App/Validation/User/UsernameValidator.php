@@ -5,12 +5,14 @@ namespace App\Validation\User;
 use App\Validation\Validator;
 
 /**
- * @inheritdoc
+ * Represents the validator for usernames.
  */
 class UsernameValidator extends Validator
 {
     /**
-     * @inheritdoc
+     * Returns true if the given username validates correctly.
+     *
+     * @param string $input
      */
     public static function validate(mixed $input): bool
     {

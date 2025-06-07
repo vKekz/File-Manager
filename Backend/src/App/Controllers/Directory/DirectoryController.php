@@ -7,6 +7,7 @@ use App\Services\Directory\DirectoryServiceInterface;
 use Core\Attributes\Http\HttpGet;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\BodyParameter;
+use Core\Attributes\Parameter\QueryParameter;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\Ok;
 use Core\Controllers\ApiController;
@@ -24,9 +25,16 @@ class DirectoryController extends ApiController
     }
 
     #[HttpGet]
-    function getDirectories(): ApiResponse
+    function getDirectoryById(#[QueryParameter] string $id): ApiResponse
     {
-        $response = $this->directoryService->getDirectories();
+        $response = $this->directoryService->getDirectoryById($id);
+        return $response instanceof ApiResponse ? $response : new Ok($response);
+    }
+
+    #[HttpGet("/children")]
+    function getChildrenOfParentDirectory(#[QueryParameter] string $parentId): ApiResponse
+    {
+        $response = $this->directoryService->getChildrenOfParentDirectory($parentId);
         return $response instanceof ApiResponse ? $response : new Ok($response);
     }
 

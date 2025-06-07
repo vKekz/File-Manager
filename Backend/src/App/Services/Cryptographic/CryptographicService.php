@@ -18,7 +18,7 @@ readonly class CryptographicService implements CryptographicServiceInterface
     /**
      * Default hashing algorithm.
      */
-    private const HASH_ALGORITHM = "sha3-512";
+    public const HASH_ALGORITHM = "sha3-512";
     /**
      * Default encryption algorithm.
      */
@@ -31,11 +31,15 @@ readonly class CryptographicService implements CryptographicServiceInterface
     /**
      * @inheritdoc
      */
-    function generateUniqueId(): int | false
+    function generateUuid(): string | false
     {
         try
         {
-            return random_int(1, PHP_INT_MAX);
+            $data = random_bytes(16);
+            $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+            $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+
+            return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
         } catch (RandomException)
         {
             return false;
@@ -43,7 +47,7 @@ readonly class CryptographicService implements CryptographicServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     function encrypt(string $data): string
     {
@@ -53,13 +57,13 @@ readonly class CryptographicService implements CryptographicServiceInterface
         $iv = openssl_random_pseudo_bytes($ivLength);
 
         $encrypted = openssl_encrypt($data, self::ENCRYPTION_ALGORITHM, $privateKey, OPENSSL_RAW_DATA, $iv);
-        $hash = $this->sign($encrypted, true);
+        $hash = $this->sign($encrypted, self::HASH_ALGORITHM, true);
 
         return base64_encode($iv . $hash . $encrypted);
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     function decrypt(string $input): string | false
     {
@@ -72,7 +76,7 @@ readonly class CryptographicService implements CryptographicServiceInterface
         $encrypted = substr($decoded, $ivLength + 64);
 
         $data = openssl_decrypt($encrypted, self::ENCRYPTION_ALGORITHM, $privateKey, OPENSSL_RAW_DATA, $iv);
-        $recreatedHash = $this->sign($encrypted, true);
+        $recreatedHash = $this->sign($encrypted, self::HASH_ALGORITHM, true);
 
         if (hash_equals($hash, $recreatedHash))
         {
@@ -101,7 +105,7 @@ readonly class CryptographicService implements CryptographicServiceInterface
     /**
      * @inheritdoc
      */
-    function sign(string $data, string $algorithm = self::HASH_ALGORITHM , bool $binary = false): string
+    function sign(string $data, string $algorithm, bool $binary = false): string
     {
         return hash_hmac($algorithm, $data, $this->environment->get(EnvironmentKey::HASH_KEY), $binary);
     }

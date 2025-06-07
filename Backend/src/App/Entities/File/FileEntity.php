@@ -3,13 +3,13 @@
 namespace App\Entities\File;
 
 /**
- * Represents a file entity.
+ * Represents the database entity for files.
  */
 readonly class FileEntity
 {
     function __construct(
-        public int $id,
-        public int $directoryId,
+        public string $id,
+        public string $directoryId,
         public string $name,
         public string $hash
     )

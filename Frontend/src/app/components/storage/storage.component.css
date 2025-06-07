@@ -1,0 +1,16 @@
+.container {
+  height: 100%;
+  width: 80%;
+
+  margin: auto;
+  padding: 2rem;
+}
+
+.title-container {
+  border-bottom: 1px solid var(--dark-theme-secondary-font-color);
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}

@@ -8,5 +8,5 @@ import { DirectoryController } from "../../../controllers/directory.controller";
   styleUrl: "./storage.component.css",
 })
 export class StorageComponent {
-  constructor(private readonly directoryController: DirectoryController) {}
+  constructor(protected readonly directoryController: DirectoryController) {}
 }

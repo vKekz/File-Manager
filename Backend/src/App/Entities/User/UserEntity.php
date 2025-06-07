@@ -3,12 +3,12 @@
 namespace App\Entities\User;
 
 /**
- * Represents a user entity.
+ * Represents the database entity for users.
  */
 readonly class UserEntity
 {
     function __construct(
-        public int $id,
+        public string $id,
         public string $username,
         public string $email,
         public string $passwordHash,

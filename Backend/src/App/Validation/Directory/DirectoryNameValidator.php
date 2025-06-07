@@ -5,12 +5,14 @@ namespace App\Validation\Directory;
 use App\Validation\Validator;
 
 /**
- * @inheritdoc
+ * Represents the validator for directory names.
  */
 class DirectoryNameValidator extends Validator
 {
     /**
-     * @inheritdoc
+     * Returns true if the given directory name validates correctly.
+     *
+     * @param string $input
      */
     public static function validate(mixed $input): bool
     {

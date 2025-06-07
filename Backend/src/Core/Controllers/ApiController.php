@@ -100,6 +100,8 @@ abstract class ApiController
 
     /**
      * Returns an array of parameters for the given controller method.
+     *
+     * @return ApiControllerMethodParameter[]
      */
     private function findMethodParameters(ReflectionMethod $method): array
     {

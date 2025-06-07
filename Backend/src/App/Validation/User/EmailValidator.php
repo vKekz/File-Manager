@@ -5,12 +5,14 @@ namespace App\Validation\User;
 use App\Validation\Validator;
 
 /**
- * @inheritdoc
+ * Represents the validator for user emails.
  */
 class EmailValidator extends Validator
 {
     /**
-     * @inheritdoc
+     * Returns true if the given email validates correctly.
+     *
+     * @param string $input
      */
     public static function validate(mixed $input): bool
     {

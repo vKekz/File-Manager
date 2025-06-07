@@ -12,18 +12,26 @@ interface DirectoryRepositoryInterface
     /**
      * Attempts to find a directory entity by the given ID. Returns null on failure.
      */
-    function findById(int $id): ?DirectoryEntity;
+    function findById(string $id): ?DirectoryEntity;
     /**
-     * Returns an array of directory entities that are owned by the given user.
+     * Returns an array of directory entities that are owned by the given user and are in the given parent directory.
+     *
+     * @return DirectoryEntity[]
      */
-    function findByUserId(int $userId): array;
+    function findByUserId(string $userId, string $parentId): array;
     /**
-     * Returns an array of directory entities
-     * where each entity is in the given parent directory, has the given name and is owned by the given user.
+     * Attempts to find the root directory entity for the given user.
+     */
+    function findRootForUser(string $userId): ?DirectoryEntity;
+    /**
+     * Returns an array of directory entities where each entity is in the given
+     * parent directory, has the given name and is owned by the given user.
      *
      * Will be called when creating a new directory to check if the name is already used.
+     *
+     * @return DirectoryEntity[]
      */
-    function findByNameForUserWithParentId(int $parentId, int $userId, string $name): array;
+    function findByNameForUserWithParentId(string $parentId, string $userId, string $name): array;
     /**
      * Attempts to add a directory entity to the repository. Returns true on success.
      */
@@ -31,5 +39,5 @@ interface DirectoryRepositoryInterface
     /**
      * Attempts to remove a directory entity from the repository. Returns true on success.
      */
-    function tryRemove(int $id): bool;
+    function tryRemove(string $id): bool;
 }

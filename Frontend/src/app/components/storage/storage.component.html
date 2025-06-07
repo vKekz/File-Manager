@@ -1,0 +1,9 @@
+<div class="container">
+  <div class="title-container">
+    <div class="title">Meine Dateien: {{ this.directoryController.currentDirectory?.name }}</div>
+  </div>
+
+  @for (directory of this.directoryController.directories(); track directory.id) {
+    <div>{{ directory.name }}</div>
+  }
+</div>
