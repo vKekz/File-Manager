@@ -16,6 +16,6 @@ export class SessionGuard implements CanActivate {
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
-    return !this.authController.isAuthenticated() ? true : this.router.parseUrl(APP_ROUTES.storage);
+    return !this.authController.isAuthenticated() ? true : this.router.parseUrl(APP_ROUTES.storage.path);
   }
 }

@@ -5,6 +5,7 @@ namespace App\Repositories\Directory;
 use App\Entities\Directory\DirectoryEntity;
 use App\Repositories\User\UserRepository;
 use Core\Database\Database;
+use DateTime;
 
 /**
  * @inheritdoc
@@ -21,26 +22,24 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findByUserId(string $userId, string $parentId): array
+    function createRootDirectoryForUser(string $userId): void
     {
-        $condition = "WHERE UserId = ? AND ParentId = ?";
-        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId, $parentId);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    function findRootForUser(string $userId): ?DirectoryEntity
-    {
-        $condition = "WHERE UserId = ? AND IsRoot = ?";
-        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId, 1);
-
-        if (count($data) == 0)
+        if ($this->doesUserHaveRootDirectory($userId))
         {
-            return null;
+            return;
         }
 
-        return DirectoryEntity::fromArray($data[0]);
+        // For simplicity, root directories will have the user ID as the primary key
+        $rootDirectory = new DirectoryEntity(
+            $userId,
+            0,
+            $userId,
+            "root",
+            "",
+            (new DateTime())->format(DATE_ISO8601_EXPANDED),
+            true
+        );
+        $this->tryAdd($rootDirectory);
     }
 
     /**
@@ -62,7 +61,16 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findByNameForUserWithParentId(string $parentId, string $userId, string $name): array
+    function findByParentIdForUser(string $userId, string $parentId): array
+    {
+        $condition = "WHERE UserId = ? AND ParentId = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId, $parentId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function findByParentIdAndNameForUser(string $parentId, string $userId, string $name): array
     {
         $condition = "WHERE ParentId = ? AND UserId = ? AND Name = ?";
         return $this->database->fetchData(self::TABLE_NAME, [], $condition, $parentId, $userId, $name);
@@ -96,6 +104,13 @@ class DirectoryRepository implements DirectoryRepositoryInterface
         }
 
         return true;
+    }
+
+    private function doesUserHaveRootDirectory(string $userId): bool
+    {
+        $condition = "WHERE UserId = ? AND IsRoot = ?";
+        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId, 1);
+        return count($data) == 1;
     }
 
     private function createTable(): void

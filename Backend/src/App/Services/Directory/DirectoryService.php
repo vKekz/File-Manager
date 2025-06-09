@@ -4,6 +4,7 @@ namespace App\Services\Directory;
 
 use App\Contracts\Directory\CreateDirectoryRequest;
 use App\Dtos\Directory\DirectoryDto;
+use App\Dtos\Directory\DirectoryDtoWithChildren;
 use App\Entities\Directory\DirectoryEntity;
 use App\Mapping\Directory\DirectoryMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
@@ -32,11 +33,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
     {
     }
 
-    /**
-     * @inheritdoc
-     */
-    function getDirectoryById(string $id): DirectoryDto | ApiResponse
-    {
+    function getDirectoryByIdWithChildren(string $id): DirectoryDtoWithChildren | ApiResponse {
         $payload = $this->authService->validateAuthHeader();
         if (!$payload)
         {
@@ -56,43 +53,18 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new BadRequest("Directory is owned by another user");
         }
 
-        return $this->directoryMapper->mapSingle($directoryEntity);
-    }
-
-    function getDirectoryByIdWithChildren(string $id): DirectoryDto | ApiResponse {
-    }
-
-    /**
-     * @inheritdoc
-     */
-    function getChildrenOfParentDirectory(string $parentId): array | ApiResponse
-    {
-        $payload = $this->authService->validateAuthHeader();
-        if (!$payload)
-        {
-            return new Unauthorized("Invalid access token");
-        }
-
-        $parentDirectory = $this->directoryRepository->findById($parentId);
-        if (!$parentDirectory)
-        {
-            return new BadRequest("Parent directory does not exist");
-        }
-
-        // Get user ID by token claims
-        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
-        if ($parentDirectory->userId != $userId)
-        {
-            return new BadRequest("Parent directory is owned by another user");
-        }
-
-        return $this->directoryMapper->mapArray($this->directoryRepository->findByUserId($userId, $parentId));
+        $children = $this->directoryMapper->mapArray(
+            $this->directoryRepository->findByParentIdForUser($userId, $id)
+        );
+        return $this->directoryMapper
+            ->mapSingle($directoryEntity)
+            ->withChildren($children);
     }
 
     /**
      * @inheritdoc
      */
-    function createDirectory(CreateDirectoryRequest $request): DirectoryEntity | ApiResponse
+    function createDirectory(CreateDirectoryRequest $request): DirectoryDto | ApiResponse
     {
         $payload = $this->authService->validateAuthHeader();
         if (!$payload)
@@ -123,7 +95,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
         }
 
         // Check if the name is already used in the current directory
-        $directoriesWithIdenticalName = $this->directoryRepository->findByNameForUserWithParentId($parentId, $userId, $name);
+        $directoriesWithIdenticalName = $this->directoryRepository->findByParentIdAndNameForUser($parentId, $userId, $name);
         if (count($directoriesWithIdenticalName) !== 0)
         {
             return new BadRequest("A directory with the name already exists");
@@ -145,31 +117,9 @@ readonly class DirectoryService implements DirectoryServiceInterface
             (new DateTime())->format(DATE_ISO8601_EXPANDED)
         );
 
+        // Create entry in database
         $this->directoryRepository->tryAdd($directoryEntity);
 
-        return $directoryEntity;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    function createRootDirectoryForUser(string $userId): void
-    {
-        if ($this->directoryRepository->findRootForUser($userId))
-        {
-            return;
-        }
-
-        // For simplicity, root directories will have the user ID as the primary key
-        $rootDirectory = new DirectoryEntity(
-            $userId,
-            0,
-            $userId,
-            "root",
-            "",
-            (new DateTime())->format(DATE_ISO8601_EXPANDED),
-            true
-        );
-        $this->directoryRepository->tryAdd($rootDirectory);
+        return $this->directoryMapper->mapSingle($directoryEntity);
     }
 }

@@ -1,6 +1,7 @@
 <main>
-  <router-outlet />
-  @if (this.canShowBottomNav()) {
-    <app-bottom-nav></app-bottom-nav>
+  @if (this.isMainPage()) {
+    <app-main-page></app-main-page>
+  } @else {
+    <router-outlet />
   }
 </main>

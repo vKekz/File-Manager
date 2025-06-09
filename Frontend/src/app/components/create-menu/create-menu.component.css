@@ -96,6 +96,7 @@ button {
   border: 1px solid var(--dark-theme-secondary-font-color);
 
   cursor: pointer;
+  transition: var(--transition-delay);
 }
 
 button:hover {

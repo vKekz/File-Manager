@@ -1,22 +1,29 @@
 import { Injectable, signal, WritableSignal } from "@angular/core";
 import { DirectoryService } from "../services/directory.service";
-import { DirectoryDto } from "../dtos/directory.dto";
+import { DirectoryDto, DirectoryDtoWithChildren } from "../dtos/directory.dto";
 import { AuthController } from "./auth.controller";
 import { ApiResponse } from "../contracts/api.response";
 
 @Injectable({ providedIn: "root" })
 export class DirectoryController {
+  private readonly directoryCache: Map<string, DirectoryDtoWithChildren> = new Map<string, DirectoryDtoWithChildren>();
+
   public currentDirectory?: DirectoryDto;
   public readonly directories: WritableSignal<DirectoryDto[]> = signal([]);
   public readonly latestResponse: WritableSignal<ApiResponse | null> = signal(null);
 
-  private readonly cachedDirectories: Map<string, DirectoryDto> = new Map<string, DirectoryDto>();
-
   constructor(
     private readonly directoryService: DirectoryService,
     private readonly authController: AuthController
-  ) {
-    this.fetchDirectories();
+  ) {}
+
+  public fetchDirectories() {
+    const parentId = this.getParentId();
+    if (!parentId) {
+      return;
+    }
+
+    this.selectDirectory(parentId);
   }
 
   public async createDirectory(name: string) {
@@ -34,17 +41,38 @@ export class DirectoryController {
     this.directories.update((data) => {
       return [...data, response];
     });
-    this.latestResponse.set(null);
+    this.directoryCache.get(parentId)?.children.push(response);
+    this.resetResponse();
   }
 
   public selectDirectory(id: string) {
-    this.directoryService.getDirectoryById(id).then((data) => {
-      this.currentDirectory = data;
-    });
+    const cachedDirectory = this.directoryCache.get(id);
+    if (cachedDirectory) {
+      this.currentDirectory = {
+        ...cachedDirectory,
+      };
+      this.directories.set(cachedDirectory.children);
+      return;
+    }
 
-    this.directoryService.getChildrenOfParentDirectory(id).then((data) => {
-      this.directories.set(data);
+    this.directoryService.getDirectoryByIdWithChildren(id).then((directory) => {
+      this.currentDirectory = directory;
+      this.directories.set(directory.children);
+      this.directoryCache.set(id, directory);
     });
+  }
+
+  public goBack() {
+    const current = this.currentDirectory;
+    if (!current) {
+      return;
+    }
+
+    this.selectDirectory(current.parentId);
+  }
+
+  public resetResponse() {
+    this.latestResponse.set(null);
   }
 
   public getParentId() {
@@ -54,14 +82,5 @@ export class DirectoryController {
     }
 
     return this.currentDirectory?.id ?? user.id;
-  }
-
-  private fetchDirectories() {
-    const parentId = this.getParentId();
-    if (!parentId) {
-      return;
-    }
-
-    this.selectDirectory(parentId);
   }
 }

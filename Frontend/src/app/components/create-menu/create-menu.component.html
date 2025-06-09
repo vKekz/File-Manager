@@ -6,7 +6,7 @@
     <div class="create-directory">
       <div class="title">Ornder erstellen</div>
       <form (submit)="this.handleCreateDirectory($event)">
-        <input type="text" id="name" name="name" #nameInput />
+        <input type="text" id="name" name="name" autocomplete="off" #nameInput />
         <button>
           <i class="bi bi-folder-plus"></i>
         </button>

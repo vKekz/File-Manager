@@ -1,0 +1,15 @@
+<div id="bottom-nav" class="bottom-nav">
+  <div class="container">
+    <div class="item">
+      <app-icon-label [route]="ROUTES.storage" [label]="ROUTES.storage.title" iconName="folder"></app-icon-label>
+    </div>
+    <div class="item">
+      @if (this.routeHandler.isOnRoute(APP_ROUTES.storage)) {
+        <app-create-button></app-create-button>
+      }
+    </div>
+    <div class="item">
+      <app-icon-label [route]="ROUTES.account" [label]="ROUTES.account.title" iconName="person"></app-icon-label>
+    </div>
+  </div>
+</div>

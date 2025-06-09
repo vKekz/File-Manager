@@ -16,6 +16,6 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
-    return this.authController.isAuthenticated() ? true : this.router.parseUrl(APP_ROUTES.home);
+    return this.authController.isAuthenticated() ? true : this.router.parseUrl(APP_ROUTES.home.path);
   }
 }

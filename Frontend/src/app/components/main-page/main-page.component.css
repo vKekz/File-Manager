@@ -1,0 +1,13 @@
+.main-page {
+  height: 100%;
+  max-width: 1024px;
+
+  margin: auto;
+  padding-top: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.page-content {
+  margin-left: 0.5rem;
+}

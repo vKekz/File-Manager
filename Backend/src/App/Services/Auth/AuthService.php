@@ -7,10 +7,10 @@ use App\Contracts\User\UserLoginRequest;
 use App\Contracts\User\UserRegisterRequest;
 use App\Dtos\Users\UserDto;
 use App\Entities\User\UserEntity;
+use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\Session\SessionRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
-use App\Services\Directory\DirectoryServiceInterface;
 use App\Services\Session\Enums\ClaimKey;
 use App\Services\Session\SessionServiceInterface;
 use App\Services\Session\Token\Payload;
@@ -33,10 +33,9 @@ readonly class AuthService implements AuthServiceInterface
     function __construct(
         private UserRepositoryInterface $userRepository,
         private SessionRepositoryInterface $sessionRepository,
+        private DirectoryRepositoryInterface $directoryRepository,
         private SessionServiceInterface $sessionService,
         private CryptographicServiceInterface $cryptographicService,
-        // TODO: Causes memory-leak? too many services? hin und her?
-        private DirectoryServiceInterface $directoryService,
         private TokenHandlerInterface $tokenHandler,
         private HttpContext $httpContext
     )
@@ -70,7 +69,7 @@ readonly class AuthService implements AuthServiceInterface
 
         if ($this->userRepository->findByEmail($email))
         {
-            return new BadRequest("The email you have provided is already associated with an account");
+            return new BadRequest("The email you have provided is already associated with an account-page");
         }
 
         $id = $this->cryptographicService->generateUuid();
@@ -102,7 +101,7 @@ readonly class AuthService implements AuthServiceInterface
         }
 
         // Make sure to create default root directory for user
-        $this->directoryService->createRootDirectoryForUser($id);
+        $this->directoryRepository->createRootDirectoryForUser($id);
 
         $userDto = new UserDto(
             $userEntity->id,

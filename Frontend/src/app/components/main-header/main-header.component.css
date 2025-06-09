@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.description {
+  color: var(--dark-theme-secondary-font-color);
+}
+
+.divider {
+  border-bottom: 1px solid var(--dark-theme-secondary-font-color);
+}

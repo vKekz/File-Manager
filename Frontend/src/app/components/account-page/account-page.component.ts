@@ -2,11 +2,11 @@ import { Component } from "@angular/core";
 import { AuthController } from "../../../controllers/auth.controller";
 
 @Component({
-  selector: "app-account",
+  selector: "app-account-page",
   imports: [],
-  templateUrl: "./account.component.html",
-  styleUrl: "./account.component.css",
+  templateUrl: "./account-page.component.html",
+  styleUrl: "./account-page.component.css",
 })
-export class AccountComponent {
+export class AccountPageComponent {
   constructor(protected readonly authController: AuthController) {}
 }

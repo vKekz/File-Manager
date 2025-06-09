@@ -9,20 +9,31 @@ use App\Entities\Directory\DirectoryEntity;
  */
 readonly class DirectoryDto
 {
+    function __construct(
+        public string $id,
+        public string $parentId,
+        public string $name,
+        public string $path,
+        public bool $isRoot,
+    )
+    {
+    }
+
     /**
      * @param DirectoryDto[] $children
      */
-    function __construct(public string $id, public string $parentId, public string $name, public string $path, public array $children = [])
+    public function withChildren(array $children): DirectoryDtoWithChildren
     {
+        return new DirectoryDtoWithChildren($this->id, $this->parentId, $this->name, $this->path, $this->isRoot, $children);
     }
 
     public static function fromArray(array $data): DirectoryDto
     {
-        return new self($data["Id"], $data["ParentId"], $data["Name"], $data["Path"]);
+        return new self($data["Id"], $data["ParentId"], $data["Name"], $data["Path"], $data["IsRoot"]);
     }
 
     public static function fromEntity(DirectoryEntity $entity): DirectoryDto
     {
-        return new self($entity->id, $entity->parentId, $entity->name, $entity->path);
+        return new self($entity->id, $entity->parentId, $entity->name, $entity->path, $entity->isRoot);
     }
 }

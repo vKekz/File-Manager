@@ -2,6 +2,7 @@ import { Component, OnDestroy } from "@angular/core";
 import { CreateMenuComponent } from "../create-menu/create-menu.component";
 import { NgClass } from "@angular/common";
 import { fromEvent, Subscription } from "rxjs";
+import { DirectoryController } from "../../../controllers/directory.controller";
 
 @Component({
   selector: "app-create-button",
@@ -15,12 +16,12 @@ export class CreateButtonComponent implements OnDestroy {
   private readonly mouseEvent: Subscription;
   private readonly keyEvent: Subscription;
 
-  constructor() {
+  constructor(private readonly directoryController: DirectoryController) {
     this.mouseEvent = fromEvent(window, "mousedown").subscribe((event) => {
-      this.handleAutoClose(event);
+      this.handleMouseDown(event);
     });
     this.keyEvent = fromEvent(window, "keyup").subscribe((event) => {
-      this.handleClose(event);
+      this.handleKeyUp(event);
     });
   }
 
@@ -30,10 +31,14 @@ export class CreateButtonComponent implements OnDestroy {
   }
 
   protected toggleMenu() {
+    if (this.isToggled) {
+      this.directoryController.resetResponse();
+    }
+
     this.isToggled = !this.isToggled;
   }
 
-  private handleAutoClose(event: Event) {
+  private handleMouseDown(event: Event) {
     if (!this.isToggled) {
       return;
     }
@@ -47,7 +52,7 @@ export class CreateButtonComponent implements OnDestroy {
     this.toggleMenu();
   }
 
-  private handleClose(event: Event) {
+  private handleKeyUp(event: Event) {
     if (!this.isToggled) {
       return;
     }

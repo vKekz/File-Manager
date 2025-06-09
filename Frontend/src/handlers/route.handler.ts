@@ -7,7 +7,7 @@ export class RouteHandler {
   constructor(private readonly router: Router) {}
 
   public isOnRoute(route: AppRoute) {
-    const path = `/${route}`;
+    const path = `/${route.path}`;
     if (route == APP_ROUTES.home) {
       return location.pathname === path;
     }
@@ -16,6 +16,18 @@ export class RouteHandler {
   }
 
   public goToRoute(route: AppRoute) {
-    return this.router.navigateByUrl(`/${route}`);
+    return this.router.navigateByUrl(`/${route.path}`);
+  }
+
+  public getCurrentRoute() {
+    for (const details of Object.values(APP_ROUTES)) {
+      const path = `/${details.path}`;
+
+      if (location.pathname === path) {
+        return details;
+      }
+    }
+
+    return null;
   }
 }

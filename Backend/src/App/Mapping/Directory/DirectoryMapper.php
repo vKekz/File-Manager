@@ -29,6 +29,11 @@ class DirectoryMapper extends Mapper
      */
     function mapArray(array $objects): array
     {
+        if (count($objects) === 0)
+        {
+            return [];
+        }
+
         return array_map(
             fn(array $data): DirectoryDto => DirectoryDto::fromArray($data),
             $objects

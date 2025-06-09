@@ -1,9 +1,23 @@
+export interface AppRouteDetails {
+  path: string;
+  title?: string;
+  description?: string;
+}
+
 export const APP_ROUTES = {
-  home: "",
-  login: "login",
-  signup: "signup",
-  account: "account",
-  storage: "storage",
+  home: { path: "" } as AppRouteDetails,
+  login: { path: "login" } as AppRouteDetails,
+  signup: { path: "signup" } as AppRouteDetails,
+  account: {
+    path: "account",
+    title: "Konto",
+    description: "Passe deine Kontoeinstellungen und persönlichen Daten wie Benutzername und E-Mail an.",
+  } as AppRouteDetails,
+  storage: {
+    path: "storage",
+    title: "Dateien",
+    description: "Zeige und verwalte deine persönlichen Ordner und Dateien.",
+  } as AppRouteDetails,
 } as const;
 
 export const API_ROUTES = {
