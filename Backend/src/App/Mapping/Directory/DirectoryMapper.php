@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Mapper\Directory;
+namespace App\Mapping\Directory;
 
 use App\Dtos\Directory\DirectoryDto;
 use App\Entities\Directory\DirectoryEntity;
-use App\Mapper\Mapper;
+use App\Mapping\Mapper;
 
 /**
  * Represents the mapper that is used to convert raw directory entities to DTOs.

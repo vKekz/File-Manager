@@ -5,7 +5,7 @@ namespace App\Services\Directory;
 use App\Contracts\Directory\CreateDirectoryRequest;
 use App\Dtos\Directory\DirectoryDto;
 use App\Entities\Directory\DirectoryEntity;
-use App\Mapper\Directory\DirectoryMapper;
+use App\Mapping\Directory\DirectoryMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Services\Auth\AuthServiceInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
@@ -35,7 +35,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
     /**
      * @inheritdoc
      */
-    function getDirectoryById(string $id): DirectoryDto|ApiResponse
+    function getDirectoryById(string $id): DirectoryDto | ApiResponse
     {
         $payload = $this->authService->validateAuthHeader();
         if (!$payload)
@@ -50,13 +50,16 @@ readonly class DirectoryService implements DirectoryServiceInterface
         }
 
         // Get user ID by token claims
-        $userId = $payload->getClaim(ClaimKey::Subject);
+        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
         if ($directoryEntity->userId != $userId)
         {
             return new BadRequest("Directory is owned by another user");
         }
 
         return $this->directoryMapper->mapSingle($directoryEntity);
+    }
+
+    function getDirectoryByIdWithChildren(string $id): DirectoryDto | ApiResponse {
     }
 
     /**
@@ -70,18 +73,14 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new Unauthorized("Invalid access token");
         }
 
-        // Get user ID by token claims
-        $userId = $payload->getClaim(ClaimKey::Subject);
-
-        // Make sure to create default root directory for user
-        $this->createRootDirectoryForUser($userId);
-
         $parentDirectory = $this->directoryRepository->findById($parentId);
         if (!$parentDirectory)
         {
             return new BadRequest("Parent directory does not exist");
         }
 
+        // Get user ID by token claims
+        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
         if ($parentDirectory->userId != $userId)
         {
             return new BadRequest("Parent directory is owned by another user");
@@ -117,7 +116,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
         }
 
         // Get user ID by token claims
-        $userId = $payload->getClaim(ClaimKey::Subject);
+        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
         if ($parentDirectory->userId != $userId)
         {
             return new BadRequest("Parent directory is owned by another user");
@@ -151,7 +150,10 @@ readonly class DirectoryService implements DirectoryServiceInterface
         return $directoryEntity;
     }
 
-    private function createRootDirectoryForUser(string $userId): void
+    /**
+     * @inheritdoc
+     */
+    function createRootDirectoryForUser(string $userId): void
     {
         if ($this->directoryRepository->findRootForUser($userId))
         {
@@ -163,8 +165,8 @@ readonly class DirectoryService implements DirectoryServiceInterface
             $userId,
             0,
             $userId,
-            "Root",
-            "$userId",
+            "root",
+            "",
             (new DateTime())->format(DATE_ISO8601_EXPANDED),
             true
         );

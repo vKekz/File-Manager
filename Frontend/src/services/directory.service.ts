@@ -4,6 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { API_ROUTES } from "../constants/route.constants";
 import { DirectoryDto } from "../dtos/directory.dto";
 import { firstValueFrom } from "rxjs";
+import { ApiResponse } from "../contracts/api.response";
 
 @Injectable({ providedIn: "root" })
 export class DirectoryService {
@@ -23,7 +24,7 @@ export class DirectoryService {
   }
 
   public getChildrenOfParentDirectory(parentId: string) {
-    const route = `${this.endpoint}/children?parentId=${parentId}`;
+    const route = `${this.endpoint}/children?id=${parentId}`;
     const request = this.httpClient.get<DirectoryDto[]>(route);
     return firstValueFrom(request);
   }
@@ -34,7 +35,7 @@ export class DirectoryService {
       name: name,
       parentId: parentId,
     } as const;
-    const request = this.httpClient.post<DirectoryDto>(route, payload);
+    const request = this.httpClient.post<DirectoryDto | ApiResponse>(route, payload);
     return firstValueFrom(request);
   }
 }

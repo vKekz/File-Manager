@@ -1,3 +1,6 @@
-<div class="container">
+@if (this.isToggled) {
+  <app-create-menu></app-create-menu>
+}
+<div (click)="toggleMenu()" class="container" [ngClass]="this.isToggled ? 'selected' : ''">
   <i class="bi bi-plus-lg"></i>
 </div>

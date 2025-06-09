@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mapper;
+namespace App\Mapping;
 
 /**
  * Represents the base class of a mapper.

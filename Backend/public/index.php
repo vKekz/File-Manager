@@ -5,7 +5,7 @@ require_once "bootstrap.php";
 use App\App;
 use App\Controllers\Auth\AuthController;
 use App\Controllers\Directory\DirectoryController;
-use App\Mapper\Directory\DirectoryMapper;
+use App\Mapping\Directory\DirectoryMapper;
 use App\Repositories\Directory\DirectoryRepository;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\Session\SessionRepository;

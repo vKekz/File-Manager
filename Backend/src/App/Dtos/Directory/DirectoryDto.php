@@ -9,7 +9,10 @@ use App\Entities\Directory\DirectoryEntity;
  */
 readonly class DirectoryDto
 {
-    function __construct(public string $id, public string $parentId, public string $name, public string $path)
+    /**
+     * @param DirectoryDto[] $children
+     */
+    function __construct(public string $id, public string $parentId, public string $name, public string $path, public array $children = [])
     {
     }
 

@@ -10,6 +10,7 @@ use App\Entities\User\UserEntity;
 use App\Repositories\Session\SessionRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\Directory\DirectoryServiceInterface;
 use App\Services\Session\Enums\ClaimKey;
 use App\Services\Session\SessionServiceInterface;
 use App\Services\Session\Token\Payload;
@@ -34,6 +35,8 @@ readonly class AuthService implements AuthServiceInterface
         private SessionRepositoryInterface $sessionRepository,
         private SessionServiceInterface $sessionService,
         private CryptographicServiceInterface $cryptographicService,
+        // TODO: Causes memory-leak? too many services? hin und her?
+        private DirectoryServiceInterface $directoryService,
         private TokenHandlerInterface $tokenHandler,
         private HttpContext $httpContext
     )
@@ -98,6 +101,9 @@ readonly class AuthService implements AuthServiceInterface
             return $sessionToken;
         }
 
+        // Make sure to create default root directory for user
+        $this->directoryService->createRootDirectoryForUser($id);
+
         $userDto = new UserDto(
             $userEntity->id,
             $userEntity->username,
@@ -154,7 +160,8 @@ readonly class AuthService implements AuthServiceInterface
             return new Unauthorized("Invalid access token");
         }
 
-        $userEntity = $this->userRepository->findById($payload->getClaim(ClaimKey::Subject));
+        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
+        $userEntity = $this->userRepository->findById($userId);
         if ($userEntity == null)
         {
             return new InternalServerError("Could not find user by claim");

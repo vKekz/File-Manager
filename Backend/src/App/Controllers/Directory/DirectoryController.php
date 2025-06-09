@@ -32,9 +32,9 @@ class DirectoryController extends ApiController
     }
 
     #[HttpGet("/children")]
-    function getChildrenOfParentDirectory(#[QueryParameter] string $parentId): ApiResponse
+    function getChildrenOfParentDirectory(#[QueryParameter] string $id): ApiResponse
     {
-        $response = $this->directoryService->getChildrenOfParentDirectory($parentId);
+        $response = $this->directoryService->getChildrenOfParentDirectory($id);
         return $response instanceof ApiResponse ? $response : new Ok($response);
     }
 

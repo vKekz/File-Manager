@@ -1,0 +1,24 @@
+<div id="create-menu" class="container">
+  @if (this.directoryController.latestResponse() !== null) {
+    <div class="errors">{{ this.directoryController.latestResponse()?.message }}</div>
+  }
+  <div class="options">
+    <div class="create-directory">
+      <div class="title">Ornder erstellen</div>
+      <form (submit)="this.handleCreateDirectory($event)">
+        <input type="text" id="name" name="name" #nameInput />
+        <button>
+          <i class="bi bi-folder-plus"></i>
+        </button>
+      </form>
+    </div>
+    <div class="divider"></div>
+    <div class="upload-files">
+      <div class="title">Dateien hochladen</div>
+      <button>
+        <i class="bi bi-paperclip"></i>
+        Dateien auswählen
+      </button>
+    </div>
+  </div>
+</div>

@@ -17,6 +17,10 @@ interface DirectoryServiceInterface
      */
     function getDirectoryById(string $id): DirectoryDto | ApiResponse;
     /**
+     * Returns the directory found by the given ID including an array of its child directories.
+     */
+    function getDirectoryByIdWithChildren(string $id): DirectoryDto | ApiResponse;
+    /**
      * Returns an array of directories that are the children of the parent directory.
      *
      * @return DirectoryDto[] | ApiResponse
@@ -26,4 +30,8 @@ interface DirectoryServiceInterface
      * Creates a new directory.
      */
     function createDirectory(CreateDirectoryRequest $request): DirectoryEntity | ApiResponse;
+    /**
+     * Creates the root directory for the given user.
+     */
+    function createRootDirectoryForUser(string $userId): void;
 }

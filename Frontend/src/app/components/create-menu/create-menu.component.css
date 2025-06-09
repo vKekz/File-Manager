@@ -1,0 +1,109 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  position: absolute;
+  bottom: calc(75px + 1rem);
+  padding: 1rem;
+
+  width: 320px;
+
+  background-color: var(--dark-theme-secondary-background-color);
+
+  border: 1px solid var(--dark-theme-secondary-font-color);
+  border-radius: var(--border-radius-light);
+
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: default;
+}
+
+.errors {
+  background-color: var(--warning-color-opacity-25);
+  padding: 12px 24px;
+  border: 1px solid var(--warning-color);
+  border-radius: var(--border-radius-light);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.divider {
+  border-bottom: 1px solid var(--dark-theme-secondary-font-color);
+  width: 100%;
+  margin: auto;
+}
+
+.create-directory,
+.upload-files {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 1rem;
+}
+
+.create-directory form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.create-directory input {
+  flex: 1;
+  background-color: var(--dark-theme-background-color);
+  color: var(--dark-theme-font-color);
+
+  padding: 0.5rem;
+
+  outline: none;
+  border-radius: var(--border-radius-lighter);
+  border: 1px solid var(--dark-theme-secondary-font-color);
+}
+
+.create-directory input:focus {
+  border: 1px solid var(--primary-color);
+}
+
+.create-directory input:-webkit-autofill,
+.create-directory input:-webkit-autofill:hover,
+.create-directory input:-webkit-autofill:focus,
+.create-directory input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--dark-theme-font-color);
+  -webkit-box-shadow: 0 0 0 40px var(--dark-theme-background-color) inset !important;
+}
+
+button {
+  background-color: var(--dark-theme-background-color);
+  color: var(--dark-theme-font-color);
+  padding: 4px 8px;
+  height: 2rem;
+
+  font-family: "Ubuntu", sans-serif;
+  font-size: 1rem;
+  font-weight: lighter;
+
+  outline: none;
+
+  border-radius: var(--border-radius-lighter);
+  border: 1px solid var(--dark-theme-secondary-font-color);
+
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--primary-color);
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    bottom: calc(50px + 1rem);
+  }
+}

@@ -53,7 +53,7 @@
   background-color: var(--dark-theme-background-color);
   color: var(--dark-theme-font-color);
 
-  padding: 0.4rem;
+  padding: 0.5rem;
 
   outline: none;
   border-radius: var(--border-radius-lighter);

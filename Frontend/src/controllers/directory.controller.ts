@@ -2,11 +2,15 @@ import { Injectable, signal, WritableSignal } from "@angular/core";
 import { DirectoryService } from "../services/directory.service";
 import { DirectoryDto } from "../dtos/directory.dto";
 import { AuthController } from "./auth.controller";
+import { ApiResponse } from "../contracts/api.response";
 
 @Injectable({ providedIn: "root" })
 export class DirectoryController {
   public currentDirectory?: DirectoryDto;
   public readonly directories: WritableSignal<DirectoryDto[]> = signal([]);
+  public readonly latestResponse: WritableSignal<ApiResponse | null> = signal(null);
+
+  private readonly cachedDirectories: Map<string, DirectoryDto> = new Map<string, DirectoryDto>();
 
   constructor(
     private readonly directoryService: DirectoryService,
@@ -22,8 +26,24 @@ export class DirectoryController {
     }
 
     const response = await this.directoryService.createDirectory(name, parentId);
+    if ("message" in response) {
+      this.latestResponse.set(response);
+      return;
+    }
+
     this.directories.update((data) => {
       return [...data, response];
+    });
+    this.latestResponse.set(null);
+  }
+
+  public selectDirectory(id: string) {
+    this.directoryService.getDirectoryById(id).then((data) => {
+      this.currentDirectory = data;
+    });
+
+    this.directoryService.getChildrenOfParentDirectory(id).then((data) => {
+      this.directories.set(data);
     });
   }
 
@@ -42,12 +62,6 @@ export class DirectoryController {
       return;
     }
 
-    this.directoryService.getChildrenOfParentDirectory(parentId).then((data) => {
-      this.directories.set(data);
-    });
-
-    this.directoryService.getDirectoryById(parentId).then((data) => {
-      this.currentDirectory = data;
-    });
+    this.selectDirectory(parentId);
   }
 }
