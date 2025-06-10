@@ -1,13 +1,32 @@
 <div class="container">
   <div class="header">Pfad: {{ this.directoryController.currentDirectory()?.path }}</div>
-  @if (!this.directoryController.currentDirectory()?.isRoot) {
-    <div (click)="this.directoryController.goBack()" class="back">...</div>
-  }
-  <div class="table">
-    @for (directory of this.directoryController.directories(); track directory.id) {
-      <div (click)="this.directoryController.selectDirectory(directory.id)">
-        {{ directory.name }}
-      </div>
-    }
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th [width]="25"></th>
+          <th>Name</th>
+          <th class="align-right">Größe</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!this.directoryController.currentDirectory()?.isRoot) {
+          <tr>
+            <td (click)="this.directoryController.goBack()">
+              <i class="bi bi-chevron-left"></i>
+            </td>
+          </tr>
+        }
+        @for (directory of this.directoryController.directories(); track directory.id) {
+          <tr (click)="this.directoryController.selectDirectory(directory.id)">
+            <td>
+              <i class="bi bi-folder-fill folder-icon"></i>
+            </td>
+            <td>{{ directory.name }}</td>
+            <td></td>
+          </tr>
+        }
+      </tbody>
+    </table>
   </div>
 </div>
