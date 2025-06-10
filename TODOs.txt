@@ -1,0 +1,2 @@
+- Per-user encryption keys
+- File/Directory encryption

@@ -16,6 +16,8 @@ use App\Services\Cryptographic\CryptographicService;
 use App\Services\Cryptographic\CryptographicServiceInterface;
 use App\Services\Directory\DirectoryService;
 use App\Services\Directory\DirectoryServiceInterface;
+use App\Services\FileSystem\FileSystemHandler;
+use App\Services\FileSystem\FileSystemHandlerInterface;
 use App\Services\Session\SessionService;
 use App\Services\Session\SessionServiceInterface;
 use App\Services\Auth\AuthService;
@@ -44,6 +46,7 @@ $serviceContainer->register(AuthServiceInterface::class, AuthService::class);
 $serviceContainer->register(TokenHandlerInterface::class, TokenHandler::class);
 $serviceContainer->register(DirectoryRepositoryInterface::class, DirectoryRepository::class);
 $serviceContainer->register(DirectoryServiceInterface::class, DirectoryService::class);
+$serviceContainer->register(FileSystemHandlerInterface::class, FileSystemHandler::class);
 
 $serviceContainer->addSingleton(AuthController::class);
 $serviceContainer->addSingleton(DirectoryController::class);

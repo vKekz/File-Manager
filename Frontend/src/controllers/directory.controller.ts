@@ -1,69 +1,33 @@
-import { Injectable, signal, WritableSignal } from "@angular/core";
-import { DirectoryService } from "../services/directory.service";
-import { DirectoryDto, DirectoryDtoWithChildren } from "../dtos/directory.dto";
-import { AuthController } from "./auth.controller";
+import { Injectable, Signal } from "@angular/core";
+import { DirectoryDto } from "../dtos/directory.dto";
 import { ApiResponse } from "../contracts/api.response";
+import { Store } from "@ngxs/store";
+import { CreateDirectory, ResetResponse, SelectDirectory } from "../states/directory/directory.actions";
+import { DirectoryState } from "../states/directory/directory.state";
+import { toSignalSync } from "../helpers/to-signal.helper";
 
 @Injectable({ providedIn: "root" })
 export class DirectoryController {
-  private readonly directoryCache: Map<string, DirectoryDtoWithChildren> = new Map<string, DirectoryDtoWithChildren>();
+  public readonly currentDirectory: Signal<DirectoryDto | undefined>;
+  public readonly directories: Signal<DirectoryDto[]>;
+  public readonly response: Signal<ApiResponse | undefined>;
 
-  public currentDirectory?: DirectoryDto;
-  public readonly directories: WritableSignal<DirectoryDto[]> = signal([]);
-  public readonly latestResponse: WritableSignal<ApiResponse | null> = signal(null);
-
-  constructor(
-    private readonly directoryService: DirectoryService,
-    private readonly authController: AuthController
-  ) {}
-
-  public fetchDirectories() {
-    const parentId = this.getParentId();
-    if (!parentId) {
-      return;
-    }
-
-    this.selectDirectory(parentId);
+  constructor(private readonly store: Store) {
+    this.currentDirectory = toSignalSync(this.store.select(DirectoryState.getCurrentDirectory));
+    this.directories = toSignalSync(this.store.select(DirectoryState.getDirectories));
+    this.response = toSignalSync(this.store.select(DirectoryState.getResponse));
   }
 
   public async createDirectory(name: string) {
-    const parentId = this.getParentId();
-    if (!parentId) {
-      return;
-    }
-
-    const response = await this.directoryService.createDirectory(name, parentId);
-    if ("message" in response) {
-      this.latestResponse.set(response);
-      return;
-    }
-
-    this.directories.update((data) => {
-      return [...data, response];
-    });
-    this.directoryCache.get(parentId)?.children.push(response);
-    this.resetResponse();
+    this.store.dispatch(new CreateDirectory(name));
   }
 
   public selectDirectory(id: string) {
-    const cachedDirectory = this.directoryCache.get(id);
-    if (cachedDirectory) {
-      this.currentDirectory = {
-        ...cachedDirectory,
-      };
-      this.directories.set(cachedDirectory.children);
-      return;
-    }
-
-    this.directoryService.getDirectoryByIdWithChildren(id).then((directory) => {
-      this.currentDirectory = directory;
-      this.directories.set(directory.children);
-      this.directoryCache.set(id, directory);
-    });
+    this.store.dispatch(new SelectDirectory(id));
   }
 
   public goBack() {
-    const current = this.currentDirectory;
+    const current = this.currentDirectory();
     if (!current) {
       return;
     }
@@ -71,16 +35,7 @@ export class DirectoryController {
     this.selectDirectory(current.parentId);
   }
 
-  public resetResponse() {
-    this.latestResponse.set(null);
-  }
-
-  public getParentId() {
-    const user = this.authController.getUser();
-    if (!user) {
-      return null;
-    }
-
-    return this.currentDirectory?.id ?? user.id;
+  public reset() {
+    this.store.dispatch(new ResetResponse());
   }
 }

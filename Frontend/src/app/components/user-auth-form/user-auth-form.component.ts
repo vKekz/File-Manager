@@ -56,6 +56,4 @@ export class UserAuthFormComponent {
     const route = this.type == AuthFormEnum.LOGIN ? "/signup" : "/login";
     await this.router.navigateByUrl(route);
   }
-
-  private handleAuth() {}
 }

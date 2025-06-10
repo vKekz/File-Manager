@@ -3,6 +3,7 @@
 namespace App\Services\Directory;
 
 use App\Contracts\Directory\CreateDirectoryRequest;
+use App\Contracts\Directory\DeleteDirectoryResponse;
 use App\Dtos\Directory\DirectoryDto;
 use App\Dtos\Directory\DirectoryDtoWithChildren;
 use App\Entities\Directory\DirectoryEntity;
@@ -10,6 +11,7 @@ use App\Mapping\Directory\DirectoryMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Services\Auth\AuthServiceInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\FileSystem\FileSystemHandlerInterface;
 use App\Services\Session\Enums\ClaimKey;
 use App\Validation\Directory\DirectoryNameValidator;
 use Core\Contracts\Api\ApiResponse;
@@ -28,6 +30,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
         private DirectoryRepositoryInterface $directoryRepository,
         private CryptographicServiceInterface $cryptographicService,
         private AuthServiceInterface $authService,
+        private FileSystemHandlerInterface $fileSystemHandler,
         private DirectoryMapper $directoryMapper
     )
     {
@@ -104,7 +107,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
         $id = $this->cryptographicService->generateUuid();
         if (!$id)
         {
-            return new InternalServerError("Unexpected server error");
+            return new InternalServerError();
         }
 
         $path = $parentDirectory->path . DIRECTORY_SEPARATOR . $name;
@@ -112,14 +115,27 @@ readonly class DirectoryService implements DirectoryServiceInterface
             $id,
             $parentId,
             $userId,
-            $request->name,
+            $name,
             $path,
             (new DateTime())->format(DATE_ISO8601_EXPANDED)
         );
 
         // Create entry in database
-        $this->directoryRepository->tryAdd($directoryEntity);
+        if (!$this->directoryRepository->tryAdd($directoryEntity))
+        {
+            return new InternalServerError();
+        }
+
+        $this->fileSystemHandler->createDirectory($name, $path);
 
         return $this->directoryMapper->mapSingle($directoryEntity);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function deleteDirectory(string $id): DeleteDirectoryResponse | ApiResponse
+    {
+        // TODO: Implement deleteDirectory() method.
     }
 }

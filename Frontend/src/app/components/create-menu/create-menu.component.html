@@ -1,10 +1,10 @@
 <div id="create-menu" class="container">
-  @if (this.directoryController.latestResponse() !== null) {
-    <div class="errors">{{ this.directoryController.latestResponse()?.message }}</div>
+  @if (this.directoryController.response()) {
+    <div class="errors">{{ this.directoryController.response()?.message }}</div>
   }
   <div class="options">
     <div class="create-directory">
-      <div class="title">Ornder erstellen</div>
+      <div class="title">Ordner erstellen</div>
       <form (submit)="this.handleCreateDirectory($event)">
         <input type="text" id="name" name="name" autocomplete="off" #nameInput />
         <button>

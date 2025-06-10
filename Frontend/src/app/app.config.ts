@@ -1,8 +1,10 @@
-import { ApplicationConfig, InjectionToken, provideZoneChangeDetection } from "@angular/core";
+import { ApplicationConfig, importProvidersFrom, InjectionToken, provideZoneChangeDetection } from "@angular/core";
 import { provideRouter } from "@angular/router";
 import { routes } from "./app.routes";
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { AuthInterceptor } from "../interceptors/auth.interceptor";
+import { NgxsModule } from "@ngxs/store";
+import { DirectoryState } from "../states/directory/directory.state";
 
 export const API_URL = new InjectionToken("API_URL");
 
@@ -22,6 +24,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     authInterceptorProvider,
     apiUrlProvider,
+    importProvidersFrom(NgxsModule.forRoot([DirectoryState])),
     provideHttpClient(withInterceptorsFromDi()),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),

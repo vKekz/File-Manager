@@ -5,6 +5,8 @@ import { AuthService } from "../services/auth.service";
 import { UserDto } from "../dtos/user.dto";
 import { RouteHandler } from "../handlers/route.handler";
 import { APP_ROUTES } from "../constants/route.constants";
+import { Store } from "@ngxs/store";
+import { FetchDirectories } from "../states/directory/directory.actions";
 
 @Injectable({
   providedIn: "root",
@@ -17,19 +19,18 @@ export class AuthController {
 
   constructor(
     private readonly authService: AuthService,
-    private readonly routeHandler: RouteHandler
+    private readonly routeHandler: RouteHandler,
+    private readonly store: Store
   ) {}
 
   public async registerUser(username: string, email: string, password: string) {
     const response = await this.authService.registerUser(username, email, password);
     await this.handleResponse(response, true);
-    return response;
   }
 
   public async loginUser(email: string, password: string) {
     const response = await this.authService.loginUser(email, password);
     await this.handleResponse(response, true);
-    return response;
   }
 
   public async validate() {
@@ -39,11 +40,10 @@ export class AuthController {
     }
 
     const response = await this.authService.validate(accessToken);
-    if (!(await this.handleResponse(response))) {
+    const isResponseSuccessful = await this.handleResponse(response);
+    if (!isResponseSuccessful) {
       await this.routeHandler.goToRoute(APP_ROUTES.home);
     }
-
-    return response;
   }
 
   public isAuthenticated(): boolean {
@@ -67,12 +67,10 @@ export class AuthController {
     this.apiResponse.set(null);
   }
 
-  private async handleResponse(response: ApiResponse | AuthResponse, routeOnSuccess: boolean = false) {
+  private async handleResponse(response: ApiResponse | AuthResponse, rerouteOnSuccess: boolean = false) {
     if ("message" in response) {
       this.apiResponse.set(response);
-
-      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-      sessionStorage.removeItem(this.USER_KEY);
+      this.clearStorage();
       return false;
     }
 
@@ -81,10 +79,18 @@ export class AuthController {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
     sessionStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
 
-    if (routeOnSuccess) {
+    // Pre-fetch directories to reduce loading time
+    this.store.dispatch(new FetchDirectories());
+
+    if (rerouteOnSuccess) {
       await this.routeHandler.goToRoute(APP_ROUTES.storage);
     }
 
     return true;
+  }
+
+  private clearStorage() {
+    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    sessionStorage.removeItem(this.USER_KEY);
   }
 }

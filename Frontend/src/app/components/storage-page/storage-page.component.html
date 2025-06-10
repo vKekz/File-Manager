@@ -1,6 +1,6 @@
 <div class="container">
-  <div class="header">Pfad: {{ this.directoryController.currentDirectory?.path }}</div>
-  @if (!this.directoryController.currentDirectory?.isRoot) {
+  <div class="header">Pfad: {{ this.directoryController.currentDirectory()?.path }}</div>
+  @if (!this.directoryController.currentDirectory()?.isRoot) {
     <div (click)="this.directoryController.goBack()" class="back">...</div>
   }
   <div class="table">

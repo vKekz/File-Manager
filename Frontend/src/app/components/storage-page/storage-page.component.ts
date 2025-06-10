@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { DirectoryController } from "../../../controllers/directory.controller";
 
 @Component({
@@ -7,10 +7,6 @@ import { DirectoryController } from "../../../controllers/directory.controller";
   templateUrl: "./storage-page.component.html",
   styleUrl: "./storage-page.component.css",
 })
-export class StoragePageComponent implements OnInit {
+export class StoragePageComponent {
   constructor(protected readonly directoryController: DirectoryController) {}
-
-  ngOnInit(): void {
-    this.directoryController.fetchDirectories();
-  }
 }

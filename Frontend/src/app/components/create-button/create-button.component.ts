@@ -32,7 +32,7 @@ export class CreateButtonComponent implements OnDestroy {
 
   protected toggleMenu() {
     if (this.isToggled) {
-      this.directoryController.resetResponse();
+      this.directoryController.reset();
     }
 
     this.isToggled = !this.isToggled;

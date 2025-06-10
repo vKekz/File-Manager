@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { AuthController } from "../controllers/auth.controller";
 import { MainPageComponent } from "./components/main-page/main-page.component";
 import { RouteHandler } from "../handlers/route.handler";
@@ -11,12 +11,14 @@ import { RouterOutlet } from "@angular/router";
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.css",
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   constructor(
     private readonly authController: AuthController,
     private readonly routeHandler: RouteHandler
-  ) {
-    this.authController.validate().then();
+  ) {}
+
+  async ngOnInit() {
+    await this.authController.validate();
   }
 
   protected isMainPage() {
