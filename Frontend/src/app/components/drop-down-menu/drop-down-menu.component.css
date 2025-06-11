@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  position: absolute;
+  padding: 1rem;
+  width: 160px;
+
+  background-color: var(--dark-theme-secondary-background-color);
+
+  border: 1px solid var(--dark-theme-secondary-font-color);
+  border-radius: var(--border-radius-light);
+
+  cursor: default;
+}

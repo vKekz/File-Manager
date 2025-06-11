@@ -1,0 +1,6 @@
+<div (click)="this.toggleMenu()" class="toggle">
+  <i class="bi bi-three-dots"></i>
+</div>
+@if (this.isToggled) {
+  <app-drop-down-menu [type]="this.type"></app-drop-down-menu>
+}

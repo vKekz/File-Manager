@@ -22,14 +22,16 @@
 
         <!-- Directories -->
         @for (directory of this.directoryController.directories(); track directory.id) {
-          <tr (click)="this.directoryController.selectDirectory(directory.id)">
+          <tr>
             <td>
               <i class="bi bi-folder-fill folder-icon"></i>
             </td>
-            <td>{{ directory.name }}</td>
+            <td (click)="this.directoryController.selectDirectory(directory.id)">
+              {{ directory.name }}
+            </td>
             <td></td>
             <td class="align-center">
-              <i class="bi bi-three-dots"></i>
+              <app-drop-down-toggle [type]="DropDownType.Directory"></app-drop-down-toggle>
             </td>
           </tr>
         }
@@ -43,7 +45,7 @@
             <td>{{ file.name }}</td>
             <td class="align-right">{{ file.compactSize }}</td>
             <td class="align-center">
-              <i class="bi bi-three-dots"></i>
+              <app-drop-down-toggle [type]="DropDownType.File"></app-drop-down-toggle>
             </td>
           </tr>
         }
