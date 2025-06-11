@@ -36,7 +36,10 @@ readonly class DirectoryService implements DirectoryServiceInterface
     {
     }
 
-    function getDirectoryByIdWithChildren(string $id): DirectoryDtoWithChildren | ApiResponse {
+    /**
+     * @inheritdoc
+     */
+    function getDirectoryWithChildren(string $id): DirectoryDtoWithChildren | ApiResponse {
         $payload = $this->authService->validateAuthHeader();
         if (!$payload)
         {

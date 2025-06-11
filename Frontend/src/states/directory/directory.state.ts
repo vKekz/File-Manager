@@ -5,6 +5,7 @@ import { CreateDirectory, FetchDirectories, ResetResponse, SelectDirectory } fro
 import { DirectoryService } from "../../services/directory.service";
 import { DirectoryDtoWithChildren } from "../../dtos/directory.dto";
 import { AuthController } from "../../controllers/auth.controller";
+import { FetchFiles } from "../file/file.actions";
 
 @State<DirectoryStateModel>({
   name: "directory",
@@ -52,9 +53,12 @@ export class DirectoryState {
 
   @Action(SelectDirectory)
   async selectDirectory(context: StateContext<DirectoryStateModel>, { id }: SelectDirectory) {
+    // Pre-fetch files of directory
+    this.store.dispatch(new FetchFiles(id));
+
     let directory = this.directoryCache.get(id);
     if (!directory) {
-      directory = await this.directoryService.getDirectoryByIdWithChildren(id);
+      directory = await this.directoryService.getDirectoryWithChildren(id);
       this.directoryCache.set(id, directory);
     }
 
@@ -62,7 +66,8 @@ export class DirectoryState {
       currentDirectory: {
         ...directory,
       },
-      directories: directory.children,
+      // Instead of passing the children directly, we need to make a copy to prevent reference errors
+      directories: [...directory.children],
     });
   }
 
@@ -82,10 +87,12 @@ export class DirectoryState {
       return;
     }
 
-    const cached = this.directoryCache.get(parentId);
-    cached?.children.push(response);
+    // Update cache
+    this.directoryCache.get(parentId)?.children.push(response);
+
+    const directories = state.directories;
     context.patchState({
-      directories: cached?.children,
+      directories: [...directories, response],
       response: undefined,
     });
   }

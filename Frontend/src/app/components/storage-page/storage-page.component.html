@@ -7,16 +7,20 @@
           <th [width]="25"></th>
           <th>Name</th>
           <th class="align-right">Größe</th>
+          <th [width]="25"></th>
         </tr>
       </thead>
+
       <tbody>
-        @if (!this.directoryController.currentDirectory()?.isRoot) {
+        @if (this.isRoot()) {
           <tr>
             <td (click)="this.directoryController.goBack()">
               <i class="bi bi-chevron-left"></i>
             </td>
           </tr>
         }
+
+        <!-- Directories -->
         @for (directory of this.directoryController.directories(); track directory.id) {
           <tr (click)="this.directoryController.selectDirectory(directory.id)">
             <td>
@@ -24,6 +28,23 @@
             </td>
             <td>{{ directory.name }}</td>
             <td></td>
+            <td class="align-center">
+              <i class="bi bi-three-dots"></i>
+            </td>
+          </tr>
+        }
+
+        <!-- Files -->
+        @for (file of this.fileController.files(); track file.id) {
+          <tr>
+            <td>
+              <i class="bi bi-file-earmark-fill"></i>
+            </td>
+            <td>{{ file.name }}</td>
+            <td class="align-right">{{ file.compactSize }}</td>
+            <td class="align-center">
+              <i class="bi bi-three-dots"></i>
+            </td>
           </tr>
         }
       </tbody>

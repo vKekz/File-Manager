@@ -8,6 +8,7 @@
 .table-container {
   padding: 1rem;
   background-color: var(--dark-theme-secondary-background-color);
+
   border-radius: var(--border-radius-light);
 }
 
@@ -22,7 +23,7 @@ thead {
 
 th {
   text-align: left;
-  border-bottom: 2px solid var(--dark-theme-secondary-font-color);
+  border-bottom: 2px solid var(--primary-color);
 }
 
 tr {
@@ -37,8 +38,12 @@ td {
   max-width: 0;
 }
 
-tbody > tr:hover {
+tbody > tr {
   cursor: pointer;
+  transition: var(--transition-delay);
+}
+
+tbody > tr:hover {
   background-color: var(--dark-theme-third-background-color);
 }
 

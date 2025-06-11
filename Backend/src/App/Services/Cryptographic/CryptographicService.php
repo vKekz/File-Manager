@@ -20,6 +20,10 @@ readonly class CryptographicService implements CryptographicServiceInterface
      */
     public const HASH_ALGORITHM = "sha3-512";
     /**
+     * Default file hashing algorithm.
+     */
+    public const FILE_HASH_ALGORITHM = "sha256";
+    /**
      * Default encryption algorithm.
      */
     private const ENCRYPTION_ALGORITHM = "aes-256-cbc";
@@ -108,5 +112,13 @@ readonly class CryptographicService implements CryptographicServiceInterface
     function sign(string $data, string $algorithm, bool $binary = false): string
     {
         return hash_hmac($algorithm, $data, $this->environment->get(EnvironmentKey::HASH_KEY), $binary);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function signFile(string $file): string
+    {
+        return hash_file(self::FILE_HASH_ALGORITHM, $file);
     }
 }

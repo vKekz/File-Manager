@@ -15,7 +15,7 @@ class Configuration
      * Gets the name of the environment file.
      * Will be set to ".env" by default.
      */
-    public string $environmentFile;
+    public string $environmentFile = ".env";
     /**
      * Gets the lifetime of the user authentication token.
      * Will be set to "PT1H" (1 hour) by default.
@@ -24,7 +24,6 @@ class Configuration
 
     function __construct()
     {
-        $this->environmentFile = ".env";
         $this->load();
     }
 

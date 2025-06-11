@@ -9,6 +9,7 @@ use Core\Contracts\Api\ApiRequest;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
 use Core\Enums\ParameterType;
+use Core\Files\UploadedFile;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -158,6 +159,15 @@ abstract class ApiController
 
                     $arguments[] = $queryParameters[$name];
                     break;
+                case ParameterType::Post:
+                    $postParameters = $httpContext->requestPostParameters;
+                    if (!array_key_exists($name, $postParameters))
+                    {
+                        return new BadRequest("Post parameter $name is missing");
+                    }
+
+                    $arguments[] = $postParameters[$name];
+                    break;
                 case ParameterType::Header:
                     $requestHeaders = $httpContext->requestHeaders;
                     if (!array_key_exists($name, $requestHeaders))
@@ -166,6 +176,15 @@ abstract class ApiController
                     }
 
                     $arguments[] = $requestHeaders[$name];
+                    break;
+                case ParameterType::File:
+                    $uploadedFiles = $httpContext->requestUploadedFiles;
+                    if (!array_key_exists($name, $uploadedFiles))
+                    {
+                        return new BadRequest("File $name is missing");
+                    }
+
+                    $arguments[] = UploadedFile::fromArray($uploadedFiles[$name]);
                     break;
             }
         }

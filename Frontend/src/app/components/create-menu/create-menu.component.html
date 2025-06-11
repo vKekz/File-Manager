@@ -2,6 +2,9 @@
   @if (this.directoryController.response()) {
     <div class="errors">{{ this.directoryController.response()?.message }}</div>
   }
+  @if (this.fileController.response()) {
+    <div class="errors">{{ this.fileController.response()?.message }}</div>
+  }
   <div class="options">
     <div class="create-directory">
       <div class="title">Ordner erstellen</div>
@@ -15,7 +18,8 @@
     <div class="divider"></div>
     <div class="upload-files">
       <div class="title">Dateien hochladen</div>
-      <button>
+      <input (change)="this.handleFileUpload($event)" type="file" hidden #fileInput />
+      <button (click)="fileInput.click()">
         <i class="bi bi-paperclip"></i>
         Dateien auswählen
       </button>

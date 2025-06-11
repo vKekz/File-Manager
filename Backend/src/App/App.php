@@ -4,6 +4,7 @@ namespace App;
 
 use App\Controllers\Auth\AuthController;
 use App\Controllers\Directory\DirectoryController;
+use App\Controllers\File\FileController;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiRequest;
 use Core\Controllers\ApiController;
@@ -27,6 +28,7 @@ class App
         $this->httpContext = $serviceContainer->resolve(HttpContext::class);
         $this->registerController($serviceContainer->resolve(AuthController::class));
         $this->registerController($serviceContainer->resolve(DirectoryController::class));
+        $this->registerController($serviceContainer->resolve(FileController::class));
     }
 
     /**

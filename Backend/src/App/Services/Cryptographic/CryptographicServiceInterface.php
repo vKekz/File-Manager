@@ -37,4 +37,8 @@ interface CryptographicServiceInterface
      * Signs the given data using a secret key.
      */
     function sign(string $data, string $algorithm, bool $binary = false): string;
+    /**
+     * Returns a hash signature for the content of the given file.
+     */
+    function signFile(string $file): string;
 }
