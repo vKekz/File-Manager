@@ -1,4 +1,4 @@
-<div id="create-menu" class="container">
+<div [id]="CREATE_MENU_ID" [class]="isOpen ? 'open' : ''" class="container">
   @if (this.directoryController.response()) {
     <div class="errors">{{ this.directoryController.response()?.message }}</div>
   }

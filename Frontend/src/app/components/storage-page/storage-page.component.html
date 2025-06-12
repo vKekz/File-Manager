@@ -6,7 +6,7 @@
         <tr>
           <th [width]="25"></th>
           <th>Name</th>
-          <th class="align-right">Größe</th>
+          <th [width]="100" class="align-right">Größe</th>
           <th [width]="25"></th>
         </tr>
       </thead>
@@ -23,15 +23,15 @@
         <!-- Directories -->
         @for (directory of this.directoryController.directories(); track directory.id) {
           <tr>
-            <td>
+            <td (click)="this.directoryController.selectDirectory(directory.id)">
               <i class="bi bi-folder-fill folder-icon"></i>
             </td>
-            <td (click)="this.directoryController.selectDirectory(directory.id)">
+            <td (click)="this.directoryController.selectDirectory(directory.id)" class="text-overflow">
               {{ directory.name }}
             </td>
-            <td></td>
-            <td class="align-center">
-              <app-drop-down-toggle [type]="DropDownType.Directory"></app-drop-down-toggle>
+            <td (click)="this.directoryController.selectDirectory(directory.id)"></td>
+            <td [id]="DROPDOWN_TOGGLE_ID">
+              <app-drop-down-toggle [type]="DropDownType.Directory" [directory]="directory"></app-drop-down-toggle>
             </td>
           </tr>
         }
@@ -40,12 +40,23 @@
         @for (file of this.fileController.files(); track file.id) {
           <tr>
             <td>
-              <i class="bi bi-file-earmark-fill"></i>
+              <app-file-type-icon [fileName]="file.name"></app-file-type-icon>
             </td>
-            <td>{{ file.name }}</td>
-            <td class="align-right">{{ file.compactSize }}</td>
-            <td class="align-center">
-              <app-drop-down-toggle [type]="DropDownType.File"></app-drop-down-toggle>
+            <td>
+              <div class="file-details-container">
+                <div class="text-overflow">{{ file.name }}</div>
+                @if (this.settingsService.showFileHashes()) {
+                  <div class="text-overflow file-hash">
+                    {{ file.hash }}
+                  </div>
+                }
+              </div>
+            </td>
+            <td class="align-right">
+              {{ file.compactSize }}
+            </td>
+            <td [id]="DROPDOWN_TOGGLE_ID">
+              <app-drop-down-toggle [type]="DropDownType.File" [file]="file"></app-drop-down-toggle>
             </td>
           </tr>
         }

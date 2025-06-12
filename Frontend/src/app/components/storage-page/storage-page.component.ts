@@ -3,17 +3,21 @@ import { DirectoryController } from "../../../controllers/directory.controller";
 import { FileController } from "../../../controllers/file.controller";
 import { DropDownToggleComponent } from "../drop-down-toggle/drop-down-toggle.component";
 import { DropDownType } from "../../../enums/drop-down-type.enum";
+import { DROPDOWN_TOGGLE_ID } from "../../../constants/id.constants";
+import { FileTypeIconComponent } from "../file-type-icon/file-type-icon.component";
+import { SettingsService } from "../../../services/settings.service";
 
 @Component({
   selector: "app-storage-page",
-  imports: [DropDownToggleComponent],
+  imports: [DropDownToggleComponent, FileTypeIconComponent],
   templateUrl: "./storage-page.component.html",
   styleUrl: "./storage-page.component.css",
 })
 export class StoragePageComponent {
   constructor(
     protected readonly directoryController: DirectoryController,
-    protected readonly fileController: FileController
+    protected readonly fileController: FileController,
+    protected readonly settingsService: SettingsService
   ) {}
 
   protected isRoot() {
@@ -22,4 +26,5 @@ export class StoragePageComponent {
   }
 
   protected readonly DropDownType = DropDownType;
+  protected readonly DROPDOWN_TOGGLE_ID = DROPDOWN_TOGGLE_ID;
 }

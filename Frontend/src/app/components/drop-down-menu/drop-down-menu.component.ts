@@ -1,6 +1,12 @@
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from "@angular/core";
 import { DropDownType } from "../../../enums/drop-down-type.enum";
 import { fromEvent, Subscription } from "rxjs";
+import { DROPDOWN_MENU_ID } from "../../../constants/id.constants";
+import { FileDto } from "../../../dtos/file.dto";
+import { DirectoryDto } from "../../../dtos/directory.dto";
+import { DirectoryController } from "../../../controllers/directory.controller";
+import { copyTextToClipboard } from "../../../helpers/clipboard.helper";
+import { DropDownToggleComponent } from "../drop-down-toggle/drop-down-toggle.component";
 
 @Component({
   selector: "app-drop-down-menu",
@@ -9,8 +15,20 @@ import { fromEvent, Subscription } from "rxjs";
   styleUrl: "./drop-down-menu.component.css",
 })
 export class DropDownMenuComponent implements AfterViewInit, OnDestroy {
-  @Input()
+  @Input({ required: true })
+  public isOpen: boolean = false;
+
+  @Input({ required: true })
+  public toggle!: DropDownToggleComponent;
+
+  @Input({ required: true })
   public type: DropDownType = DropDownType.File;
+
+  @Input({ required: true })
+  public file?: FileDto;
+
+  @Input({ required: true })
+  public directory?: DirectoryDto;
 
   @ViewChild("menuElement")
   private menuElement?: ElementRef;
@@ -18,7 +36,7 @@ export class DropDownMenuComponent implements AfterViewInit, OnDestroy {
   private resizeEvent: Subscription;
   private initialRect?: DOMRect;
 
-  constructor() {
+  constructor(private readonly directoryController: DirectoryController) {
     this.resizeEvent = fromEvent(window, "resize", () => {
       this.handleResize();
     }).subscribe();
@@ -30,6 +48,19 @@ export class DropDownMenuComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.resizeEvent.unsubscribe();
+  }
+
+  protected selectDirectory() {
+    if (!this.directory) {
+      return;
+    }
+
+    this.directoryController.selectDirectory(this.directory.id);
+  }
+
+  protected async copyHash() {
+    await copyTextToClipboard(this.file?.hash);
+    this.toggle.toggleMenu();
   }
 
   private handleInitialPosition() {
@@ -74,4 +105,7 @@ export class DropDownMenuComponent implements AfterViewInit, OnDestroy {
       element.style.right = "auto";
     }
   }
+
+  protected readonly DropDownType = DropDownType;
+  protected readonly DROPDOWN_MENU_ID = DROPDOWN_MENU_ID;
 }

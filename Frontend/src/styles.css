@@ -41,6 +41,16 @@ body {
   text-align: right !important;
 }
 
+.text-warning {
+  color: var(--warning-color);
+}
+
+.text-overflow {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-wrap: nowrap !important;
+}
+
 @font-face {
   font-family: "Ubuntu";
   src: url("/assets/fonts/ubuntu/Ubuntu-Regular.woff2") format("woff");

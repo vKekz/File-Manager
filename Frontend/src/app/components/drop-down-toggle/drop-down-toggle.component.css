@@ -1,0 +1,11 @@
+.toggle {
+  border-radius: var(--border-radius-lighter);
+  margin: auto;
+  padding: 0.25rem;
+  transition: var(--transition-delay);
+  text-align: center;
+}
+
+.toggle:hover {
+  background-color: var(--dark-theme-secondary-background-color);
+}

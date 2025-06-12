@@ -1,6 +1,4 @@
-@if (this.isToggled) {
-  <app-create-menu></app-create-menu>
-}
-<div (click)="toggleMenu()" class="container" [ngClass]="this.isToggled ? 'selected' : ''">
+<app-create-menu [isOpen]="isOpen"></app-create-menu>
+<div (click)="toggleMenu()" class="container" [ngClass]="this.isOpen ? 'selected' : ''">
   <i class="bi bi-plus-lg"></i>
 </div>

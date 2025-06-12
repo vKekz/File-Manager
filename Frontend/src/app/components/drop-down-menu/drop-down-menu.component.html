@@ -1,1 +1,46 @@
-<div class="container" #menuElement>Test</div>
+<div [id]="DROPDOWN_MENU_ID" [class]="isOpen ? 'open' : ''" class="container" #menuElement>
+  <div class="title text-overflow">"{{ this.directory?.name ?? this.file?.name }}"</div>
+  @switch (type) {
+    @case (DropDownType.Directory) {
+      <div (click)="this.selectDirectory()" class="item">
+        <div>
+          <i class="bi bi-folder"></i>
+        </div>
+        <div>Öffnen</div>
+      </div>
+      <div class="item">
+        <div>
+          <i class="bi bi-input-cursor-text"></i>
+        </div>
+        <div>Umbenennen</div>
+      </div>
+      <div class="item">
+        <div>
+          <i class="bi bi-brush"></i>
+        </div>
+        <div>Farbe ändern</div>
+      </div>
+    }
+    @case (DropDownType.File) {
+      <div class="item">
+        <div>
+          <i class="bi bi-download"></i>
+        </div>
+        <div>Herunterladen</div>
+      </div>
+      <div (click)="this.copyHash()" class="item">
+        <div>
+          <i class="bi bi-fingerprint"></i>
+        </div>
+        <div>Hash kopieren</div>
+      </div>
+    }
+  }
+  <hr class="divider" />
+  <div class="item text-warning">
+    <div>
+      <i class="bi bi-trash"></i>
+    </div>
+    <div>Löschen</div>
+  </div>
+</div>

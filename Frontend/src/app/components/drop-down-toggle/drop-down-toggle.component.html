@@ -1,6 +1,11 @@
 <div (click)="this.toggleMenu()" class="toggle">
   <i class="bi bi-three-dots"></i>
 </div>
-@if (this.isToggled) {
-  <app-drop-down-menu [type]="this.type"></app-drop-down-menu>
-}
+<app-drop-down-menu
+  [isOpen]="isOpen"
+  [toggle]="this"
+  [type]="this.type"
+  [file]="this.file"
+  [directory]="this.directory"
+>
+</app-drop-down-menu>

@@ -1,6 +1,7 @@
-import { Component, ElementRef, ViewChild } from "@angular/core";
+import { Component, ElementRef, Input, ViewChild } from "@angular/core";
 import { DirectoryController } from "../../../controllers/directory.controller";
 import { FileController } from "../../../controllers/file.controller";
+import { CREATE_MENU_ID } from "../../../constants/id.constants";
 
 @Component({
   selector: "app-create-menu",
@@ -9,6 +10,9 @@ import { FileController } from "../../../controllers/file.controller";
   styleUrl: "./create-menu.component.css",
 })
 export class CreateMenuComponent {
+  @Input({ required: true })
+  public isOpen: boolean = false;
+
   @ViewChild("nameInput")
   private nameInput?: ElementRef;
 
@@ -36,4 +40,6 @@ export class CreateMenuComponent {
 
     input.value = "";
   }
+
+  protected readonly CREATE_MENU_ID = CREATE_MENU_ID;
 }

@@ -15,8 +15,14 @@
   border-radius: var(--border-radius-light);
 
   left: 50%;
-  transform: translateX(-50%);
   cursor: default;
+
+  transform: translate(-50%, 200%);
+  transition: var(--transition-delay);
+}
+
+.open {
+  transform: translate(-50%, 0%);
 }
 
 .errors {

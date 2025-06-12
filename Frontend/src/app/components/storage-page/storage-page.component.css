@@ -18,9 +18,6 @@ table {
   border-collapse: collapse;
 }
 
-thead {
-}
-
 th {
   text-align: left;
   border-bottom: 2px solid var(--primary-color);
@@ -28,14 +25,7 @@ th {
 
 tr {
   border-bottom: 1px solid var(--dark-theme-secondary-font-color);
-  height: 40px;
-}
-
-td {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-wrap: nowrap;
-  max-width: 0;
+  height: 50px;
 }
 
 tbody > tr {
@@ -55,8 +45,20 @@ td:first-child {
 th:last-child,
 td:last-child {
   padding-right: 0.5rem;
+  padding-left: 0.5rem;
 }
 
 .folder-icon {
   color: var(--primary-color);
+}
+
+.file-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.file-hash {
+  color: var(--dark-theme-secondary-font-color);
+  font-size: 0.75rem;
 }

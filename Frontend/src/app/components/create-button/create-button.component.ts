@@ -3,6 +3,7 @@ import { CreateMenuComponent } from "../create-menu/create-menu.component";
 import { NgClass } from "@angular/common";
 import { fromEvent, Subscription } from "rxjs";
 import { DirectoryController } from "../../../controllers/directory.controller";
+import { BOTTOM_NAV_ID, CREATE_MENU_ID } from "../../../constants/id.constants";
 
 @Component({
   selector: "app-create-button",
@@ -11,14 +12,14 @@ import { DirectoryController } from "../../../controllers/directory.controller";
   styleUrl: "./create-button.component.css",
 })
 export class CreateButtonComponent implements OnDestroy {
-  protected isToggled: boolean = false;
+  protected isOpen: boolean = false;
 
   private readonly mouseEvent: Subscription;
   private readonly keyEvent: Subscription;
 
   constructor(private readonly directoryController: DirectoryController) {
-    this.mouseEvent = fromEvent(window, "mousedown").subscribe((event) => {
-      this.handleMouseDown(event);
+    this.mouseEvent = fromEvent(window, "mouseup").subscribe((event) => {
+      this.handleMouseUp(event);
     });
     this.keyEvent = fromEvent(window, "keyup").subscribe((event) => {
       this.handleKeyUp(event);
@@ -31,21 +32,21 @@ export class CreateButtonComponent implements OnDestroy {
   }
 
   protected toggleMenu() {
-    if (this.isToggled) {
+    if (this.isOpen) {
       this.directoryController.reset();
     }
 
-    this.isToggled = !this.isToggled;
+    this.isOpen = !this.isOpen;
   }
 
-  private handleMouseDown(event: Event) {
-    if (!this.isToggled) {
+  private handleMouseUp(event: Event) {
+    if (!this.isOpen) {
       return;
     }
 
     const target = event.target as HTMLElement;
     const parent = target.offsetParent;
-    if (parent?.id === "create-menu" || parent?.id === "bottom-nav") {
+    if (parent?.id === CREATE_MENU_ID || parent?.id === BOTTOM_NAV_ID) {
       return;
     }
 
@@ -53,7 +54,7 @@ export class CreateButtonComponent implements OnDestroy {
   }
 
   private handleKeyUp(event: Event) {
-    if (!this.isToggled) {
+    if (!this.isOpen) {
       return;
     }
 
