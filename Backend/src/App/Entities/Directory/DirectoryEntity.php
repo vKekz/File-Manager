@@ -2,6 +2,8 @@
 
 namespace App\Entities\Directory;
 
+use App\Dtos\Directory\DirectoryDto;
+
 /**
  * Represents the database entity for directories.
  */
@@ -17,6 +19,11 @@ readonly class DirectoryEntity
         public bool $isRoot = false
     )
     {
+    }
+
+    public function toDto(): DirectoryDto
+    {
+        return new DirectoryDto($this->id, $this->parentId, $this->name, $this->path, $this->isRoot);
     }
 
     public static function fromArray(array $data): DirectoryEntity

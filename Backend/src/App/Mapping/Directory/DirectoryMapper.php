@@ -18,7 +18,7 @@ class DirectoryMapper extends Mapper
      */
     function mapSingle(mixed $object): DirectoryDto
     {
-        return DirectoryDto::fromEntity($object);
+        return $object->toDto();
     }
 
     /**

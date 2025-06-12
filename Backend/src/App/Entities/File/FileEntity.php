@@ -2,6 +2,8 @@
 
 namespace App\Entities\File;
 
+use App\Dtos\File\FileDto;
+
 /**
  * Represents the database entity for files.
  */
@@ -18,6 +20,11 @@ readonly class FileEntity
         public string $uploadedAt
     )
     {
+    }
+
+    public function toDto(): FileDto
+    {
+        return new FileDto($this->id, $this->name, $this->hash, $this->size, $this->uploadedAt);
     }
 
     public static function fromArray(array $data): FileEntity

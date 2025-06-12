@@ -1,5 +1,6 @@
 {
   "frontendUrl": "http://localhost:4200",
   "environmentFile": ".env",
-  "authenticationTokenLifetime": "PT1H"
+  "authenticationTokenLifetime": "PT5H",
+  "maximumAmountOfFiles": 5
 }

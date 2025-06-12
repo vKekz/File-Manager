@@ -21,6 +21,11 @@ class Configuration
      * Will be set to "PT1H" (1 hour) by default.
      */
     public string $authenticationTokenLifetime = "PT1H";
+    /**
+     * Gets the maximum amount of files that can be uploaded simultaneously.
+     * Will be set to 5 by default.
+     */
+    public int $maximumAmountOfFiles = 5;
 
     function __construct()
     {

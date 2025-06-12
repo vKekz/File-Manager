@@ -9,15 +9,16 @@ use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\FileParameter;
 use Core\Attributes\Parameter\PostParameter;
 use Core\Attributes\Parameter\QueryParameter;
+use Core\Authorization\Authorized;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\Ok;
+use Core\Contracts\File\UploadedFile;
 use Core\Controllers\ApiController;
-use Core\Files\UploadedFile;
 
 /**
  * Represents the controller that is used for file management.
  */
-class FileController extends ApiController
+class FileController extends ApiController implements Authorized
 {
     private const END_POINT = "api/file";
 

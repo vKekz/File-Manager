@@ -2,6 +2,7 @@
 
 namespace Core\Context;
 
+use App\Services\Session\Token\Payload;
 use Core\Authorization\AuthorizationToken;
 
 /**
@@ -9,13 +10,15 @@ use Core\Authorization\AuthorizationToken;
  */
 class HttpContext
 {
-    public array $requestHeaders;
-    public array $requestPostParameters;
-    public array $requestQueryParameters;
-    public array $requestUploadedFiles;
-    public string $requestUserAgent;
-    public string $requestAddress;
-    public ?AuthorizationToken $authorizationToken;
+    public readonly array $requestHeaders;
+    public readonly array $requestPostParameters;
+    public readonly array $requestQueryParameters;
+    public readonly array $requestUploadedFiles;
+    public readonly string $requestUserAgent;
+    public readonly string $requestAddress;
+
+    public readonly ?AuthorizationToken $authorizationToken;
+    public ?Payload $payload;
 
     function __construct()
     {

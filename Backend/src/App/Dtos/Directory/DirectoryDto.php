@@ -2,8 +2,6 @@
 
 namespace App\Dtos\Directory;
 
-use App\Entities\Directory\DirectoryEntity;
-
 /**
  * Represents the DTO for directories.
  */
@@ -30,10 +28,5 @@ readonly class DirectoryDto
     public static function fromArray(array $data): DirectoryDto
     {
         return new self($data["Id"], $data["ParentId"], $data["Name"], $data["Path"], $data["IsRoot"]);
-    }
-
-    public static function fromEntity(DirectoryEntity $entity): DirectoryDto
-    {
-        return new self($entity->id, $entity->parentId, $entity->name, $entity->path, $entity->isRoot);
     }
 }

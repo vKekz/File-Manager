@@ -18,7 +18,7 @@ class FileMapper extends Mapper
      */
     function mapSingle(mixed $object): FileDto
     {
-        return FileDto::fromEntity($object);
+        return $object->toDto();
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Files;
+namespace Core\Contracts\File;
 
 /**
  * Represents a file that has been uploaded via FormData and captured using the built-in $_FILES variable.

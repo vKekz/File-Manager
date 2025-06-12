@@ -8,6 +8,7 @@ use Core\Attributes\Http\HttpGet;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\BodyParameter;
 use Core\Attributes\Parameter\QueryParameter;
+use Core\Authorization\Authorized;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\Ok;
 use Core\Controllers\ApiController;
@@ -15,7 +16,7 @@ use Core\Controllers\ApiController;
 /**
  * Represents the controller that is used for directory management.
  */
-class DirectoryController extends ApiController
+class DirectoryController extends ApiController implements Authorized
 {
     private const END_POINT = "api/directory";
 

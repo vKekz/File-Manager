@@ -2,7 +2,7 @@
 
 namespace App\Contracts\File;
 
-use Core\Files\UploadedFile;
+use Core\Contracts\File\UploadedFile;
 
 class UploadFileRequest
 {
