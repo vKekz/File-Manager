@@ -12,21 +12,17 @@ use Random\RandomException;
 readonly class CryptographicService implements CryptographicServiceInterface
 {
     /**
+     * Default hashing algorithm.
+     */
+    public const HASH_ALGORITHM = "sha512";
+    /**
      * Default password hashing algorithm.
      */
     private const PASSWORD_ALGORITHM = PASSWORD_ARGON2ID;
     /**
-     * Default hashing algorithm.
-     */
-    public const HASH_ALGORITHM = "sha3-512";
-    /**
-     * Default file hashing algorithm.
-     */
-    public const FILE_HASH_ALGORITHM = "sha256";
-    /**
      * Default encryption algorithm.
      */
-    private const ENCRYPTION_ALGORITHM = "aes-256-cbc";
+    private const ENCRYPTION_ALGORITHM = "aes-256-gcm";
 
     function __construct(private Environment $environment)
     {
@@ -55,15 +51,23 @@ readonly class CryptographicService implements CryptographicServiceInterface
      */
     function encrypt(string $data): string
     {
-        $privateKey = base64_encode($this->environment->get(EnvironmentKey::PRIVATE_ENCRYPTION_KEY));
+        $privateKey = $this->environment->get(EnvironmentKey::ENCRYPTION_MASTER_KEY);
+        $keyHash = openssl_digest($privateKey, self::HASH_ALGORITHM, true);
 
-        $ivLength = openssl_cipher_iv_length(self::ENCRYPTION_ALGORITHM);
-        $iv = openssl_random_pseudo_bytes($ivLength);
+        $vectorLength = openssl_cipher_iv_length(self::ENCRYPTION_ALGORITHM);
+        $vector = openssl_random_pseudo_bytes($vectorLength);
 
-        $encrypted = openssl_encrypt($data, self::ENCRYPTION_ALGORITHM, $privateKey, OPENSSL_RAW_DATA, $iv);
+        $encrypted = openssl_encrypt(
+            $data,
+            self::ENCRYPTION_ALGORITHM,
+            $keyHash,
+            OPENSSL_RAW_DATA,
+            $vector,
+            $tag
+        );
         $hash = $this->sign($encrypted, self::HASH_ALGORITHM, true);
 
-        return base64_encode($iv . $hash . $encrypted);
+        return base64_encode($vector . $tag . $hash . $encrypted);
     }
 
     /**
@@ -71,17 +75,28 @@ readonly class CryptographicService implements CryptographicServiceInterface
      */
     function decrypt(string $input): string | false
     {
-        $privateKey = base64_encode($this->environment->get(EnvironmentKey::PRIVATE_ENCRYPTION_KEY));
-        $decoded = base64_decode($input);
+        $privateKey = $this->environment->get(EnvironmentKey::ENCRYPTION_MASTER_KEY);
+        $keyHash = openssl_digest($privateKey, self::HASH_ALGORITHM, true);
 
-        $ivLength = openssl_cipher_iv_length(self::ENCRYPTION_ALGORITHM);
-        $iv = substr($decoded, 0, $ivLength);
-        $hash = substr($decoded, $ivLength, 64);
-        $encrypted = substr($decoded, $ivLength + 64);
+        $vectorLength = openssl_cipher_iv_length(self::ENCRYPTION_ALGORITHM);
+        $hashLength = 64;
+        $tagLength = 16;
 
-        $data = openssl_decrypt($encrypted, self::ENCRYPTION_ALGORITHM, $privateKey, OPENSSL_RAW_DATA, $iv);
-        $recreatedHash = $this->sign($encrypted, self::HASH_ALGORITHM, true);
+        $inputRaw = base64_decode($input);
+        $vector = substr($inputRaw, 0, $vectorLength);
+        $tag = substr($inputRaw, $vectorLength, $tagLength);
+        $hash = substr($inputRaw, $vectorLength + $tagLength, $hashLength);
+        $raw = substr($inputRaw, $vectorLength + $tagLength + $hashLength);
 
+        $data = openssl_decrypt(
+            $raw,
+            self::ENCRYPTION_ALGORITHM,
+            $keyHash,
+            OPENSSL_RAW_DATA,
+            $vector,
+            $tag
+        );
+        $recreatedHash = $this->sign($raw, self::HASH_ALGORITHM, true);
         if (hash_equals($hash, $recreatedHash))
         {
             return $data;
@@ -111,14 +126,14 @@ readonly class CryptographicService implements CryptographicServiceInterface
      */
     function sign(string $data, string $algorithm, bool $binary = false): string
     {
-        return hash_hmac($algorithm, $data, $this->environment->get(EnvironmentKey::HASH_KEY), $binary);
+        return hash_hmac($algorithm, $data, $this->environment->get(EnvironmentKey::HASH_MASTER_KEY), $binary);
     }
 
     /**
      * @inheritdoc
      */
-    function signFile(string $file): string
+    function signFile(string $file, string $algorithm = "sha256"): string
     {
-        return hash_file(self::FILE_HASH_ALGORITHM, $file);
+        return hash_file($algorithm, $file);
     }
 }

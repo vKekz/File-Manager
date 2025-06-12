@@ -11,6 +11,6 @@ enum EnvironmentKey: string
     case DB_USER = "DB_USER";
     case DB_PASSWORD = "DB_PASSWORD";
     case DB_NAME = "DB_NAME";
-    case HASH_KEY = "HASH_KEY";
-    case PRIVATE_ENCRYPTION_KEY = "PRIVATE_ENCRYPTION_KEY";
+    case HASH_MASTER_KEY = "HASH_MASTER_KEY";
+    case ENCRYPTION_MASTER_KEY = "ENCRYPTION_MASTER_KEY";
 }

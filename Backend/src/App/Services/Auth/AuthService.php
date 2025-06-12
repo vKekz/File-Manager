@@ -69,7 +69,7 @@ readonly class AuthService implements AuthServiceInterface
 
         if ($this->userRepository->findByEmail($email))
         {
-            return new BadRequest("The email you have provided is already associated with an account-page");
+            return new BadRequest("The email you have provided is already associated with an account");
         }
 
         $id = $this->cryptographicService->generateUuid();
