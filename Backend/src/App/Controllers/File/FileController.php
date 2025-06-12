@@ -4,12 +4,12 @@ namespace App\Controllers\File;
 
 use App\Contracts\File\UploadFileRequest;
 use App\Services\File\FileServiceInterface;
+use Core\Attributes\Authorization\Authorize;
 use Core\Attributes\Http\HttpGet;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\FileParameter;
 use Core\Attributes\Parameter\PostParameter;
 use Core\Attributes\Parameter\QueryParameter;
-use Core\Authorization\Authorized;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\Ok;
 use Core\Contracts\File\UploadedFile;
@@ -18,7 +18,8 @@ use Core\Controllers\ApiController;
 /**
  * Represents the controller that is used for file management.
  */
-class FileController extends ApiController implements Authorized
+#[Authorize]
+class FileController extends ApiController
 {
     private const END_POINT = "api/file";
 

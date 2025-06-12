@@ -7,6 +7,7 @@ import { RouteHandler } from "../handlers/route.handler";
 import { APP_ROUTES } from "../constants/route.constants";
 import { Store } from "@ngxs/store";
 import { FetchDirectories } from "../states/directory/directory.actions";
+import { SessionService } from "../services/session.service";
 
 @Injectable({
   providedIn: "root",
@@ -19,6 +20,7 @@ export class AuthController {
 
   constructor(
     private readonly authService: AuthService,
+    private readonly sessionService: SessionService,
     private readonly routeHandler: RouteHandler,
     private readonly store: Store
   ) {}
@@ -33,13 +35,13 @@ export class AuthController {
     await this.handleResponse(response, true);
   }
 
-  public async validate() {
+  public async validateSession() {
     const accessToken = this.getAccessToken();
     if (!accessToken) {
       return;
     }
 
-    const response = await this.authService.validate(accessToken);
+    const response = await this.sessionService.validate(accessToken);
     const isResponseSuccessful = await this.handleResponse(response);
     if (!isResponseSuccessful) {
       await this.routeHandler.goToRoute(APP_ROUTES.home);

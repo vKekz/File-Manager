@@ -7,7 +7,6 @@ use App\Contracts\User\UserRegisterRequest;
 use App\Services\Auth\AuthServiceInterface;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\BodyParameter;
-use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\Ok;
 use Core\Controllers\ApiController;
@@ -19,10 +18,7 @@ class AuthController extends ApiController
 {
     private const END_POINT = "api/auth";
 
-    function __construct(
-        private readonly AuthServiceInterface $authService,
-        private readonly HttpContext $httpContext
-    )
+    function __construct(private readonly AuthServiceInterface $authService)
     {
         parent::__construct(self::END_POINT);
     }
@@ -41,13 +37,5 @@ class AuthController extends ApiController
         $request = UserLoginRequest::deserialize($body);
         $response = $this->authService->loginUser($request);
         return $response instanceof ApiResponse ? $response : new Ok($response);
-    }
-
-    #[HttpPost("/validate")]
-    function validateSession(): ApiResponse
-    {
-        $authorizationToken = $this->httpContext->authorizationToken;
-        $payload = $this->authService->validateSession($authorizationToken?->token);
-        return new Ok($payload);
     }
 }

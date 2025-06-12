@@ -8,21 +8,15 @@ use App\Contracts\User\UserRegisterRequest;
 use App\Dtos\Users\UserDto;
 use App\Entities\User\UserEntity;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
-use App\Repositories\Session\SessionRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
-use App\Services\Session\Enums\ClaimKey;
 use App\Services\Session\SessionServiceInterface;
-use App\Services\Session\Token\Payload;
-use App\Services\Token\TokenHandlerInterface;
 use App\Validation\User\EmailValidator;
 use App\Validation\User\PasswordValidator;
 use App\Validation\User\UsernameValidator;
-use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
 use Core\Contracts\Api\InternalServerError;
-use Core\Contracts\Api\Unauthorized;
 use DateTime;
 
 /**
@@ -32,12 +26,9 @@ readonly class AuthService implements AuthServiceInterface
 {
     function __construct(
         private UserRepositoryInterface $userRepository,
-        private SessionRepositoryInterface $sessionRepository,
         private DirectoryRepositoryInterface $directoryRepository,
         private SessionServiceInterface $sessionService,
-        private CryptographicServiceInterface $cryptographicService,
-        private TokenHandlerInterface $tokenHandler,
-        private HttpContext $httpContext
+        private CryptographicServiceInterface $cryptographicService
     )
     {
     }
@@ -146,50 +137,5 @@ readonly class AuthService implements AuthServiceInterface
             $userDto,
             $sessionToken->accessToken
         );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    function validateSession(?string $accessToken): AuthenticationResponse | ApiResponse
-    {
-        $payload = $this->tokenHandler->verifyAccessToken($accessToken);
-        if (!$payload)
-        {
-            return new Unauthorized("Invalid access token");
-        }
-
-        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
-        $userEntity = $this->userRepository->findById($userId);
-        if ($userEntity == null)
-        {
-            return new InternalServerError("Could not find user by claim");
-        }
-
-        $sessionEntity = $this->sessionRepository->findById($payload->getClaim(ClaimKey::SessionId));
-        if ($sessionEntity == null)
-        {
-            return new InternalServerError("Could not find session by claim");
-        }
-
-        $userDto = new UserDto(
-            $userEntity->id,
-            $userEntity->username,
-            $userEntity->email,
-        );
-
-        return new AuthenticationResponse(
-            $userDto,
-            $accessToken
-        );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    function validateAuthHeader(): Payload | false
-    {
-        $authorizationToken = $this->httpContext->authorizationToken;
-        return $this->tokenHandler->verifyAccessToken($authorizationToken?->token);
     }
 }

@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.authController.validate();
+    await this.authController.validateSession();
   }
 
   protected isMainPage() {

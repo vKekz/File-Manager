@@ -2,6 +2,7 @@
 
 namespace Core\Context;
 
+use App\Dtos\Users\UserDto;
 use App\Services\Session\Token\Payload;
 use Core\Authorization\AuthorizationToken;
 
@@ -16,9 +17,9 @@ class HttpContext
     public readonly array $requestUploadedFiles;
     public readonly string $requestUserAgent;
     public readonly string $requestAddress;
-
     public readonly ?AuthorizationToken $authorizationToken;
-    public ?Payload $payload;
+    public ?UserDto $user = null;
+    public ?Payload $rawPayload = null;
 
     function __construct()
     {

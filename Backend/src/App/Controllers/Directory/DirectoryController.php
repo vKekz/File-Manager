@@ -4,11 +4,11 @@ namespace App\Controllers\Directory;
 
 use App\Contracts\Directory\CreateDirectoryRequest;
 use App\Services\Directory\DirectoryServiceInterface;
+use Core\Attributes\Authorization\Authorize;
 use Core\Attributes\Http\HttpGet;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\BodyParameter;
 use Core\Attributes\Parameter\QueryParameter;
-use Core\Authorization\Authorized;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\Ok;
 use Core\Controllers\ApiController;
@@ -16,7 +16,8 @@ use Core\Controllers\ApiController;
 /**
  * Represents the controller that is used for directory management.
  */
-class DirectoryController extends ApiController implements Authorized
+#[Authorize]
+class DirectoryController extends ApiController
 {
     private const END_POINT = "api/directory";
 

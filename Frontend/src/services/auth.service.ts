@@ -37,14 +37,4 @@ export class AuthService {
     const request = this.httpClient.post<AuthResponse | ApiResponse>(route, payload);
     return firstValueFrom(request);
   }
-
-  public validate($accessToken: string) {
-    const route = `${this.endpoint}/validate`;
-    const request = this.httpClient.post<AuthResponse | ApiResponse>(route, "", {
-      headers: {
-        Authorization: `Bearer ${$accessToken}`,
-      },
-    });
-    return firstValueFrom(request);
-  }
 }

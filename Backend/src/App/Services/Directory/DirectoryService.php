@@ -9,16 +9,14 @@ use App\Dtos\Directory\DirectoryDtoWithChildren;
 use App\Entities\Directory\DirectoryEntity;
 use App\Mapping\Directory\DirectoryMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
-use App\Services\Auth\AuthServiceInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
 use App\Services\FileSystem\FileSystemHandlerInterface;
-use App\Services\Session\Enums\ClaimKey;
 use App\Validation\Directory\DirectoryNameValidator;
+use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
 use Core\Contracts\Api\InternalServerError;
 use Core\Contracts\Api\NotFound;
-use Core\Contracts\Api\Unauthorized;
 use DateTime;
 
 /**
@@ -29,9 +27,9 @@ readonly class DirectoryService implements DirectoryServiceInterface
     function __construct(
         private DirectoryRepositoryInterface $directoryRepository,
         private CryptographicServiceInterface $cryptographicService,
-        private AuthServiceInterface $authService,
         private FileSystemHandlerInterface $fileSystemHandler,
-        private DirectoryMapper $directoryMapper
+        private DirectoryMapper $directoryMapper,
+        private HttpContext $httpContext
     )
     {
     }
@@ -40,20 +38,13 @@ readonly class DirectoryService implements DirectoryServiceInterface
      * @inheritdoc
      */
     function getDirectoryWithChildren(string $id): DirectoryDtoWithChildren | ApiResponse {
-        $payload = $this->authService->validateAuthHeader();
-        if (!$payload)
-        {
-            return new Unauthorized("Invalid access token");
-        }
-
         $directoryEntity = $this->directoryRepository->findById($id);
         if ($directoryEntity == null)
         {
             return new NotFound("Directory not found");
         }
 
-        // Get user ID by token claims
-        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
+        $userId = $this->httpContext->user->id;
         if ($directoryEntity->userId != $userId)
         {
             return new BadRequest("Directory is owned by another user");
@@ -72,12 +63,6 @@ readonly class DirectoryService implements DirectoryServiceInterface
      */
     function createDirectory(CreateDirectoryRequest $request): DirectoryDto | ApiResponse
     {
-        $payload = $this->authService->validateAuthHeader();
-        if (!$payload)
-        {
-            return new Unauthorized("Invalid access token");
-        }
-
         $name = $request->name;
         if (!DirectoryNameValidator::validate($name))
         {
@@ -93,8 +78,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new BadRequest("Parent directory does not exist");
         }
 
-        // Get user ID by token claims
-        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
+        $userId = $this->httpContext->user->id;
         if ($parentDirectory->userId != $userId)
         {
             return new BadRequest("Parent directory is owned by another user");

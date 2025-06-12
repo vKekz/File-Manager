@@ -8,13 +8,11 @@ use App\Entities\File\FileEntity;
 use App\Mapping\File\FileMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\File\FileRepositoryInterface;
-use App\Services\Auth\AuthServiceInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
-use App\Services\Session\Enums\ClaimKey;
+use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
 use Core\Contracts\Api\InternalServerError;
-use Core\Contracts\Api\Unauthorized;
 use DateTime;
 
 /**
@@ -23,11 +21,11 @@ use DateTime;
 readonly class FileService implements FileServiceInterface
 {
     function __construct(
-        private AuthServiceInterface $authService,
         private DirectoryRepositoryInterface $directoryRepository,
         private CryptographicServiceInterface $cryptographicService,
         private FileRepositoryInterface $fileRepository,
-        private FileMapper $fileMapper
+        private FileMapper $fileMapper,
+        private HttpContext $httpContext
     )
     {
     }
@@ -37,12 +35,6 @@ readonly class FileService implements FileServiceInterface
      */
     function getFilesOfDirectory(string $directoryId): array | ApiResponse
     {
-        $payload = $this->authService->validateAuthHeader();
-        if (!$payload)
-        {
-            return new Unauthorized("Invalid access token");
-        }
-
         // Check if the directory exists and is owned by the user
         $directory = $this->directoryRepository->findById($directoryId);
         if (!$directory)
@@ -50,8 +42,7 @@ readonly class FileService implements FileServiceInterface
             return new BadRequest("Directory does not exist");
         }
 
-        // Get user ID by token claims
-        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
+        $userId = $this->httpContext->user->id;
         if ($directory->userId != $userId)
         {
             return new BadRequest("Directory is owned by another user");
@@ -65,12 +56,6 @@ readonly class FileService implements FileServiceInterface
      */
     function uploadFile(UploadFileRequest $request): FileDto | ApiResponse
     {
-        $payload = $this->authService->validateAuthHeader();
-        if (!$payload)
-        {
-            return new Unauthorized("Invalid access token");
-        }
-
         // TODO: Validation
         // TODO: Check if file exists and replace
         $file = $request->file;
@@ -83,8 +68,7 @@ readonly class FileService implements FileServiceInterface
             return new BadRequest("Directory does not exist");
         }
 
-        // Get user ID by token claims
-        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
+        $userId = $this->httpContext->user->id;
         if ($directory->userId != $userId)
         {
             return new BadRequest("Directory is owned by another user");

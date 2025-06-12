@@ -8,6 +8,7 @@ use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiRequest;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
+use Core\Contracts\Api\MethodNotAllowed;
 use Core\Contracts\File\UploadedFile;
 use Core\Enums\ParameterType;
 use ReflectionAttribute;
@@ -20,9 +21,11 @@ use ReflectionMethod;
 abstract class ApiController
 {
     private array $routes = [];
+    public readonly ReflectionClass $reflection;
 
     function __construct(public readonly string $endpoint)
     {
+        $this->reflection = new ReflectionClass($this);
         $this->registerRoutes();
     }
 
@@ -35,7 +38,7 @@ abstract class ApiController
         if ($method == null)
         {
             // Method not allowed if route does not exist
-            http_response_code(405);
+            (new MethodNotAllowed())->write();
             return;
         }
 
@@ -72,8 +75,7 @@ abstract class ApiController
 
     private function registerRoutes(): void
     {
-        $reflection = new ReflectionClass($this);
-        $methods = $reflection->getMethods();
+        $methods = $this->reflection->getMethods();
 
         // Go through each method of the controller
         foreach ($methods as $method)
