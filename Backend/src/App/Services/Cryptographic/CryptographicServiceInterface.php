@@ -40,5 +40,5 @@ interface CryptographicServiceInterface
     /**
      * Returns a hash signature for the content of the given file.
      */
-    function signFile(string $file): string;
+    function signFile(string $file, string $algorithm = "sha256"): string;
 }
