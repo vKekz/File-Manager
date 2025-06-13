@@ -20,6 +20,13 @@
         </div>
         <div>Farbe ändern</div>
       </div>
+      <hr class="divider" />
+      <div (click)="this.deleteDirectory()" class="item text-warning">
+        <div>
+          <i class="bi bi-trash"></i>
+        </div>
+        <div>Löschen</div>
+      </div>
     }
     @case (DropDownType.File) {
       <div class="item">
@@ -34,13 +41,13 @@
         </div>
         <div>Hash kopieren</div>
       </div>
+      <hr class="divider" />
+      <div (click)="this.deleteFile()" class="item text-warning">
+        <div>
+          <i class="bi bi-trash"></i>
+        </div>
+        <div>Löschen</div>
+      </div>
     }
   }
-  <hr class="divider" />
-  <div class="item text-warning">
-    <div>
-      <i class="bi bi-trash"></i>
-    </div>
-    <div>Löschen</div>
-  </div>
 </div>

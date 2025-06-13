@@ -2,7 +2,12 @@ import { Injectable, Signal } from "@angular/core";
 import { DirectoryDto } from "../dtos/directory.dto";
 import { ApiResponse } from "../contracts/api.response";
 import { Store } from "@ngxs/store";
-import { CreateDirectory, ResetResponse, SelectDirectory } from "../states/directory/directory.actions";
+import {
+  CreateDirectory,
+  DeleteDirectory,
+  ResetResponse,
+  SelectDirectory,
+} from "../states/directory/directory.actions";
 import { DirectoryState } from "../states/directory/directory.state";
 import { toSignalSync } from "../helpers/to-signal.helper";
 
@@ -18,8 +23,12 @@ export class DirectoryController {
     this.response = toSignalSync(this.store.select(DirectoryState.getResponse));
   }
 
-  public async createDirectory(name: string) {
+  public createDirectory(name: string) {
     this.store.dispatch(new CreateDirectory(name));
+  }
+
+  public deleteDirectory(id: string) {
+    this.store.dispatch(new DeleteDirectory(id));
   }
 
   public selectDirectory(id: string) {

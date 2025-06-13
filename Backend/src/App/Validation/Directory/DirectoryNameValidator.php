@@ -14,7 +14,7 @@ class DirectoryNameValidator extends Validator
      *
      * @param string $input
      */
-    public static function validate(mixed $input): bool
+    public static function validate(mixed &$input): bool
     {
         $name = htmlspecialchars($input);
 
@@ -33,6 +33,8 @@ class DirectoryNameValidator extends Validator
         {
             return false;
         }
+
+        $input = $name;
 
         return true;
     }

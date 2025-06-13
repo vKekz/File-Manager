@@ -16,6 +16,12 @@ export class CreateDirectory {
   constructor(public readonly name: string) {}
 }
 
+export class DeleteDirectory {
+  static readonly type = "[Directory] Delete directory";
+
+  constructor(public readonly id: string) {}
+}
+
 export class ResetResponse {
   static readonly type = "[Directory] Reset response";
 

@@ -7,6 +7,7 @@ import { DirectoryDto } from "../../../dtos/directory.dto";
 import { DirectoryController } from "../../../controllers/directory.controller";
 import { copyTextToClipboard } from "../../../helpers/clipboard.helper";
 import { DropDownToggleComponent } from "../drop-down-toggle/drop-down-toggle.component";
+import { FileController } from "../../../controllers/file.controller";
 
 @Component({
   selector: "app-drop-down-menu",
@@ -36,7 +37,10 @@ export class DropDownMenuComponent implements AfterViewInit, OnDestroy {
   private resizeEvent: Subscription;
   private initialRect?: DOMRect;
 
-  constructor(private readonly directoryController: DirectoryController) {
+  constructor(
+    private readonly directoryController: DirectoryController,
+    private readonly fileController: FileController
+  ) {
     this.resizeEvent = fromEvent(window, "resize", () => {
       this.handleResize();
     }).subscribe();
@@ -58,9 +62,17 @@ export class DropDownMenuComponent implements AfterViewInit, OnDestroy {
     this.directoryController.selectDirectory(this.directory.id);
   }
 
+  protected deleteDirectory() {
+    this.directoryController.deleteDirectory(this.directory!.id);
+  }
+
   protected async copyHash() {
     await copyTextToClipboard(this.file?.hash);
     this.toggle.toggleMenu();
+  }
+
+  protected deleteFile() {
+    this.fileController.deleteFile(this.file!.id);
   }
 
   private handleInitialPosition() {

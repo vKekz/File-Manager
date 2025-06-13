@@ -9,7 +9,9 @@ use App\Dtos\Directory\DirectoryDtoWithChildren;
 use App\Entities\Directory\DirectoryEntity;
 use App\Mapping\Directory\DirectoryMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
+use App\Repositories\File\FileRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\File\FileServiceInterface;
 use App\Services\FileSystem\FileSystemHandlerInterface;
 use App\Validation\Directory\DirectoryNameValidator;
 use Core\Context\HttpContext;
@@ -29,6 +31,8 @@ readonly class DirectoryService implements DirectoryServiceInterface
         private CryptographicServiceInterface $cryptographicService,
         private FileSystemHandlerInterface $fileSystemHandler,
         private DirectoryMapper $directoryMapper,
+        private FileRepositoryInterface $fileRepository,
+        private FileServiceInterface $fileService,
         private HttpContext $httpContext
     )
     {
@@ -123,6 +127,62 @@ readonly class DirectoryService implements DirectoryServiceInterface
      */
     function deleteDirectory(string $id): DeleteDirectoryResponse | ApiResponse
     {
-        // TODO: Implement deleteDirectory() method.
+        $directoryEntity = $this->directoryRepository->findById($id);
+        if ($directoryEntity == null)
+        {
+            return new NotFound("Directory not found");
+        }
+
+        $userId = $this->httpContext->user->id;
+        if ($directoryEntity->userId != $userId)
+        {
+            return new BadRequest("Directory is owned by another user");
+        }
+
+        // Root user directory cannot be deleted
+        if ($directoryEntity->isRoot)
+        {
+            return new BadRequest("Cannot delete root directory");
+        }
+
+        $this->deleteDirectoryChildrenRecursively($directoryEntity);
+
+        // Finally delete parent directory
+        if (!$this->directoryRepository->tryRemove($id))
+        {
+            return new InternalServerError();
+        }
+
+        // TODO: Delete directory from filesystem
+
+        return new DeleteDirectoryResponse($id);
+    }
+
+    private function deleteDirectoryChildrenRecursively(DirectoryEntity $directoryEntity): void
+    {
+        $userId = $directoryEntity->userId;
+        $id = $directoryEntity->id;
+
+        $files = $this->fileRepository->findByDirectoryIdForUser($userId, $id);
+        foreach ($files as $file)
+        {
+            $this->fileService->deleteFile($file->id);
+        }
+
+        // Apparently just saying that the return type is DirectoryEntity[] does not make the "compiler" happy
+        // which is why I have to manually map the array of "DirectoryEntities" to DirectoryEntity[]
+        $children = $this->directoryMapper->mapToEntities(
+            $this->directoryRepository->findByParentIdForUser($userId, $id)
+        );
+        if (count($children) === 0)
+        {
+            return;
+        }
+
+        foreach ($children as $child)
+        {
+            $this->deleteDirectoryChildrenRecursively($child);
+            $this->directoryRepository->tryRemove($child->id);
+        }
     }
 }

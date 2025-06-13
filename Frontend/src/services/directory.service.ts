@@ -5,6 +5,7 @@ import { API_ROUTES } from "../constants/route.constants";
 import { DirectoryDto, DirectoryDtoWithChildren } from "../dtos/directory.dto";
 import { firstValueFrom } from "rxjs";
 import { ApiResponse } from "../contracts/api.response";
+import { DeleteDirectoryResponse } from "../contracts/delete-directory.response";
 
 @Injectable({ providedIn: "root" })
 export class DirectoryService {
@@ -30,6 +31,12 @@ export class DirectoryService {
       parentId: parentId,
     } as const;
     const request = this.httpClient.post<DirectoryDto | ApiResponse>(route, payload);
+    return firstValueFrom(request);
+  }
+
+  public deleteDirectory(id: string) {
+    const route = `${this.endpoint}?id=${id}`;
+    const request = this.httpClient.delete<DeleteDirectoryResponse | ApiResponse>(route);
     return firstValueFrom(request);
   }
 }

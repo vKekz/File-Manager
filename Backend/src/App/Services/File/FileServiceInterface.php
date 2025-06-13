@@ -2,9 +2,11 @@
 
 namespace App\Services\File;
 
-use App\Contracts\File\UploadFileRequest;
+use App\Contracts\File\CreateFileRequest;
+use App\Contracts\File\DeleteFileResponse;
 use App\Dtos\File\FileDto;
 use Core\Contracts\Api\ApiResponse;
+use Core\Contracts\Api\FileResponse;
 
 /**
  * Represents the service that is used for managing files.
@@ -17,7 +19,15 @@ interface FileServiceInterface
      */
     function getFilesOfDirectory(string $directoryId): array | ApiResponse;
     /**
-     * Uploads a file to the given directory.
+     * Creates a file for the given directory.
      */
-    function uploadFile(UploadFileRequest $request): FileDto | ApiResponse;
+    function createFile(CreateFileRequest $request): FileDto | ApiResponse;
+    /**
+     * Deletes a file.
+     */
+    function deleteFile(string $id): DeleteFileResponse | ApiResponse;
+    /**
+     * Prepares a file for download.
+     */
+    function getFile(string $id): FileResponse | ApiResponse;
 }

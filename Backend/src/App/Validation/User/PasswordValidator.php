@@ -14,7 +14,7 @@ class PasswordValidator extends Validator
      *
      * @param string $input
      */
-    public static function validate(mixed $input): bool
+    public static function validate(mixed &$input): bool
     {
         // Passwords must be at least 8 characters
         if (strlen($input) < 8)

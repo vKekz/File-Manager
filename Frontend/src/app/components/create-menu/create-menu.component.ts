@@ -21,11 +21,11 @@ export class CreateMenuComponent {
     protected readonly fileController: FileController
   ) {}
 
-  protected async handleCreateDirectory(event: SubmitEvent) {
+  protected handleCreateDirectory(event: SubmitEvent) {
     event.preventDefault();
 
     const name = (this.nameInput?.nativeElement as HTMLInputElement).value;
-    await this.directoryController.createDirectory(name);
+    this.directoryController.createDirectory(name);
   }
 
   protected handleFileUpload(event: Event) {
@@ -36,7 +36,7 @@ export class CreateMenuComponent {
     }
 
     const file = files[0];
-    this.fileController.uploadFile(file);
+    this.fileController.createFile(file);
 
     input.value = "";
   }

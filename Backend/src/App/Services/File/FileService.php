@@ -2,7 +2,8 @@
 
 namespace App\Services\File;
 
-use App\Contracts\File\UploadFileRequest;
+use App\Contracts\File\CreateFileRequest;
+use App\Contracts\File\DeleteFileResponse;
 use App\Dtos\File\FileDto;
 use App\Entities\File\FileEntity;
 use App\Mapping\File\FileMapper;
@@ -12,6 +13,7 @@ use App\Services\Cryptographic\CryptographicServiceInterface;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
+use Core\Contracts\Api\FileResponse;
 use Core\Contracts\Api\InternalServerError;
 use DateTime;
 
@@ -54,7 +56,7 @@ readonly class FileService implements FileServiceInterface
     /**
      * @inheritdoc
      */
-    function uploadFile(UploadFileRequest $request): FileDto | ApiResponse
+    function createFile(CreateFileRequest $request): FileDto | ApiResponse
     {
         // TODO: Validation
         // TODO: Check if file exists and replace
@@ -97,5 +99,52 @@ readonly class FileService implements FileServiceInterface
         }
 
         return $this->fileMapper->mapSingle($fileEntity);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function deleteFile(string $id): DeleteFileResponse | ApiResponse
+    {
+        $fileEntity = $this->fileRepository->findById($id);
+        if (!$fileEntity)
+        {
+            return new BadRequest("File not found");
+        }
+
+        $userId = $this->httpContext->user->id;
+        if ($fileEntity->userId !== $userId)
+        {
+            return new BadRequest("File is owned by another user");
+        }
+
+        if (!$this->fileRepository->tryRemove($id))
+        {
+            return new InternalServerError();
+        }
+
+        // TODO: Delete file on file system
+
+        return new DeleteFileResponse($id);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function getFile(string $id): FileResponse | ApiResponse
+    {
+        $fileEntity = $this->fileRepository->findById($id);
+        if (!$fileEntity)
+        {
+            return new BadRequest("File not found");
+        }
+
+        $userId = $this->httpContext->user->id;
+        if ($fileEntity->userId !== $userId)
+        {
+            return new BadRequest("File is owned by another user");
+        }
+
+        return new FileResponse($fileEntity->path, $fileEntity->name);
     }
 }

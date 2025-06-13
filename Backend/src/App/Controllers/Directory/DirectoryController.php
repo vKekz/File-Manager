@@ -5,6 +5,7 @@ namespace App\Controllers\Directory;
 use App\Contracts\Directory\CreateDirectoryRequest;
 use App\Services\Directory\DirectoryServiceInterface;
 use Core\Attributes\Authorization\Authorize;
+use Core\Attributes\Http\HttpDelete;
 use Core\Attributes\Http\HttpGet;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\BodyParameter;
@@ -38,6 +39,13 @@ class DirectoryController extends ApiController
     {
         $request = CreateDirectoryRequest::deserialize($body);
         $response = $this->directoryService->createDirectory($request);
+        return $response instanceof ApiResponse ? $response : new Ok($response);
+    }
+
+    #[HttpDelete]
+    function deleteDirectory(#[QueryParameter] string $id): ApiResponse
+    {
+        $response = $this->directoryService->deleteDirectory($id);
         return $response instanceof ApiResponse ? $response : new Ok($response);
     }
 }

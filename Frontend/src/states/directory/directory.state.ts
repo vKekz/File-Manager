@@ -1,7 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext, Store } from "@ngxs/store";
 import { DirectoryStateModel } from "./model/directory-state.model";
-import { CreateDirectory, FetchDirectories, ResetResponse, SelectDirectory } from "./directory.actions";
+import {
+  CreateDirectory,
+  DeleteDirectory,
+  FetchDirectories,
+  ResetResponse,
+  SelectDirectory,
+} from "./directory.actions";
 import { DirectoryService } from "../../services/directory.service";
 import { DirectoryDtoWithChildren } from "../../dtos/directory.dto";
 import { AuthController } from "../../controllers/auth.controller";
@@ -94,6 +100,49 @@ export class DirectoryState {
     context.patchState({
       directories: [...directories, response],
       response: undefined,
+    });
+  }
+
+  @Action(DeleteDirectory)
+  async deleteFile(context: StateContext<DirectoryStateModel>, { id }: DeleteDirectory) {
+    const response = await this.directoryService.deleteDirectory(id);
+    if ("message" in response) {
+      context.patchState({
+        response: response,
+      });
+      return;
+    }
+
+    const state = context.getState();
+    const parentId = this.getParentId(state);
+    if (!parentId) {
+      return;
+    }
+
+    // Update cache
+    const cache = this.directoryCache.get(parentId);
+    if (!cache) {
+      return;
+    }
+
+    const cacheIndex = cache.children.findIndex((directory) => directory.id === id);
+    if (cacheIndex === -1) {
+      return;
+    }
+
+    cache.children.splice(cacheIndex, 1);
+
+    // Update real state
+    const directories = state.directories;
+    const index = directories.findIndex((directory) => directory.id === id);
+    if (index === -1) {
+      return;
+    }
+
+    directories.splice(index, 1);
+
+    context.patchState({
+      directories: [...directories],
     });
   }
 

@@ -14,7 +14,7 @@ class UsernameValidator extends Validator
      *
      * @param string $input
      */
-    public static function validate(mixed $input): bool
+    public static function validate(mixed &$input): bool
     {
         $username = htmlspecialchars($input);
 
@@ -30,6 +30,8 @@ class UsernameValidator extends Validator
         {
             return false;
         }
+
+        $input = $username;
 
         return true;
     }
