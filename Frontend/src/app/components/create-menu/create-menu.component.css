@@ -16,13 +16,20 @@
 
   left: 50%;
   cursor: default;
+  pointer-events: none;
 
-  transform: translate(-50%, 200%);
-  transition: var(--transition-delay);
+  opacity: 0;
+  transition:
+    transform var(--transition-delay),
+    opacity var(--transition-delay);
+  transform: translateX(-50%) scale(0);
+  transform-origin: bottom center;
 }
 
 .open {
-  transform: translate(-50%, 0%);
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  pointer-events: auto;
 }
 
 .errors {

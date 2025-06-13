@@ -1,4 +1,4 @@
-<div [id]="DROPDOWN_MENU_ID" [class]="isOpen ? 'open' : ''" class="container" #menuElement>
+<div [id]="DROPDOWN_MENU_ID" [class]="isOpen ? 'open' : ''" class="container">
   <div class="title text-overflow">"{{ this.directory?.name ?? this.file?.name }}"</div>
   @switch (type) {
     @case (DropDownType.Directory) {

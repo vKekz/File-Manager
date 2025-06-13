@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy } from "@angular/core";
 import { DropDownType } from "../../../enums/drop-down-type.enum";
 import { DropDownMenuComponent } from "../drop-down-menu/drop-down-menu.component";
 import { fromEvent, Subscription } from "rxjs";
-import { DROPDOWN_MENU_ID, DROPDOWN_TOGGLE_ID } from "../../../constants/id.constants";
+import { DROPDOWN_MENU_ID, DROPDOWN_TOGGLE_ID, DROPDOWN_WRAPPER_ID } from "../../../constants/id.constants";
 import { FileDto } from "../../../dtos/file.dto";
 import { DirectoryDto } from "../../../dtos/directory.dto";
 
@@ -46,10 +46,12 @@ export class DropDownToggleComponent implements OnDestroy {
 
     const target = event.target as HTMLElement;
     const parent = target.offsetParent;
-    if (parent?.id === DROPDOWN_MENU_ID || parent?.id === DROPDOWN_TOGGLE_ID) {
+    if (parent?.id === DROPDOWN_MENU_ID || parent?.id === DROPDOWN_TOGGLE_ID || parent?.id === DROPDOWN_WRAPPER_ID) {
       return;
     }
 
     this.toggleMenu();
   }
+
+  protected readonly DROPDOWN_WRAPPER_ID = DROPDOWN_WRAPPER_ID;
 }

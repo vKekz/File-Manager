@@ -1,11 +1,13 @@
-<div (click)="this.toggleMenu()" class="toggle">
-  <i class="bi bi-three-dots"></i>
+<div [id]="DROPDOWN_WRAPPER_ID" class="dropdown-wrapper">
+  <div (click)="this.toggleMenu()" class="toggle">
+    <i class="bi bi-three-dots"></i>
+  </div>
+  <app-drop-down-menu
+    [isOpen]="isOpen"
+    [toggle]="this"
+    [type]="this.type"
+    [file]="this.file"
+    [directory]="this.directory"
+  >
+  </app-drop-down-menu>
 </div>
-<app-drop-down-menu
-  [isOpen]="isOpen"
-  [toggle]="this"
-  [type]="this.type"
-  [file]="this.file"
-  [directory]="this.directory"
->
-</app-drop-down-menu>

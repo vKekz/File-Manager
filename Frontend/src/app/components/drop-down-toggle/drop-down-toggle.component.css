@@ -1,3 +1,7 @@
+.dropdown-wrapper {
+  position: relative;
+}
+
 .toggle {
   border-radius: var(--border-radius-lighter);
   margin: auto;

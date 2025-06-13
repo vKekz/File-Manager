@@ -3,8 +3,8 @@
   display: flex;
   flex-direction: column;
 
-  min-width: 160px;
-  max-width: 200px;
+  right: 0;
+  width: 200px;
 
   background-color: var(--dark-theme-secondary-background-color);
 
@@ -12,13 +12,22 @@
   border-radius: var(--border-radius-light);
 
   cursor: default;
-  transition: var(--transition-delay);
-  transform: scale(0%);
-  transform-origin: top left;
+  pointer-events: none;
+
+  transition:
+    transform var(--transition-delay),
+    opacity var(--transition-delay);
+  transform: scale(0);
+  transform-origin: top right;
+
+  opacity: 0;
+  z-index: 1;
 }
 
 .open {
-  transform: scaleZ(100%);
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .title {
