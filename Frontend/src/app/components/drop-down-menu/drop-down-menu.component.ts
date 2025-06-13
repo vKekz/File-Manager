@@ -32,7 +32,7 @@ export class DropDownMenuComponent {
 
   constructor(
     private readonly directoryController: DirectoryController,
-    private readonly fileController: FileController
+    protected readonly fileController: FileController
   ) {}
 
   protected selectDirectory() {
@@ -45,6 +45,10 @@ export class DropDownMenuComponent {
 
   protected deleteDirectory() {
     this.directoryController.deleteDirectory(this.directory!.id);
+  }
+
+  protected downloadFile(anchor: HTMLAnchorElement) {
+    return this.fileController.downloadFileViaAnchor(this.file!, anchor);
   }
 
   protected async copyHash() {

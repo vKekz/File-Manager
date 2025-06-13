@@ -6,6 +6,7 @@ import { DropDownType } from "../../../enums/drop-down-type.enum";
 import { DROPDOWN_TOGGLE_ID } from "../../../constants/id.constants";
 import { FileTypeIconComponent } from "../file-type-icon/file-type-icon.component";
 import { SettingsService } from "../../../services/settings.service";
+import { FileDto } from "../../../dtos/file.dto";
 
 @Component({
   selector: "app-storage-page",
@@ -19,6 +20,10 @@ export class StoragePageComponent {
     protected readonly fileController: FileController,
     protected readonly settingsService: SettingsService
   ) {}
+
+  protected downloadFile(file: FileDto, anchor: HTMLAnchorElement) {
+    return this.fileController.downloadFileViaAnchor(file, anchor);
+  }
 
   protected isRoot() {
     const directory = this.directoryController.currentDirectory();

@@ -3,3 +3,6 @@
 
 # Environment variables
 */.env
+
+# Uploded user storage files
+/Backend/Storage/Users/*

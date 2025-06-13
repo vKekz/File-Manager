@@ -39,4 +39,20 @@ class FileMapper extends Mapper
             $objects
         );
     }
+
+    /**
+     * @return FileEntity[]
+     */
+    function mapToEntities(array $entities): array
+    {
+        if (count($entities) === 0)
+        {
+            return [];
+        }
+
+        return array_map(
+            fn(array $data): FileEntity => FileEntity::fromArray($data),
+            $entities
+        );
+    }
 }

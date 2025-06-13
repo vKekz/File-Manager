@@ -10,6 +10,7 @@ use App\Mapping\File\FileMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\File\FileRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\FileSystem\FileSystemHandlerInterface;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
@@ -26,6 +27,7 @@ readonly class FileService implements FileServiceInterface
         private DirectoryRepositoryInterface $directoryRepository,
         private CryptographicServiceInterface $cryptographicService,
         private FileRepositoryInterface $fileRepository,
+        private FileSystemHandlerInterface $fileSystemHandler,
         private FileMapper $fileMapper,
         private HttpContext $httpContext
     )
@@ -82,13 +84,20 @@ readonly class FileService implements FileServiceInterface
             return new InternalServerError();
         }
 
+        $name = $file->name;
+        $path = $directory->path . DIRECTORY_SEPARATOR . $name;
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $path);
+
+        // Save uploaded file
+        $this->fileSystemHandler->saveUploadedFile($file, $absolutePath);
+
         $fileEntity = new FileEntity(
             $id,
             $directoryId,
             $userId,
-            $file->name,
-            $directory->path,
-            $this->cryptographicService->signFile($file->tempPath),
+            $name,
+            $path,
+            $this->cryptographicService->signFile($absolutePath),
             $file->size,
             (new DateTime())->format(DATE_ISO8601_EXPANDED)
         );
@@ -118,12 +127,14 @@ readonly class FileService implements FileServiceInterface
             return new BadRequest("File is owned by another user");
         }
 
+        // Delete file on file system
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $fileEntity->path);
+        $this->fileSystemHandler->deleteFile($absolutePath);
+
         if (!$this->fileRepository->tryRemove($id))
         {
             return new InternalServerError();
         }
-
-        // TODO: Delete file on file system
 
         return new DeleteFileResponse($id);
     }
@@ -145,6 +156,10 @@ readonly class FileService implements FileServiceInterface
             return new BadRequest("File is owned by another user");
         }
 
-        return new FileResponse($fileEntity->path, $fileEntity->name);
+        return new FileResponse(
+            $this->fileSystemHandler->getAbsolutePath($userId . $fileEntity->path),
+            $fileEntity->name,
+            $fileEntity->size
+        );
     }
 }

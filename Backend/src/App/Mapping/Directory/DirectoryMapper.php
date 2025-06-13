@@ -41,19 +41,18 @@ class DirectoryMapper extends Mapper
     }
 
     /**
-     * @param DirectoryEntity[] $objects
      * @return DirectoryEntity[]
      */
-    function mapToEntities(array $objects): array
+    function mapToEntities(array $entities): array
     {
-        if (count($objects) === 0)
+        if (count($entities) === 0)
         {
             return [];
         }
 
         return array_map(
             fn(array $data): DirectoryEntity => DirectoryEntity::fromArray($data),
-            $objects
+            $entities
         );
     }
 }

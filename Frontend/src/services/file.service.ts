@@ -18,6 +18,14 @@ export class FileService {
     this.endpoint = `${apiUrl}/${API_ROUTES.file}`;
   }
 
+  public downloadFile(id: string) {
+    const route = `${this.endpoint}/download?id=${id}`;
+    const options = {
+      responseType: "blob" as "json",
+    };
+    return firstValueFrom(this.httpClient.get<Blob>(route, options));
+  }
+
   public getDirectoryFiles(directoryId: string) {
     const route = `${this.endpoint}?directoryId=${directoryId}`;
     const request = this.httpClient.get<FileDto[]>(route);

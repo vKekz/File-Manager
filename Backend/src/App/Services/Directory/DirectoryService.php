@@ -8,6 +8,7 @@ use App\Dtos\Directory\DirectoryDto;
 use App\Dtos\Directory\DirectoryDtoWithChildren;
 use App\Entities\Directory\DirectoryEntity;
 use App\Mapping\Directory\DirectoryMapper;
+use App\Mapping\File\FileMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\File\FileRepositoryInterface;
 use App\Services\Cryptographic\CryptographicServiceInterface;
@@ -31,6 +32,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
         private CryptographicServiceInterface $cryptographicService,
         private FileSystemHandlerInterface $fileSystemHandler,
         private DirectoryMapper $directoryMapper,
+        private FileMapper $fileMapper,
         private FileRepositoryInterface $fileRepository,
         private FileServiceInterface $fileService,
         private HttpContext $httpContext
@@ -87,7 +89,6 @@ readonly class DirectoryService implements DirectoryServiceInterface
         {
             return new BadRequest("Parent directory is owned by another user");
         }
-
         // Check if the name is already used in the current directory
         $directoriesWithIdenticalName = $this->directoryRepository->findByParentIdAndNameForUser($parentId, $userId, $name);
         if (count($directoriesWithIdenticalName) !== 0)
@@ -102,6 +103,11 @@ readonly class DirectoryService implements DirectoryServiceInterface
         }
 
         $path = $parentDirectory->path . DIRECTORY_SEPARATOR . $name;
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $path);
+
+        // Create real directory on file system
+        $this->fileSystemHandler->createDirectory($absolutePath);
+
         $directoryEntity = new DirectoryEntity(
             $id,
             $parentId,
@@ -116,8 +122,6 @@ readonly class DirectoryService implements DirectoryServiceInterface
         {
             return new InternalServerError();
         }
-
-        $this->fileSystemHandler->createDirectory($name, $path);
 
         return $this->directoryMapper->mapSingle($directoryEntity);
     }
@@ -153,17 +157,24 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new InternalServerError();
         }
 
-        // TODO: Delete directory from filesystem
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $directoryEntity->path);
+        $this->fileSystemHandler->deleteDirectory($absolutePath);
 
         return new DeleteDirectoryResponse($id);
     }
 
+    /**
+     * Deletes the children of a directory entity including its files and directories in the database and file system.
+     */
     private function deleteDirectoryChildrenRecursively(DirectoryEntity $directoryEntity): void
     {
         $userId = $directoryEntity->userId;
         $id = $directoryEntity->id;
 
-        $files = $this->fileRepository->findByDirectoryIdForUser($userId, $id);
+        // Delete files of directory
+        $files = $this->fileMapper->mapToEntities(
+            $this->fileRepository->findByDirectoryIdForUser($userId, $id)
+        );
         foreach ($files as $file)
         {
             $this->fileService->deleteFile($file->id);
@@ -171,6 +182,8 @@ readonly class DirectoryService implements DirectoryServiceInterface
 
         // Apparently just saying that the return type is DirectoryEntity[] does not make the "compiler" happy
         // which is why I have to manually map the array of "DirectoryEntities" to DirectoryEntity[]
+        //
+        // Same with files above btw...
         $children = $this->directoryMapper->mapToEntities(
             $this->directoryRepository->findByParentIdForUser($userId, $id)
         );
@@ -179,6 +192,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return;
         }
 
+        // Call recursively for children
         foreach ($children as $child)
         {
             $this->deleteDirectoryChildrenRecursively($child);

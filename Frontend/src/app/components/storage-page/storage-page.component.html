@@ -42,7 +42,8 @@
             <td>
               <app-file-type-icon [fileName]="file.name"></app-file-type-icon>
             </td>
-            <td>
+            <a hidden download #downloadAnchor></a>
+            <td (click)="this.downloadFile(file, downloadAnchor)">
               <div class="file-details-container">
                 <div class="text-overflow">{{ file.name }}</div>
                 @if (this.settingsService.showFileHashes()) {
