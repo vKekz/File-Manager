@@ -82,6 +82,17 @@ readonly class Database
         return $this->executePreparedQuery($query, ...$values);
     }
 
+    public function updateData(string $table, array $attributes, string $condition, array $values): bool
+    {
+        // Join updating attributes "Attr = ?, Attr = ?, ..., Attr = ?"
+        $attributes = count($attributes) === 1 ? "$attributes[0] = ?" : join(" = ?,", $attributes);
+
+        // Finally generate query
+        $query = "UPDATE $table SET $attributes $condition";
+
+        return $this->executePreparedQuery($query, ...$values);
+    }
+
     public function deleteData(string $table, string $condition, string ...$values): bool
     {
         $query = "DELETE FROM $table $condition";

@@ -97,7 +97,8 @@ readonly class AuthService implements AuthServiceInterface
         $userDto = new UserDto(
             $userEntity->id,
             $userEntity->username,
-            $userEntity->email
+            $userEntity->email,
+            $userEntity->settings
         );
         return new AuthenticationResponse(
             $userDto,
@@ -131,7 +132,8 @@ readonly class AuthService implements AuthServiceInterface
         $userDto = new UserDto(
             $userEntity->id,
             $userEntity->username,
-            $userEntity->email
+            $userEntity->email,
+            $userEntity->settings
         );
         return new AuthenticationResponse(
             $userDto,

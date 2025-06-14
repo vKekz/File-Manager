@@ -18,6 +18,10 @@ interface UserRepositoryInterface
      */
     function findByEmail(string $email): ?UserEntity;
     /**
+     * Attempts to update a users attributes. Returns true on success.
+     */
+    function tryUpdate(string $id, array $attributes, array $values, string $condition = ""): bool;
+    /**
      * Attempts to add a user entity to the repository. Returns true on success.
      */
     function tryAdd(UserEntity $entity): bool;

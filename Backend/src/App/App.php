@@ -6,6 +6,7 @@ use App\Controllers\Auth\AuthController;
 use App\Controllers\Directory\DirectoryController;
 use App\Controllers\File\FileController;
 use App\Controllers\Session\SessionController;
+use App\Controllers\User\UserController;
 use App\Services\Session\SessionServiceInterface;
 use Core\Attributes\Authorization\Authorize;
 use Core\Context\HttpContext;
@@ -36,6 +37,7 @@ class App
         $this->registerController($serviceContainer->resolve(DirectoryController::class));
         $this->registerController($serviceContainer->resolve(FileController::class));
         $this->registerController($serviceContainer->resolve(SessionController::class));
+        $this->registerController($serviceContainer->resolve(UserController::class));
     }
 
     /**

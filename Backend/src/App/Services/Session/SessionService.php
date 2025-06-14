@@ -96,6 +96,7 @@ readonly class SessionService implements SessionServiceInterface
             $userEntity->id,
             $userEntity->username,
             $userEntity->email,
+            $userEntity->settings
         );
 
         return true;

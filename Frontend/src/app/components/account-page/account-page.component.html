@@ -2,4 +2,6 @@
   <div>{{ this.authController.getUser()?.id }}</div>
   <div>{{ this.authController.getUser()?.username }}</div>
   <div>{{ this.authController.getUser()?.email }}</div>
+  <div>Hash: {{ this.authController.getUser()?.settings?.storageSettings?.showFileHash }}</div>
+  <div>Date: {{ this.authController.getUser()?.settings?.storageSettings?.showUploadDate }}</div>
 </div>

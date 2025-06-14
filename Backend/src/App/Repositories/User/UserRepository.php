@@ -52,10 +52,18 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @inheritdoc
      */
+    function tryUpdate(string $id, array $attributes, array $values, string $condition = ""): bool
+    {
+        return $this->database->updateData(self::TABLE_NAME, $attributes, $condition, $values);
+    }
+
+    /**
+     * @inheritdoc
+     */
     function tryAdd(UserEntity $entity): bool
     {
-        $attributes = ["Id", "Email", "UserName", "PasswordHash", "CreatedAt"];
-        $values = [$entity->id, $entity->email, $entity->username, $entity->passwordHash, $entity->createdAt];
+        $attributes = ["Id", "Email", "UserName", "PasswordHash", "CreatedAt", "Settings"];
+        $values = [$entity->id, $entity->email, $entity->username, $entity->passwordHash, $entity->createdAt, $entity->settings->serialize()];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -86,7 +94,8 @@ class UserRepository implements UserRepositoryInterface
             UserName varchar(32) NOT NULL,
             Email varchar(320) NOT NULL,
             PasswordHash varchar(1024) NOT NULL,
-            CreatedAt DATETIME NOT NULL
+            CreatedAt DATETIME NOT NULL,
+            Settings varchar(255) NOT NULL
         );";
         $this->database->createTable(self::TABLE_NAME, $attributes);
     }
