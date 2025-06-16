@@ -3,7 +3,6 @@
   max-width: 1024px;
 
   margin: auto;
-  padding-top: 2rem;
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -11,10 +10,4 @@
 .page-content {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
-}
-
-@media screen and (max-width: 960px) {
-  .main-page {
-    padding-top: 1rem;
-  }
 }

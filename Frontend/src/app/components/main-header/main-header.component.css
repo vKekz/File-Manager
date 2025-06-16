@@ -1,8 +1,13 @@
 .container {
+  background-color: var(--dark-theme-background-color);
+  position: sticky;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 2rem;
+  padding-top: 2rem;
+  top: 0;
+  z-index: 2;
 }
 
 .title-container {
@@ -23,4 +28,10 @@
 
 .divider {
   border-bottom: 1px solid var(--dark-theme-secondary-font-color);
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    padding-top: 1rem;
+  }
 }

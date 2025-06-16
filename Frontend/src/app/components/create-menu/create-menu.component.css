@@ -9,7 +9,8 @@
 
   width: 320px;
 
-  background-color: var(--dark-theme-secondary-background-color);
+  backdrop-filter: blur(var(--border-radius-lighter));
+  background-color: transparent;
 
   border: 1px solid var(--dark-theme-secondary-font-color);
   border-radius: var(--border-radius-light);
