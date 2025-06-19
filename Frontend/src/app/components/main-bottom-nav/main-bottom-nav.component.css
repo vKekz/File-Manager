@@ -1,6 +1,7 @@
 .bottom-nav {
   position: fixed;
   bottom: 0;
+  z-index: 2;
 
   background-color: var(--dark-theme-background-color);
   border-top: 1px solid var(--dark-theme-secondary-font-color);

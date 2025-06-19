@@ -1,22 +1,28 @@
 <div class="container">
-  <div class="header">Pfad: {{ this.directoryController.currentDirectory()?.path }}</div>
+  <div class="header">\root{{ this.directoryController.currentDirectory()?.path }}</div>
   <div class="table-container">
     <table>
       <thead>
         <tr>
-          <th [width]="25"></th>
           <th>Name</th>
-          <th [width]="100" class="align-right">Größe</th>
+          <th [width]="80" class="align-right">Größe</th>
           <th [width]="25"></th>
         </tr>
       </thead>
 
       <tbody>
-        @if (this.isRoot()) {
-          <tr>
-            <td (click)="this.directoryController.goBack()">
-              <i class="bi bi-chevron-left"></i>
+        @if (this.isRootDirectory()) {
+          <tr (click)="this.directoryController.goBack()">
+            <td class="">
+              <div class="name-container">
+                <div>
+                  <i class="bi bi-folder-fill folder-icon"></i>
+                </div>
+                <span>. .</span>
+              </div>
             </td>
+            <td></td>
+            <td></td>
           </tr>
         }
 
@@ -24,10 +30,12 @@
         @for (directory of this.directoryController.directories(); track directory.id) {
           <tr>
             <td (click)="this.directoryController.selectDirectory(directory.id)">
-              <i class="bi bi-folder-fill folder-icon"></i>
-            </td>
-            <td (click)="this.directoryController.selectDirectory(directory.id)" class="text-overflow">
-              {{ directory.name }}
+              <div class="name-container">
+                <div>
+                  <i class="bi bi-folder-fill folder-icon"></i>
+                </div>
+                <span class="text-overflow">{{ directory.name }}</span>
+              </div>
             </td>
             <td (click)="this.directoryController.selectDirectory(directory.id)"></td>
             <td [id]="DROPDOWN_TOGGLE_ID">
@@ -39,21 +47,22 @@
         <!-- Files -->
         @for (file of this.fileController.files(); track file.id) {
           <tr>
-            <td>
-              <app-file-type-icon [fileName]="file.name"></app-file-type-icon>
-            </td>
-            <a hidden download #downloadAnchor></a>
             <td (click)="this.downloadFile(file, downloadAnchor)">
-              <div class="file-details-container">
-                <div class="text-overflow">{{ file.name }}</div>
-                @if (this.settingsService.showFileHashes()) {
-                  <div class="text-overflow file-hash">
-                    {{ file.hash }}
-                  </div>
-                }
+              <div class="name-container">
+                <div>
+                  <app-file-type-icon [fileName]="file.name"></app-file-type-icon>
+                </div>
+                <div class="file-details-container text-overflow">
+                  <span class="text-overflow">{{ file.name }}</span>
+                  @if (this.settingsService.showFileHashes()) {
+                    <span class="text-overflow file-hash">
+                      {{ file.hash }}
+                    </span>
+                  }
+                </div>
               </div>
             </td>
-            <td class="align-right">
+            <td (click)="this.downloadFile(file, downloadAnchor)" class="align-right">
               {{ file.compactSize }}
             </td>
             <td [id]="DROPDOWN_TOGGLE_ID">
@@ -61,6 +70,7 @@
             </td>
           </tr>
         }
+        <a hidden download #downloadAnchor></a>
       </tbody>
     </table>
   </div>

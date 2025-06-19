@@ -56,7 +56,12 @@
   padding: 0.5rem;
 
   outline: none;
+  border: 1px solid transparent;
   border-radius: var(--border-radius-lighter);
+  transition: border var(--transition-delay);
+}
+
+.auth-input input:hover {
   border: 1px solid var(--dark-theme-secondary-font-color);
 }
 

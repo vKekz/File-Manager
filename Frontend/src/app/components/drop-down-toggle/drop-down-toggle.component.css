@@ -2,14 +2,18 @@
   position: relative;
 }
 
-.toggle {
-  border-radius: var(--border-radius-lighter);
-  margin: auto;
-  padding: 0.25rem;
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: var(--border-radius-round);
+  height: 32px;
+  width: 32px;
+
   transition: var(--transition-delay);
-  text-align: center;
 }
 
-.toggle:hover {
-  background-color: var(--dark-theme-secondary-background-color);
+.toggle-container:hover {
+  background-color: var(--dark-theme-third-background-color);
 }

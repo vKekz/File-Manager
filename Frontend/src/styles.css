@@ -5,8 +5,10 @@
   --warning-color-opacity-25: rgba(255, 115, 115, 0.25);
 
   --dark-theme-background-color: #141414;
+  --dark-theme-background-color-opacity-33: rgba(20, 20, 20, calc(2 / 3));
   --dark-theme-secondary-background-color: #282828;
   --dark-theme-third-background-color: #4b4b4b;
+  --dark-theme-third-background-color-opacity-50: rgba(75, 75, 75, 0.5);
 
   --dark-theme-font-color: #ffffff;
   --dark-theme-secondary-font-color: #afafaf;
@@ -16,6 +18,7 @@
   --border-radius: 1rem;
   --border-radius-light: 0.5rem;
   --border-radius-lighter: 0.25rem;
+  --border-radius-round: 50%;
 }
 
 body {

@@ -10,7 +10,7 @@
   width: 320px;
 
   backdrop-filter: blur(var(--border-radius-lighter));
-  background-color: transparent;
+  background-color: var(--dark-theme-background-color-opacity-33);
 
   border: 1px solid var(--dark-theme-secondary-font-color);
   border-radius: var(--border-radius-light);
@@ -62,7 +62,7 @@
 }
 
 .title {
-  font-size: 1rem;
+  font-weight: bolder;
 }
 
 .create-directory form {
@@ -76,10 +76,11 @@
   color: var(--dark-theme-font-color);
 
   padding: 0.5rem;
-
   outline: none;
-  border-radius: var(--border-radius-lighter);
+
   border: 1px solid var(--dark-theme-secondary-font-color);
+  border-radius: var(--border-radius-lighter);
+  transition: border var(--transition-delay);
 }
 
 .create-directory input:focus {
@@ -107,7 +108,7 @@ button {
   outline: none;
 
   border-radius: var(--border-radius-lighter);
-  border: 1px solid var(--dark-theme-secondary-font-color);
+  border: 1px solid var(--primary-color);
 
   cursor: pointer;
   transition: var(--transition-delay);

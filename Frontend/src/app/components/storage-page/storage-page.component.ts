@@ -25,7 +25,7 @@ export class StoragePageComponent {
     return this.fileController.downloadFileViaAnchor(file, anchor);
   }
 
-  protected isRoot() {
+  protected isRootDirectory() {
     const directory = this.directoryController.currentDirectory();
     return directory !== undefined && !directory.isRoot;
   }
