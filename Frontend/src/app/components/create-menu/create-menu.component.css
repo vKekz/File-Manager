@@ -34,7 +34,7 @@
 }
 
 .errors {
-  background-color: var(--warning-color-opacity-25);
+  background-color: var(--warning-color-opacity-15);
   padding: 12px 24px;
   border: 1px solid var(--warning-color);
   border-radius: var(--border-radius-light);

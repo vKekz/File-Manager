@@ -1,77 +1,8 @@
 <div class="container">
-  <div class="header">\root{{ this.directoryController.currentDirectory()?.path }}</div>
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th [width]="80" class="align-right">Größe</th>
-          <th [width]="25"></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        @if (this.isRootDirectory()) {
-          <tr (click)="this.directoryController.goBack()">
-            <td class="">
-              <div class="name-container">
-                <div>
-                  <i class="bi bi-folder-fill folder-icon"></i>
-                </div>
-                <span>. .</span>
-              </div>
-            </td>
-            <td></td>
-            <td></td>
-          </tr>
-        }
-
-        <!-- Directories -->
-        @for (directory of this.directoryController.directories(); track directory.id) {
-          <tr>
-            <td (click)="this.directoryController.selectDirectory(directory.id)">
-              <div class="name-container">
-                <div>
-                  <i class="bi bi-folder-fill folder-icon"></i>
-                </div>
-                <span class="text-overflow">{{ directory.name }}</span>
-              </div>
-            </td>
-            <td (click)="this.directoryController.selectDirectory(directory.id)"></td>
-            <td [id]="DROPDOWN_TOGGLE_ID">
-              <app-drop-down-toggle [type]="DropDownType.Directory" [directory]="directory"></app-drop-down-toggle>
-            </td>
-          </tr>
-        }
-
-        <!-- Files -->
-        @for (file of this.fileController.files(); track file.id) {
-          <tr>
-            <td (click)="this.downloadFile(file, downloadAnchor)">
-              <div class="name-container">
-                <div>
-                  <app-file-type-icon [fileName]="file.name"></app-file-type-icon>
-                </div>
-                <div class="file-details-container text-overflow">
-                  <span class="text-overflow">{{ file.name }}</span>
-                  @if (this.settingsService.showFileHashes()) {
-                    <span class="text-overflow file-hash">
-                      {{ file.hash }}
-                    </span>
-                  }
-                </div>
-              </div>
-            </td>
-            <td (click)="this.downloadFile(file, downloadAnchor)" class="align-right">
-              {{ file.compactSize }}
-            </td>
-            <td [id]="DROPDOWN_TOGGLE_ID">
-              <app-drop-down-toggle [type]="DropDownType.File" [file]="file"></app-drop-down-toggle>
-            </td>
-          </tr>
-        }
-        <a hidden download #downloadAnchor></a>
-      </tbody>
-    </table>
+  <div>
+    <app-storage-table-header></app-storage-table-header>
+  </div>
+  <div>
+    <app-storage-table></app-storage-table>
   </div>
 </div>

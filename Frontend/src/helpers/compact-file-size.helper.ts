@@ -14,5 +14,5 @@ export function calculateCompactFileSize(bytes: number) {
   }
 
   const sizeUnit = SizeUnit[index];
-  return `${convertedSize.toFixed(2)} ${sizeUnit}`;
+  return `${convertedSize.toFixed(1)} ${sizeUnit}`;
 }
