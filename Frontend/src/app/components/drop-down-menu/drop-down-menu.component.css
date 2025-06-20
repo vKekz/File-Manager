@@ -54,10 +54,32 @@
   transition: var(--transition-delay);
   cursor: pointer;
   text-wrap: nowrap;
+  opacity: 0;
 }
 
 .item:hover {
   background-color: var(--dark-theme-third-background-color-opacity-50);
+}
+
+.open .item {
+  animation: fadeIn var(--transition-delay) forwards;
+}
+
+/* Not the best solution but it works */
+.open .item:nth-child(1) {
+  animation-delay: calc(var(--drop-down-animation-delay) * 2);
+}
+
+.open .item:nth-child(2) {
+  animation-delay: calc(var(--drop-down-animation-delay) * 3);
+}
+
+.open .item:nth-child(3) {
+  animation-delay: calc(var(--drop-down-animation-delay) * 4);
+}
+
+.open .item:nth-child(5) {
+  animation-delay: calc(var(--drop-down-animation-delay) * 5);
 }
 
 .text-warning:hover {
@@ -69,10 +91,19 @@
   height: 1px;
   width: 100%;
 
-  margin: 0.125rem auto;
+  margin: 0.25rem auto;
   border: 0;
 }
 
 i {
   vertical-align: middle;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

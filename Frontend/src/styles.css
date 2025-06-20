@@ -14,6 +14,7 @@
   --dark-theme-secondary-font-color: #afafaf;
 
   --transition-delay: 200ms;
+  --drop-down-animation-delay: 50ms;
 
   --border-radius: 1rem;
   --border-radius-light: 0.5rem;
@@ -21,10 +22,13 @@
   --border-radius-round: 50%;
 }
 
+.dark-theme {
+}
+
 body {
   background-color: var(--dark-theme-background-color);
 
-  font-family: "Ubuntu", sans-serif;
+  font-family: "Ubuntu", serif;
   font-size: 1rem;
   font-weight: lighter;
   color: var(--dark-theme-font-color);

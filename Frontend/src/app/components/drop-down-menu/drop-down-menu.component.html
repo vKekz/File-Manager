@@ -9,26 +9,26 @@
           <div>
             <i class="bi bi-folder"></i>
           </div>
-          <div>Öffnen</div>
+          <span>Öffnen</span>
         </div>
         <div class="item">
           <div>
             <i class="bi bi-pencil"></i>
           </div>
-          <div>Umbenennen</div>
+          <span>Umbenennen</span>
         </div>
         <div class="item">
           <div>
             <i class="bi bi-palette"></i>
           </div>
-          <div>Farbe ändern</div>
+          <span>Farbe ändern</span>
         </div>
         <hr class="divider" />
         <div (click)="this.deleteDirectory()" class="item text-warning">
           <div>
             <i class="bi bi-trash3"></i>
           </div>
-          <div>Löschen</div>
+          <span>Löschen</span>
         </div>
       }
       @case (DropDownType.File) {
@@ -37,20 +37,20 @@
           <div>
             <i class="bi bi-download"></i>
           </div>
-          <div>Herunterladen</div>
+          <span>Herunterladen</span>
         </div>
         <div (click)="this.copyHash()" class="item">
           <div>
             <i class="bi bi-key"></i>
           </div>
-          <div>SHA-256-Signatur kopieren</div>
+          <span>SHA-256-Signatur kopieren</span>
         </div>
         <hr class="divider" />
         <div (click)="this.deleteFile()" class="item text-warning">
           <div>
             <i class="bi bi-trash3"></i>
           </div>
-          <div>Löschen</div>
+          <span>Löschen</span>
         </div>
       }
     }
