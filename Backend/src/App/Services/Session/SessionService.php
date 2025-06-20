@@ -78,7 +78,7 @@ readonly class SessionService implements SessionServiceInterface
             return new Unauthorized("Invalid access token");
         }
 
-        $userId = $this->cryptographicService->decrypt($payload->getClaim(ClaimKey::Subject));
+        $userId = $payload->getClaim(ClaimKey::Subject);
         $userEntity = $this->userRepository->findById($userId);
         if ($userEntity == null)
         {
@@ -89,6 +89,11 @@ readonly class SessionService implements SessionServiceInterface
         if ($sessionEntity == null)
         {
             return new InternalServerError("Could not find session by claim");
+        }
+
+        if ($sessionEntity->userId !== $userId)
+        {
+            return new Unauthorized("Invalid access token");
         }
 
         $this->httpContext->rawPayload = $payload;

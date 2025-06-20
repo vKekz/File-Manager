@@ -47,10 +47,31 @@ class FileRepository implements FileRepositoryInterface
     /**
      * @inheritdoc
      */
+    function findByParentIdAndNameForUser(string $directoryId, string $userId, string $name): array
+    {
+        $condition = "WHERE DirectoryId = ? AND UserId = ? AND Name = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $directoryId, $userId, $name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function tryUpdate(FileEntity $file): bool
+    {
+        $condition = "WHERE Id = ?";
+        $attributes = ["Hash", "Size", "UploadedAt"];
+        $values = [$file->hash, $file->size, $file->uploadedAt, $file->id];
+
+        return $this->tryUpdateEntity($attributes, $values, $condition);
+    }
+
+    /**
+     * @inheritdoc
+     */
     function tryAdd(FileEntity $entity): bool
     {
-        $attributes = ["Id", "DirectoryId", "UserId", "Name", "Path", "Hash", "Size", "UploadedAt",];
-        $values = [$entity->id, $entity->directoryId, $entity->userId, $entity->name, $entity->path, $entity->hash, $entity->size, $entity->uploadedAt];
+        $attributes = ["Id", "DirectoryId", "UserId", "Name", "Hash", "Size", "UploadedAt",];
+        $values = [$entity->id, $entity->directoryId, $entity->userId, $entity->name, $entity->hash, $entity->size, $entity->uploadedAt];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -74,6 +95,11 @@ class FileRepository implements FileRepositoryInterface
         return true;
     }
 
+    private function tryUpdateEntity(array $attributes, array $values, string $condition = ""): bool
+    {
+        return $this->database->updateData(self::TABLE_NAME, $attributes, $condition, $values);
+    }
+
     private function createTable(): void
     {
         $attributes = "(
@@ -81,7 +107,6 @@ class FileRepository implements FileRepositoryInterface
             DirectoryId varchar(36) NOT NULL,
             UserId varchar(36) NOT NULL,
             Name varchar(255) NOT NULL,
-            Path varchar(255) NOT NULL,
             Hash varchar(255) NOT NULL,
             Size int NOT NULL,
             UploadedAt datetime NOT NULL,

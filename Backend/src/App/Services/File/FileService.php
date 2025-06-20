@@ -5,7 +5,9 @@ namespace App\Services\File;
 use App\Contracts\File\CreateFileRequest;
 use App\Contracts\File\DeleteFileResponse;
 use App\Dtos\File\FileDto;
+use App\Entities\Directory\DirectoryEntity;
 use App\Entities\File\FileEntity;
+use App\Enums\FileReplacementMode;
 use App\Mapping\File\FileMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\File\FileRepositoryInterface;
@@ -16,6 +18,7 @@ use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
 use Core\Contracts\Api\FileResponse;
 use Core\Contracts\Api\InternalServerError;
+use Core\Contracts\File\UploadedFile;
 use DateTime;
 
 /**
@@ -60,10 +63,6 @@ readonly class FileService implements FileServiceInterface
      */
     function createFile(CreateFileRequest $request): FileDto | ApiResponse
     {
-        // TODO: Validation
-        // TODO: Check if file exists and replace
-        $file = $request->file;
-
         // Check if the directory exists and is owned by the user
         $directoryId = $request->directoryId;
         $directory = $this->directoryRepository->findById($directoryId);
@@ -72,10 +71,26 @@ readonly class FileService implements FileServiceInterface
             return new BadRequest("Directory does not exist");
         }
 
-        $userId = $this->httpContext->user->id;
+        $user = $this->httpContext->user;
+        $userId = $user->id;
         if ($directory->userId != $userId)
         {
             return new BadRequest("Directory is owned by another user");
+        }
+
+        $file = $request->file;
+        $name = $file->name;
+
+        // Check if a file with the same name already exists
+        $filesWithIdenticalName = $this->fileMapper->mapToEntities(
+            $this->fileRepository->findByParentIdAndNameForUser($directoryId, $userId, $name)
+        );
+        $hasFilesWithIdenticalName = count($filesWithIdenticalName);
+
+        if ($user->settings->storageSettings->fileReplacementMode === FileReplacementMode::Replace &&
+            $hasFilesWithIdenticalName)
+        {
+            return $this->replaceFile($directory, $filesWithIdenticalName[0], $file);
         }
 
         $id = $this->cryptographicService->generateUuid();
@@ -84,9 +99,14 @@ readonly class FileService implements FileServiceInterface
             return new InternalServerError();
         }
 
-        $name = $file->name;
-        $path = $directory->path . DIRECTORY_SEPARATOR . $name;
-        $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $path);
+        // Make sure to keep both files if there's an identical one
+        if ($hasFilesWithIdenticalName)
+        {
+            $name = "(#" . substr($id, 0, 4) . ") " . $name;
+        }
+
+        $relativePath = $userId . $directory->path . DIRECTORY_SEPARATOR . $name;
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($relativePath);
 
         // Save uploaded file
         $this->fileSystemHandler->saveUploadedFile($file, $absolutePath);
@@ -96,7 +116,6 @@ readonly class FileService implements FileServiceInterface
             $directoryId,
             $userId,
             $name,
-            $path,
             $this->cryptographicService->signFile($absolutePath),
             $file->size,
             (new DateTime())->format(DATE_ISO8601_EXPANDED)
@@ -127,14 +146,21 @@ readonly class FileService implements FileServiceInterface
             return new BadRequest("File is owned by another user");
         }
 
-        // Delete file on file system
-        $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $fileEntity->path);
-        $this->fileSystemHandler->deleteFile($absolutePath);
-
         if (!$this->fileRepository->tryRemove($id))
         {
             return new InternalServerError();
         }
+
+        $directory = $this->directoryRepository->findById($fileEntity->directoryId);
+        if (!$directory)
+        {
+            return new BadRequest("Directory not found");
+        }
+
+        // Finally delete file on file system
+        $relativePath = $userId . $directory->path . DIRECTORY_SEPARATOR . $fileEntity->name;
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($relativePath);
+        $this->fileSystemHandler->deleteFile($absolutePath);
 
         return new DeleteFileResponse($id);
     }
@@ -156,10 +182,48 @@ readonly class FileService implements FileServiceInterface
             return new BadRequest("File is owned by another user");
         }
 
+        $directory = $this->directoryRepository->findById($fileEntity->directoryId);
+        if (!$directory)
+        {
+            return new BadRequest("Directory not found");
+        }
+
+        $relativePath = $userId . $directory->path . DIRECTORY_SEPARATOR . $fileEntity->name;
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($relativePath);
+
+        // Check if file has been tampered
+        $hash = $this->cryptographicService->signFile($absolutePath);
+        if (!hash_equals($fileEntity->hash, $hash))
+        {
+            return new InternalServerError("File integrity verification failed: Signature mismatch");
+        }
+
         return new FileResponse(
-            $this->fileSystemHandler->getAbsolutePath($userId . $fileEntity->path),
+            $absolutePath,
             $fileEntity->name,
             $fileEntity->size
         );
+    }
+
+    private function replaceFile(DirectoryEntity $directory, FileEntity $file, UploadedFile $uploadedFile) : FileDto | ApiResponse
+    {
+        $relativePath = $file->userId . $directory->path . DIRECTORY_SEPARATOR . $file->name;
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($relativePath);
+
+        // Replace file
+        $this->fileSystemHandler->saveUploadedFile($uploadedFile, $absolutePath);
+
+        // Replace properties
+        $file->hash = $this->cryptographicService->signFile($absolutePath);
+        $file->size = $uploadedFile->size;
+        $file->uploadedAt = (new DateTime())->format(DATE_ISO8601_EXPANDED);
+
+        // Update in database
+        if (!$this->fileRepository->tryUpdate($file))
+        {
+            return new InternalServerError();
+        }
+
+        return $this->fileMapper->mapSingle($file);
     }
 }

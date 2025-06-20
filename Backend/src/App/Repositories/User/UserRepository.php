@@ -52,7 +52,7 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @inheritdoc
      */
-    function tryUpdate(string $id, array $attributes, array $values, string $condition = ""): bool
+    function tryUpdate(array $attributes, array $values, string $condition = ""): bool
     {
         return $this->database->updateData(self::TABLE_NAME, $attributes, $condition, $values);
     }
@@ -62,8 +62,8 @@ class UserRepository implements UserRepositoryInterface
      */
     function tryAdd(UserEntity $entity): bool
     {
-        $attributes = ["Id", "Email", "UserName", "PasswordHash", "CreatedAt", "Settings"];
-        $values = [$entity->id, $entity->email, $entity->username, $entity->passwordHash, $entity->createdAt, $entity->settings->serialize()];
+        $attributes = ["Id", "Email", "UserName", "Hash", "PrivateKey", "CreatedAt", "Settings"];
+        $values = [$entity->id, $entity->email, $entity->username, $entity->hash, $entity->privateKey, $entity->createdAt, $entity->settings->serialize()];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -91,11 +91,12 @@ class UserRepository implements UserRepositoryInterface
     {
         $attributes = "(
             Id varchar(36) PRIMARY KEY NOT NULL,
-            UserName varchar(32) NOT NULL,
+            UserName varchar(16) NOT NULL,
             Email varchar(320) NOT NULL,
-            PasswordHash varchar(1024) NOT NULL,
-            CreatedAt DATETIME NOT NULL,
-            Settings varchar(255) NOT NULL
+            Hash varchar(255) NOT NULL,
+            PrivateKey varchar(255) NOT NULL,
+            CreatedAt datetime NOT NULL,
+            Settings json NOT NULL
         );";
         $this->database->createTable(self::TABLE_NAME, $attributes);
     }

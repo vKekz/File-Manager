@@ -59,8 +59,8 @@ class SessionRepository implements SessionRepositoryInterface
             Id varchar(36) PRIMARY KEY NOT NULL,
             UserId varchar(36) NOT NULL,
             DeviceData varchar(256) NOT NULL,
-            IssuedAt DATETIME NOT NULL,
-            ExpiresAt DATETIME NOT NULL,
+            IssuedAt datetime NOT NULL,
+            ExpiresAt datetime NOT NULL,
             FOREIGN KEY (UserId) REFERENCES " . UserRepository::TABLE_NAME . "(Id)
         );";
         $this->database->createTable(self::TABLE_NAME, $attributes);

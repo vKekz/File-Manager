@@ -30,7 +30,7 @@ readonly class TokenHandler implements TokenHandlerInterface
         $header = new Header($algorithm);
         $payload = new Payload(
             [
-                ClaimKey::Subject->value => $this->cryptographicService->encrypt($sessionEntity->userId),
+                ClaimKey::Subject->value => $sessionEntity->userId,
                 ClaimKey::IssuedAt->value => $sessionEntity->issuedAt,
                 ClaimKey::ExpiresAt->value => $sessionEntity->expiresAt,
                 ClaimKey::SessionId->value => $sessionEntity->id,

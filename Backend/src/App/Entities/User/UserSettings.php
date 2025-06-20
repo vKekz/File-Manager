@@ -2,7 +2,7 @@
 
 namespace App\Entities\User;
 
-use Core\Enums\Theme;
+use App\Enums\Theme;
 
 /**
  * Represents the settings each user can have.

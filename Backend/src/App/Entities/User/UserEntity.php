@@ -11,7 +11,8 @@ readonly class UserEntity
         public string $id,
         public string $username,
         public string $email,
-        public string $passwordHash,
+        public string $hash,
+        public string $privateKey,
         public string $createdAt,
         public UserSettings $settings = new UserSettings()
     )
@@ -24,7 +25,8 @@ readonly class UserEntity
             $data["Id"],
             $data["UserName"],
             $data["Email"],
-            $data["PasswordHash"],
+            $data["Hash"],
+            $data["PrivateKey"],
             $data["CreatedAt"],
             UserSettings::fromArray(json_decode($data["Settings"], true))
         );

@@ -68,6 +68,17 @@ export class FileState {
       return;
     }
 
+    const files = context.getState().files;
+    const existingFile = files.find((file) => file.id === response.id);
+    if (existingFile) {
+      this.replaceFile(directoryId, existingFile, response);
+
+      context.patchState({
+        files: [...files],
+      });
+      return;
+    }
+
     // Calculate compact size for new file
     response.compactSize = calculateCompactFileSize(response.size);
 
@@ -75,7 +86,7 @@ export class FileState {
     this.fileCache.get(directoryId)?.push(response);
 
     context.patchState({
-      files: [...context.getState().files, response],
+      files: [...files, response],
     });
   }
 
@@ -100,7 +111,7 @@ export class FileState {
       return;
     }
 
-    const cacheIndex = cache.findIndex((file) => file.id === id);
+    const cacheIndex = cache.findIndex((file) => file.id === response.id);
     if (cacheIndex === -1) {
       return;
     }
@@ -109,7 +120,7 @@ export class FileState {
 
     // Update real state
     const files = context.getState().files;
-    const index = files.findIndex((file) => file.id === id);
+    const index = files.findIndex((file) => file.id === response.id);
     if (index === -1) {
       return;
     }
@@ -119,5 +130,24 @@ export class FileState {
     context.patchState({
       files: [...files],
     });
+  }
+
+  private replaceFile(directoryId: string, existingFile: FileDto, newFile: FileDto) {
+    existingFile.hash = newFile.hash;
+    existingFile.size = newFile.size;
+    existingFile.compactSize = calculateCompactFileSize(existingFile.size);
+    existingFile.uploadedAt = newFile.uploadedAt;
+
+    const fileCache = this.fileCache.get(directoryId);
+    const cachedFile = fileCache?.find((file) => file.id === newFile.id);
+    if (cachedFile) {
+      cachedFile.hash = newFile.hash;
+      cachedFile.size = newFile.size;
+      cachedFile.compactSize = calculateCompactFileSize(cachedFile.size);
+      cachedFile.uploadedAt = newFile.uploadedAt;
+      return;
+    }
+
+    fileCache?.push(existingFile);
   }
 }

@@ -89,6 +89,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
         {
             return new BadRequest("Parent directory is owned by another user");
         }
+
         // Check if the name is already used in the current directory
         $directoriesWithIdenticalName = $this->directoryRepository->findByParentIdAndNameForUser($parentId, $userId, $name);
         if (count($directoriesWithIdenticalName) !== 0)

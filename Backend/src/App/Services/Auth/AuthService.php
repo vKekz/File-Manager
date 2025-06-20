@@ -66,23 +66,32 @@ readonly class AuthService implements AuthServiceInterface
         $id = $this->cryptographicService->generateUuid();
         if (!$id)
         {
-            return new InternalServerError("Unexpected server error");
+            return new InternalServerError();
+        }
+
+        $key = $this->cryptographicService->generateKey();
+        if (!$key)
+        {
+            return new InternalServerError();
         }
 
         $hash = $this->cryptographicService->generatePasswordHash($password);
-        $encryptedHash = $this->cryptographicService->encrypt($hash);
+        $encryptedHash = $this->cryptographicService->encrypt($hash, $key);
+        $encryptedKey = $this->cryptographicService->encrypt($key);
+
         $userEntity = new UserEntity(
             $id,
             $username,
             $email,
             $encryptedHash,
+            $encryptedKey,
             (new DateTime())
                 ->format(DATE_ISO8601_EXPANDED)
         );
 
         if (!$this->userRepository->tryAdd($userEntity))
         {
-            return new InternalServerError("Unexpected server error");
+            return new InternalServerError();
         }
 
         $sessionToken = $this->sessionService->createSession($userEntity);
@@ -114,11 +123,13 @@ readonly class AuthService implements AuthServiceInterface
         $userEntity = $this->userRepository->findByEmail($request->email);
         if ($userEntity == null)
         {
+            // TODO: Not safe to timing attack
             return new BadRequest("Incorrect credentials");
         }
 
-        $decryptedPassword = $this->cryptographicService->decrypt($userEntity->passwordHash);
-        if (!$this->cryptographicService->verifyPassword($decryptedPassword, $request->password))
+        $key = $this->cryptographicService->decrypt($userEntity->privateKey);
+        $decryptedPasswordHash = $this->cryptographicService->decrypt($userEntity->hash, $key);
+        if (!$this->cryptographicService->verifyPassword($decryptedPasswordHash, $request->password))
         {
             return new BadRequest("Incorrect credentials");
         }

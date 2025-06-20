@@ -48,7 +48,9 @@ class FileSystemHandler implements FileSystemHandlerInterface
             if ($child->isDir())
             {
                 rmdir($child->getRealPath());
-            } else {
+            }
+            else
+            {
                 unlink($child->getRealPath());
             }
         }

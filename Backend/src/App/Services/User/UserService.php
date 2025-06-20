@@ -30,7 +30,7 @@ readonly class UserService implements UserServiceInterface
 
         $condition = "WHERE Id = ?";
         $this->userRepository
-             ->tryUpdate($request->id, ["Settings"], [json_encode($request->settings), $request->id], $condition);
+             ->tryUpdate(["Settings"], [json_encode($request->settings), $request->id], $condition);
 
         return $request->settings;
     }

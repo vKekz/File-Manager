@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Enums;
+namespace App\Enums;
 
 enum Theme: int
 {

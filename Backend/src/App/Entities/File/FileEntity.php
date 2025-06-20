@@ -7,14 +7,13 @@ use App\Dtos\File\FileDto;
 /**
  * Represents the database entity for files.
  */
-readonly class FileEntity
+class FileEntity
 {
     function __construct(
-        public string $id,
-        public string $directoryId,
-        public string $userId,
+        public readonly string $id,
+        public readonly string $directoryId,
+        public readonly string $userId,
         public string $name,
-        public string $path,
         public string $hash,
         public int $size,
         public string $uploadedAt
@@ -29,6 +28,6 @@ readonly class FileEntity
 
     public static function fromArray(array $data): FileEntity
     {
-        return new self($data["Id"], $data["DirectoryId"], $data["UserId"], $data["Name"], $data["Path"], $data["Hash"], $data["Size"], $data["UploadedAt"]);
+        return new self($data["Id"], $data["DirectoryId"], $data["UserId"], $data["Name"], $data["Hash"], $data["Size"], $data["UploadedAt"]);
     }
 }

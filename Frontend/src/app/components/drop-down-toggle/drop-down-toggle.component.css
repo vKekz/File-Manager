@@ -9,7 +9,7 @@
   justify-content: center;
   align-items: center;
 
-  border-radius: var(--border-radius-lighter);
+  border-radius: var(--border-radius-round);
   height: 32px;
   width: 32px;
   margin-bottom: 1px;
@@ -19,4 +19,8 @@
 
 .toggle-container:hover {
   background-color: var(--dark-theme-third-background-color);
+}
+
+.open {
+  background-color: var(--primary-color);
 }

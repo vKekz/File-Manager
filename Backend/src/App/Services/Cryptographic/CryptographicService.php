@@ -49,11 +49,29 @@ readonly class CryptographicService implements CryptographicServiceInterface
     /**
      * @inheritdoc
      */
-    function encrypt(string $data): string
+    function generateKey(int $size = 32): string | false
     {
-        $privateKey = $this->environment->get(EnvironmentKey::ENCRYPTION_MASTER_KEY);
-        $keyHash = openssl_digest($privateKey, self::HASH_ALGORITHM, true);
+        try
+        {
+            return base64_encode(random_bytes($size));
+        } catch (RandomException)
+        {
+            return false;
+        }
+    }
 
+    /**
+     * @inheritdoc
+     */
+    function encrypt(string $data, ?string $key = null): string
+    {
+        // Get default master key if none is supplied
+        if ($key === null)
+        {
+            $key = $this->environment->get(EnvironmentKey::ENCRYPTION_MASTER_KEY);
+        }
+
+        $keyHash = openssl_digest($key, self::HASH_ALGORITHM, true);
         $vectorLength = openssl_cipher_iv_length(self::ENCRYPTION_ALGORITHM);
         $vector = openssl_random_pseudo_bytes($vectorLength);
 
@@ -73,33 +91,38 @@ readonly class CryptographicService implements CryptographicServiceInterface
     /**
      * @inheritdoc
      */
-    function decrypt(string $input): string | false
+    function decrypt(string $input, ?string $key = null): string | false
     {
-        $privateKey = $this->environment->get(EnvironmentKey::ENCRYPTION_MASTER_KEY);
-        $keyHash = openssl_digest($privateKey, self::HASH_ALGORITHM, true);
+        // Get default master key if none is supplied
+        if ($key === null)
+        {
+            $key = $this->environment->get(EnvironmentKey::ENCRYPTION_MASTER_KEY);
+        }
 
         $vectorLength = openssl_cipher_iv_length(self::ENCRYPTION_ALGORITHM);
         $hashLength = 64;
         $tagLength = 16;
 
         $inputRaw = base64_decode($input);
-        $vector = substr($inputRaw, 0, $vectorLength);
-        $tag = substr($inputRaw, $vectorLength, $tagLength);
         $hash = substr($inputRaw, $vectorLength + $tagLength, $hashLength);
         $raw = substr($inputRaw, $vectorLength + $tagLength + $hashLength);
-
-        $data = openssl_decrypt(
-            $raw,
-            self::ENCRYPTION_ALGORITHM,
-            $keyHash,
-            OPENSSL_RAW_DATA,
-            $vector,
-            $tag
-        );
         $recreatedHash = $this->sign($raw, self::HASH_ALGORITHM, true);
+
+        // Only return data if signatures match
         if (hash_equals($hash, $recreatedHash))
         {
-            return $data;
+            $keyHash = openssl_digest($key, self::HASH_ALGORITHM, true);
+            $vector = substr($inputRaw, 0, $vectorLength);
+            $tag = substr($inputRaw, $vectorLength, $tagLength);
+
+            return openssl_decrypt(
+                $raw,
+                self::ENCRYPTION_ALGORITHM,
+                $keyHash,
+                OPENSSL_RAW_DATA,
+                $vector,
+                $tag
+            );
         }
 
         return false;

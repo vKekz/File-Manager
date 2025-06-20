@@ -7,7 +7,7 @@
       @case (DropDownType.Directory) {
         <div (click)="this.selectDirectory()" class="item">
           <div>
-            <i class="bi bi-folder"></i>
+            <i class="bi bi-folder2-open"></i>
           </div>
           <span>Öffnen</span>
         </div>
@@ -32,12 +32,17 @@
         </div>
       }
       @case (DropDownType.File) {
-        <a hidden download #downloadAnchor></a>
         <div (click)="this.downloadFile(downloadAnchor)" class="item">
           <div>
             <i class="bi bi-download"></i>
           </div>
           <span>Herunterladen</span>
+        </div>
+        <div class="item">
+          <div>
+            <i class="bi bi-pencil"></i>
+          </div>
+          <span>Umbenennen</span>
         </div>
         <div (click)="this.copyHash()" class="item">
           <div>
@@ -52,6 +57,7 @@
           </div>
           <span>Löschen</span>
         </div>
+        <a hidden download #downloadAnchor></a>
       }
     }
   </div>

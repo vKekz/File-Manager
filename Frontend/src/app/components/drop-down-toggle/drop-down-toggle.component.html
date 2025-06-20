@@ -1,7 +1,7 @@
 <div [id]="DROPDOWN_WRAPPER_ID" class="dropdown-wrapper">
-  <div (click)="this.toggleMenu()" class="toggle-container">
+  <div (click)="this.toggleMenu()" [class]="isOpen ? 'open' : ''" class="toggle-container">
     <div>
-      <i class="bi bi-three-dots-vertical"></i>
+      <i class="bi bi-three-dots"></i>
     </div>
   </div>
   <app-drop-down-menu
