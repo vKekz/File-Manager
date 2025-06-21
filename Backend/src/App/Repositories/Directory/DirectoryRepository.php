@@ -36,6 +36,7 @@ class DirectoryRepository implements DirectoryRepositoryInterface
             $userId,
             "root",
             "",
+            "",
             (new DateTime())->format(DATE_ISO8601_EXPANDED),
             true
         );
@@ -70,10 +71,10 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findByParentIdAndNameForUser(string $parentId, string $userId, string $name): array
+    function findByParentIdAndNameHashForUser(string $parentId, string $userId, string $nameHash): array
     {
-        $condition = "WHERE ParentId = ? AND UserId = ? AND Name = ?";
-        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $parentId, $userId, $name);
+        $condition = "WHERE ParentId = ? AND UserId = ? AND NameHash = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $parentId, $userId, $nameHash);
     }
 
     /**
@@ -81,8 +82,17 @@ class DirectoryRepository implements DirectoryRepositoryInterface
      */
     function tryAdd(DirectoryEntity $entity): bool
     {
-        $attributes = ["Id", "ParentId", "UserId", "Name", "Path", "CreatedAt", "IsRoot"];
-        $values = [$entity->id, $entity->parentId, $entity->userId, $entity->name, $entity->path, $entity->createdAt, (int)$entity->isRoot];
+        $attributes = ["Id", "ParentId", "UserId", "Name", "NameHash", "Path", "CreatedAt", "IsRoot"];
+        $values = [
+            $entity->id,
+            $entity->parentId,
+            $entity->userId,
+            $entity->name,
+            $entity->nameHash,
+            $entity->path,
+            $entity->createdAt,
+            (int)$entity->isRoot
+        ];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -120,7 +130,8 @@ class DirectoryRepository implements DirectoryRepositoryInterface
             ParentId varchar(36) NOT NULL,
             UserId varchar(36) NOT NULL,
             Name varchar(255) NOT NULL,
-            Path varchar(255) NOT NULL,
+            NameHash varchar(128) NOT NULL,
+            Path varchar(1024) NOT NULL,
             CreatedAt datetime NOT NULL,
             IsRoot boolean NOT NULL,
             FOREIGN KEY (UserId) REFERENCES " . UserRepository::TABLE_NAME . "(Id)

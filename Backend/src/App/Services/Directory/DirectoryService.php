@@ -11,6 +11,7 @@ use App\Mapping\Directory\DirectoryMapper;
 use App\Mapping\File\FileMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\File\FileRepositoryInterface;
+use App\Services\Cryptographic\CryptographicService;
 use App\Services\Cryptographic\CryptographicServiceInterface;
 use App\Services\File\FileServiceInterface;
 use App\Services\FileSystem\FileSystemHandlerInterface;
@@ -50,18 +51,27 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new NotFound("Directory not found");
         }
 
-        $userId = $this->httpContext->user->id;
+        $user = $this->httpContext->user;
+        $userId = $user->id;
         if ($directoryEntity->userId != $userId)
         {
             return new BadRequest("Directory is owned by another user");
         }
 
+        // Make sure to decrypt names and paths before sending
         $children = $this->directoryMapper->mapArray(
             $this->directoryRepository->findByParentIdForUser($userId, $id)
         );
-        return $this->directoryMapper
-            ->mapSingle($directoryEntity)
-            ->withChildren($children);
+        foreach ($children as $child)
+        {
+            $child->name = $this->cryptographicService->decrypt($child->name, $user->privateKey);
+            $child->path = $this->cryptographicService->decrypt($child->path, $user->privateKey);
+        }
+
+        $directoryEntity->name = $this->cryptographicService->decrypt($directoryEntity->name, $user->privateKey);
+        $directoryEntity->path = $this->cryptographicService->decrypt($directoryEntity->path, $user->privateKey);
+
+        return $this->directoryMapper->mapSingle($directoryEntity)->withChildren($children);
     }
 
     /**
@@ -84,14 +94,16 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new BadRequest("Parent directory does not exist");
         }
 
-        $userId = $this->httpContext->user->id;
+        $user = $this->httpContext->user;
+        $userId = $user->id;
         if ($parentDirectory->userId != $userId)
         {
             return new BadRequest("Parent directory is owned by another user");
         }
 
         // Check if the name is already used in the current directory
-        $directoriesWithIdenticalName = $this->directoryRepository->findByParentIdAndNameForUser($parentId, $userId, $name);
+        $nameHash = $this->cryptographicService->sign($name, CryptographicService::HASH_ALGORITHM);
+        $directoriesWithIdenticalName = $this->directoryRepository->findByParentIdAndNameHashForUser($parentId, $userId, $nameHash);
         if (count($directoriesWithIdenticalName) !== 0)
         {
             return new BadRequest("A directory with the name already exists");
@@ -113,8 +125,9 @@ readonly class DirectoryService implements DirectoryServiceInterface
             $id,
             $parentId,
             $userId,
-            $name,
-            $path,
+            $this->cryptographicService->encrypt($name, $user->privateKey),
+            $nameHash,
+            $this->cryptographicService->encrypt($path, $user->privateKey),
             (new DateTime())->format(DATE_ISO8601_EXPANDED)
         );
 
@@ -123,6 +136,10 @@ readonly class DirectoryService implements DirectoryServiceInterface
         {
             return new InternalServerError();
         }
+
+        // Show unencrypted name & path to user when creating the directory
+        $directoryEntity->name = $name;
+        $directoryEntity->path = $path;
 
         return $this->directoryMapper->mapSingle($directoryEntity);
     }
@@ -138,7 +155,8 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new NotFound("Directory not found");
         }
 
-        $userId = $this->httpContext->user->id;
+        $user = $this->httpContext->user;
+        $userId = $user->id;
         if ($directoryEntity->userId != $userId)
         {
             return new BadRequest("Directory is owned by another user");
@@ -158,7 +176,8 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new InternalServerError();
         }
 
-        $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $directoryEntity->path);
+        $decryptedPath = $this->cryptographicService->decrypt($directoryEntity->path, $user->privateKey);
+        $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $decryptedPath);
         $this->fileSystemHandler->deleteDirectory($absolutePath);
 
         return new DeleteDirectoryResponse($id);

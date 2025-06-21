@@ -7,16 +7,17 @@ use App\Dtos\Directory\DirectoryDto;
 /**
  * Represents the database entity for directories.
  */
-readonly class DirectoryEntity
+class DirectoryEntity
 {
     function __construct(
-        public string $id,
-        public string $parentId,
-        public string $userId,
+        public readonly string $id,
+        public readonly string $parentId,
+        public readonly string $userId,
         public string $name,
+        public readonly string $nameHash,
         public string $path,
-        public string $createdAt,
-        public bool $isRoot = false
+        public readonly string $createdAt,
+        public readonly bool $isRoot = false
     )
     {
     }
@@ -28,6 +29,6 @@ readonly class DirectoryEntity
 
     public static function fromArray(array $data): DirectoryEntity
     {
-        return new self($data["Id"], $data["ParentId"], $data["UserId"], $data["Name"], $data["Path"], $data["CreatedAt"], $data["IsRoot"]);
+        return new self($data["Id"], $data["ParentId"], $data["UserId"], $data["Name"], $data["NameHash"], $data["Path"], $data["CreatedAt"], $data["IsRoot"]);
     }
 }

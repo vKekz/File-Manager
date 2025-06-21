@@ -5,14 +5,14 @@ namespace App\Dtos\Directory;
 /**
  * Represents the DTO for directories.
  */
-readonly class DirectoryDto
+class DirectoryDto
 {
     function __construct(
-        public string $id,
-        public string $parentId,
+        public readonly string $id,
+        public readonly string $parentId,
         public string $name,
         public string $path,
-        public bool $isRoot,
+        public readonly bool $isRoot,
     )
     {
     }
