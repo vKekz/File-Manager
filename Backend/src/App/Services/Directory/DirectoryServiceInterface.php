@@ -5,7 +5,6 @@ namespace App\Services\Directory;
 use App\Contracts\Directory\CreateDirectoryRequest;
 use App\Contracts\Directory\DeleteDirectoryResponse;
 use App\Dtos\Directory\DirectoryDto;
-use App\Dtos\Directory\DirectoryDtoWithChildren;
 use Core\Contracts\Api\ApiResponse;
 
 /**
@@ -13,10 +12,6 @@ use Core\Contracts\Api\ApiResponse;
  */
 interface DirectoryServiceInterface
 {
-    /**
-     * Returns the directory found by the given ID including its child directories.
-     */
-    function getDirectoryWithChildren(string $id): DirectoryDtoWithChildren | ApiResponse;
     /**
      * Creates a new directory.
      */

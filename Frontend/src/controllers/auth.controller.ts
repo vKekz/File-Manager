@@ -6,8 +6,8 @@ import { UserDto } from "../dtos/user.dto";
 import { RouteHandler } from "../handlers/route.handler";
 import { APP_ROUTES } from "../constants/route.constants";
 import { Store } from "@ngxs/store";
-import { FetchDirectories } from "../states/directory/directory.actions";
 import { SessionService } from "../services/session.service";
+import { FetchStorage } from "../states/storage/storage.actions";
 
 @Injectable({
   providedIn: "root",
@@ -81,8 +81,8 @@ export class AuthController {
     localStorage.setItem(this.ACCESS_TOKEN_KEY, response.accessToken);
     sessionStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
 
-    // Pre-fetch directories to reduce loading time
-    this.store.dispatch(new FetchDirectories());
+    // Pre-fetch storage to reduce loading time
+    this.store.dispatch(new FetchStorage());
 
     if (rerouteOnSuccess) {
       await this.routeHandler.goToRoute(APP_ROUTES.storage);

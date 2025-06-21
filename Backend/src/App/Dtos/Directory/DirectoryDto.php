@@ -2,6 +2,8 @@
 
 namespace App\Dtos\Directory;
 
+use App\Dtos\File\FileDto;
+
 /**
  * Represents the DTO for directories.
  */
@@ -19,10 +21,11 @@ class DirectoryDto
 
     /**
      * @param DirectoryDto[] $children
+     * @param FileDto[] $files
      */
-    public function withChildren(array $children): DirectoryDtoWithChildren
+    public function withContent(array $children, array $files): DirectoryDtoWithContent
     {
-        return new DirectoryDtoWithChildren($this->id, $this->parentId, $this->name, $this->path, $this->isRoot, $children);
+        return new DirectoryDtoWithContent($this->id, $this->parentId, $this->name, $this->path, $this->isRoot, $children, $files);
     }
 
     public static function fromArray(array $data): DirectoryDto

@@ -14,11 +14,6 @@ use Core\Contracts\Api\FileResponse;
 interface FileServiceInterface
 {
     /**
-     * Returns an array of files that are present in the given directory.
-     * @return FileDto[] | ApiResponse
-     */
-    function getFilesOfDirectory(string $directoryId): array | ApiResponse;
-    /**
      * Uploads a file for the given directory. Replaces the existing one if names match.
      */
     function uploadFile(UploadFileRequest $request): FileDto | ApiResponse;

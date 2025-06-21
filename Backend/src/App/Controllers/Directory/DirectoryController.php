@@ -6,7 +6,6 @@ use App\Contracts\Directory\CreateDirectoryRequest;
 use App\Services\Directory\DirectoryServiceInterface;
 use Core\Attributes\Authorization\Authorize;
 use Core\Attributes\Http\HttpDelete;
-use Core\Attributes\Http\HttpGet;
 use Core\Attributes\Http\HttpPost;
 use Core\Attributes\Parameter\BodyParameter;
 use Core\Attributes\Parameter\QueryParameter;
@@ -25,13 +24,6 @@ class DirectoryController extends ApiController
     function __construct(private readonly DirectoryServiceInterface $directoryService)
     {
         parent::__construct(self::END_POINT);
-    }
-
-    #[HttpGet]
-    function getDirectoryWithChildren(#[QueryParameter] string $id): ApiResponse
-    {
-        $response = $this->directoryService->getDirectoryWithChildren($id);
-        return $response instanceof ApiResponse ? $response : new Ok($response);
     }
 
     #[HttpPost]

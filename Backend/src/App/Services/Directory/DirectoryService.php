@@ -5,7 +5,6 @@ namespace App\Services\Directory;
 use App\Contracts\Directory\CreateDirectoryRequest;
 use App\Contracts\Directory\DeleteDirectoryResponse;
 use App\Dtos\Directory\DirectoryDto;
-use App\Dtos\Directory\DirectoryDtoWithChildren;
 use App\Entities\Directory\DirectoryEntity;
 use App\Mapping\Directory\DirectoryMapper;
 use App\Mapping\File\FileMapper;
@@ -39,39 +38,6 @@ readonly class DirectoryService implements DirectoryServiceInterface
         private HttpContext $httpContext
     )
     {
-    }
-
-    /**
-     * @inheritdoc
-     */
-    function getDirectoryWithChildren(string $id): DirectoryDtoWithChildren | ApiResponse {
-        $directoryEntity = $this->directoryRepository->findById($id);
-        if ($directoryEntity == null)
-        {
-            return new NotFound("Directory not found");
-        }
-
-        $user = $this->httpContext->user;
-        $userId = $user->id;
-        if ($directoryEntity->userId != $userId)
-        {
-            return new BadRequest("Directory is owned by another user");
-        }
-
-        // Make sure to decrypt names and paths before sending
-        $children = $this->directoryMapper->mapArray(
-            $this->directoryRepository->findByParentIdForUser($userId, $id)
-        );
-        foreach ($children as $child)
-        {
-            $child->name = $this->cryptographicService->decrypt($child->name, $user->privateKey);
-            $child->path = $this->cryptographicService->decrypt($child->path, $user->privateKey);
-        }
-
-        $directoryEntity->name = $this->cryptographicService->decrypt($directoryEntity->name, $user->privateKey);
-        $directoryEntity->path = $this->cryptographicService->decrypt($directoryEntity->path, $user->privateKey);
-
-        return $this->directoryMapper->mapSingle($directoryEntity)->withChildren($children);
     }
 
     /**

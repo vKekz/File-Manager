@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@angular/core";
 import { API_URL } from "../app/app.config";
 import { HttpClient } from "@angular/common/http";
 import { API_ROUTES } from "../constants/route.constants";
-import { DirectoryDto, DirectoryDtoWithChildren } from "../dtos/directory.dto";
+import { DirectoryDto } from "../dtos/directory.dto";
 import { firstValueFrom } from "rxjs";
 import { ApiResponse } from "../contracts/api.response";
 import { DeleteDirectoryResponse } from "../contracts/delete-directory.response";
@@ -16,12 +16,6 @@ export class DirectoryService {
     private readonly httpClient: HttpClient
   ) {
     this.endpoint = `${apiUrl}/${API_ROUTES.directory}`;
-  }
-
-  public getDirectoryWithChildren(id: string) {
-    const route = `${this.endpoint}?id=${id}`;
-    const request = this.httpClient.get<DirectoryDtoWithChildren>(route);
-    return firstValueFrom(request);
   }
 
   public createDirectory(name: string, parentId: string) {

@@ -26,7 +26,7 @@
     <!-- Directories -->
     @for (directory of this.directoryController.directories(); track directory.id) {
       <tr>
-        <td (click)="this.directoryController.selectDirectory(directory.id)">
+        <td (click)="this.storageController.selectStorage(directory.id)">
           <div class="name-container">
             <div>
               <i class="bi bi-folder-fill folder-icon"></i>
@@ -34,7 +34,7 @@
             <span class="text-overflow">{{ directory.name }}</span>
           </div>
         </td>
-        <td (click)="this.directoryController.selectDirectory(directory.id)"></td>
+        <td (click)="this.storageController.selectStorage(directory.id)"></td>
         <td [id]="DROPDOWN_TOGGLE_ID">
           <app-drop-down-toggle [type]="DropDownType.Directory" [directory]="directory"></app-drop-down-toggle>
         </td>

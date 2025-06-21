@@ -7,6 +7,7 @@ use App\Controllers\Auth\AuthController;
 use App\Controllers\Directory\DirectoryController;
 use App\Controllers\File\FileController;
 use App\Controllers\Session\SessionController;
+use App\Controllers\Storage\StorageController;
 use App\Controllers\User\UserController;
 use App\Mapping\Directory\DirectoryMapper;
 use App\Mapping\File\FileMapper;
@@ -30,6 +31,8 @@ use App\Services\FileSystem\FileSystemHandler;
 use App\Services\FileSystem\FileSystemHandlerInterface;
 use App\Services\Session\SessionService;
 use App\Services\Session\SessionServiceInterface;
+use App\Services\Storage\StorageService;
+use App\Services\Storage\StorageServiceInterface;
 use App\Services\Token\TokenHandler;
 use App\Services\Token\TokenHandlerInterface;
 use App\Services\User\UserService;
@@ -61,12 +64,14 @@ $serviceContainer->register(FileSystemHandlerInterface::class, FileSystemHandler
 $serviceContainer->register(FileRepositoryInterface::class, FileRepository::class);
 $serviceContainer->register(FileServiceInterface::class, FileService::class);
 $serviceContainer->register(UserServiceInterface::class, UserService::class);
+$serviceContainer->register(StorageServiceInterface::class, StorageService::class);
 
 $serviceContainer->addSingleton(AuthController::class);
 $serviceContainer->addSingleton(DirectoryController::class);
 $serviceContainer->addSingleton(FileController::class);
 $serviceContainer->addSingleton(SessionController::class);
 $serviceContainer->addSingleton(UserController::class);
+$serviceContainer->addSingleton(StorageController::class);
 
 // Run app
 $app = new App($serviceContainer);

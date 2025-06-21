@@ -35,13 +35,6 @@ class FileController extends ApiController
         return $this->fileService->downloadFile($id);
     }
 
-    #[HttpGet]
-    function getFilesOfDirectory(#[QueryParameter] string $directoryId): ApiResponse
-    {
-        $response = $this->fileService->getFilesOfDirectory($directoryId);
-        return $response instanceof ApiResponse ? $response : new Ok($response);
-    }
-
     #[HttpPost]
     function uploadFile(#[FileParameter] UploadedFile $file, #[PostParameter] string $directoryId): ApiResponse
     {

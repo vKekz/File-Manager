@@ -43,37 +43,6 @@ readonly class FileService implements FileServiceInterface
     /**
      * @inheritdoc
      */
-    function getFilesOfDirectory(string $directoryId): array | ApiResponse
-    {
-        // Check if the directory exists and is owned by the user
-        $directory = $this->directoryRepository->findById($directoryId);
-        if (!$directory)
-        {
-            return new BadRequest("Directory does not exist");
-        }
-
-        $user = $this->httpContext->user;
-        $userId = $user->id;
-        if ($directory->userId != $userId)
-        {
-            return new BadRequest("Directory is owned by another user");
-        }
-
-        // Decrypt file names before sending
-        $files = $this->fileMapper->mapArray(
-            $this->fileRepository->findByDirectoryIdForUser($userId, $directoryId)
-        );
-        foreach ($files as $file)
-        {
-            $file->name = $this->cryptographicService->decrypt($file->name, $user->privateKey);
-        }
-
-        return $files;
-    }
-
-    /**
-     * @inheritdoc
-     */
     function uploadFile(UploadFileRequest $request): FileDto | ApiResponse
     {
         // Check if the directory exists and is owned by the user

@@ -1,3 +1,5 @@
+import { FileDto } from "./file.dto";
+
 export interface DirectoryDto {
   id: string;
   parentId: string;
@@ -6,6 +8,7 @@ export interface DirectoryDto {
   isRoot: boolean;
 }
 
-export interface DirectoryDtoWithChildren extends DirectoryDto {
+export interface DirectoryDtoWithContent extends DirectoryDto {
   children: DirectoryDto[];
+  files: FileDto[];
 }

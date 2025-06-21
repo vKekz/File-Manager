@@ -11,6 +11,9 @@ use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\Ok;
 use Core\Controllers\ApiController;
 
+/**
+ * Represents the controller that is used for user-specific actions like changing settings.
+ */
 #[Authorize]
 class UserController extends ApiController
 {
