@@ -1,7 +1,7 @@
 import { SizeUnit } from "../enums/size-unit.enum";
 
 export function calculateCompactFileSize(bytes: number) {
-  const kiloByte = 1024;
+  const kiloByte = 1000;
   if (bytes < kiloByte) {
     return `${bytes} ${SizeUnit[SizeUnit.Bytes]}`;
   }
@@ -14,5 +14,5 @@ export function calculateCompactFileSize(bytes: number) {
   }
 
   const sizeUnit = SizeUnit[index];
-  return `${convertedSize.toFixed(1)} ${sizeUnit}`;
+  return `${convertedSize.toFixed(2)} ${sizeUnit}`;
 }

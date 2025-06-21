@@ -14,13 +14,16 @@
   width: 32px;
   margin-bottom: 1px;
 
+  color: var(--dark-theme-secondary-font-color);
   transition: var(--transition-delay);
 }
 
 .toggle-container:hover {
+  color: var(--dark-theme-font-color);
   background-color: var(--dark-theme-third-background-color);
 }
 
 .open {
+  color: var(--dark-theme-font-color);
   background-color: var(--primary-color);
 }

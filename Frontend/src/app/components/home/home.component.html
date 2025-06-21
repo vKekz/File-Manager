@@ -5,13 +5,13 @@
         <app-icon [width]="iconSize" [height]="iconSize"></app-icon>
         <div class="brand-name">{{ brandName() }}</div>
       </div>
-      <div class="brand-description">Modern web-based file manager</div>
+      <div class="brand-description">Modern and secure web-based file manager</div>
     </div>
   </div>
   <div class="sub-container right">
     <div class="slogan-container content">
       <div class="slogan">Alles an einem Ort.</div>
-      <div class="sub-slogan">Deine Dateien und Ordner – sicher und einfach verwaltet.</div>
+      <div class="sub-slogan">Deine Dateien und Ordner – verschlüsselt und einfach verwaltet.</div>
       <div>
         @if (this.authController.isAuthenticated()) {
           <app-button (click)="this.goToStorage()" text="Zu deinen Dateien"></app-button>

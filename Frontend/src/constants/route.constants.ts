@@ -16,7 +16,7 @@ export const APP_ROUTES = {
   storage: {
     path: "storage",
     title: "Dateien",
-    description: "Zeige und verwalte deine persönlichen Ordner und Dateien.",
+    description: "Zeige und verwalte deine persönlichen Ordner und Dateien. Sicher durch AES-256-GCM Verschlüsselung.",
   } as AppRouteDetails,
 } as const;
 
