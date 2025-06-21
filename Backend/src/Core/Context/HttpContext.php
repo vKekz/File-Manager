@@ -2,7 +2,7 @@
 
 namespace Core\Context;
 
-use App\Dtos\Users\UserDto;
+use App\Entities\User\UserEntity;
 use App\Services\Session\Token\Payload;
 use Core\Authorization\AuthorizationToken;
 
@@ -18,7 +18,7 @@ class HttpContext
     public readonly string $requestUserAgent;
     public readonly string $requestAddress;
     public readonly ?AuthorizationToken $authorizationToken;
-    public ?UserDto $user = null;
+    public ?UserEntity $user = null;
     public ?Payload $rawPayload = null;
 
     function __construct()

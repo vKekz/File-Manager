@@ -5,20 +5,20 @@ namespace App\Dtos\File;
 /**
  * Represents the DTO for files.
  */
-readonly class FileDto
+class FileDto
 {
     function __construct(
-        public string $id,
+        public readonly string $id,
         public string $name,
-        public string $hash,
-        public int $size,
-        public string $uploadedAt
+        public readonly string $hash,
+        public readonly int $size,
+        public readonly string $uploadedAt
     )
     {
     }
 
     public static function fromArray(array $data): FileDto
     {
-        return new self($data["Id"], $data["Name"], $data["Hash"], $data["Size"], $data["UploadedAt"]);
+        return new self($data["Id"], $data["Name"], $data["RealHash"], $data["Size"], $data["UploadedAt"]);
     }
 }

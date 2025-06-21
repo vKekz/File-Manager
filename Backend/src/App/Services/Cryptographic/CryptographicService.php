@@ -63,7 +63,7 @@ readonly class CryptographicService implements CryptographicServiceInterface
     /**
      * @inheritdoc
      */
-    function encrypt(string $data, ?string $key = null): string
+    function encrypt(string $data, ?string $key = null, bool $binary = false): string
     {
         // Get default master key if none is supplied
         if ($key === null)
@@ -84,14 +84,15 @@ readonly class CryptographicService implements CryptographicServiceInterface
             $tag
         );
         $hash = $this->sign($encrypted, self::HASH_ALGORITHM, true);
+        $raw = $vector . $tag . $hash . $encrypted;
 
-        return base64_encode($vector . $tag . $hash . $encrypted);
+        return $binary ? $raw : base64_encode($raw);
     }
 
     /**
      * @inheritdoc
      */
-    function decrypt(string $input, ?string $key = null): string | false
+    function decrypt(string $input, ?string $key = null, bool $binary = false): string | false
     {
         // Get default master key if none is supplied
         if ($key === null)
@@ -103,7 +104,7 @@ readonly class CryptographicService implements CryptographicServiceInterface
         $hashLength = 64;
         $tagLength = 16;
 
-        $inputRaw = base64_decode($input);
+        $inputRaw = $binary ? $input : base64_decode($input);
         $hash = substr($inputRaw, $vectorLength + $tagLength, $hashLength);
         $raw = substr($inputRaw, $vectorLength + $tagLength + $hashLength);
         $recreatedHash = $this->sign($raw, self::HASH_ALGORITHM, true);
@@ -126,6 +127,36 @@ readonly class CryptographicService implements CryptographicServiceInterface
         }
 
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function encryptFile(string $source, string $destination, ?string $key = null): void
+    {
+        if (!file_exists($source))
+        {
+            return;
+        }
+
+        $data = file_get_contents($source);
+        $encryptedData = $this->encrypt($data, $key, true);
+
+        file_put_contents($destination, $encryptedData);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function decryptFile(string $source, ?string $key = null): string | false
+    {
+        if (!file_exists($source))
+        {
+            return false;
+        }
+
+        $data = file_get_contents($source);
+        return $this->decrypt($data, $key, true);
     }
 
     /**

@@ -22,7 +22,7 @@ interface FileSystemHandlerInterface
     /**
      * Saves an uploaded file and moves it to the corresponding destination.
      */
-    function saveUploadedFile(UploadedFile $source, string $destination): void;
+    function saveUploadedFile(UploadedFile $source, string $destination, bool $encrypt = false, ?string $key = null): void;
     /**
      * Deletes a file at the given path.
      */

@@ -3,6 +3,7 @@
 namespace App\Controllers\Session;
 
 use App\Contracts\Auth\AuthenticationResponse;
+use App\Dtos\Users\UserDto;
 use Core\Attributes\Authorization\Authorize;
 use Core\Attributes\Http\HttpPost;
 use Core\Context\HttpContext;
@@ -36,10 +37,7 @@ class SessionController extends ApiController
         }
 
         return new Ok(
-            new AuthenticationResponse(
-                $this->httpContext->user,
-                $this->httpContext->authorizationToken->token
-            )
+            new AuthenticationResponse(UserDto::fromEntity($user), $token->token)
         );
     }
 }

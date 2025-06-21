@@ -2,6 +2,7 @@
 
 namespace App\Dtos\Users;
 
+use App\Entities\User\UserEntity;
 use App\Entities\User\UserSettings;
 
 /**
@@ -16,5 +17,10 @@ readonly class UserDto
         public UserSettings $settings
     )
     {
+    }
+
+    public static function fromEntity(UserEntity $userEntity): UserDto
+    {
+        return new self($userEntity->id, $userEntity->username, $userEntity->email, $userEntity->settings);
     }
 }

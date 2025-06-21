@@ -2,7 +2,6 @@
 
 namespace App\Services\Session;
 
-use App\Dtos\Users\UserDto;
 use App\Entities\Session\SessionEntity;
 use App\Entities\User\UserEntity;
 use App\Repositories\Session\SessionRepositoryInterface;
@@ -96,13 +95,17 @@ readonly class SessionService implements SessionServiceInterface
             return new Unauthorized("Invalid access token");
         }
 
+        // Get user from session and save in context for future use
+        $key = $this->cryptographicService->decrypt($userEntity->privateKey);
+        $decryptedEmail = $this->cryptographicService->decrypt($userEntity->email, $key);
+        $decryptedUserName = $this->cryptographicService->decrypt($userEntity->username, $key);
+
+        $userEntity->email = $decryptedEmail;
+        $userEntity->username = $decryptedUserName;
+        $userEntity->privateKey = $key;
+
         $this->httpContext->rawPayload = $payload;
-        $this->httpContext->user = new UserDto(
-            $userEntity->id,
-            $userEntity->username,
-            $userEntity->email,
-            $userEntity->settings
-        );
+        $this->httpContext->user = $userEntity;
 
         return true;
     }

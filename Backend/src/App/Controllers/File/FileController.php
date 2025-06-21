@@ -2,7 +2,7 @@
 
 namespace App\Controllers\File;
 
-use App\Contracts\File\CreateFileRequest;
+use App\Contracts\File\UploadFileRequest;
 use App\Services\File\FileServiceInterface;
 use Core\Attributes\Authorization\Authorize;
 use Core\Attributes\Http\HttpDelete;
@@ -32,7 +32,7 @@ class FileController extends ApiController
     #[HttpGet("/download")]
     function downloadFile(#[QueryParameter] string $id): ApiResponse
     {
-        return $this->fileService->getFile($id);
+        return $this->fileService->downloadFile($id);
     }
 
     #[HttpGet]
@@ -45,8 +45,8 @@ class FileController extends ApiController
     #[HttpPost]
     function uploadFile(#[FileParameter] UploadedFile $file, #[PostParameter] string $directoryId): ApiResponse
     {
-        $request = new CreateFileRequest($file, $directoryId);
-        $response = $this->fileService->createFile($request);
+        $request = new UploadFileRequest($file, $directoryId);
+        $response = $this->fileService->uploadFile($request);
         return $response instanceof ApiResponse ? $response : new Ok($response);
     }
 

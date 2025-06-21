@@ -5,16 +5,17 @@ namespace App\Entities\User;
 /**
  * Represents the database entity for users.
  */
-readonly class UserEntity
+class UserEntity
 {
     function __construct(
-        public string $id,
+        public readonly string $id,
         public string $username,
         public string $email,
-        public string $hash,
+        public readonly string $emailHash,
+        public string $passwordHash,
         public string $privateKey,
-        public string $createdAt,
-        public UserSettings $settings = new UserSettings()
+        public readonly string $createdAt,
+        public readonly UserSettings $settings = new UserSettings()
     )
     {
     }
@@ -25,7 +26,8 @@ readonly class UserEntity
             $data["Id"],
             $data["UserName"],
             $data["Email"],
-            $data["Hash"],
+            $data["EmailHash"],
+            $data["PasswordHash"],
             $data["PrivateKey"],
             $data["CreatedAt"],
             UserSettings::fromArray(json_decode($data["Settings"], true))

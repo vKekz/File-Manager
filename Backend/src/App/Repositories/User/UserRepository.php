@@ -36,10 +36,10 @@ class UserRepository implements UserRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findByEmail(string $email): ?UserEntity
+    function findByEmailHash(string $emailHash): ?UserEntity
     {
-        $condition = "WHERE Email = ?";
-        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $email);
+        $condition = "WHERE EmailHash = ?";
+        $data = $this->database->fetchData(self::TABLE_NAME, [], $condition, $emailHash);
 
         if (count($data) == 0)
         {
@@ -62,8 +62,8 @@ class UserRepository implements UserRepositoryInterface
      */
     function tryAdd(UserEntity $entity): bool
     {
-        $attributes = ["Id", "Email", "UserName", "Hash", "PrivateKey", "CreatedAt", "Settings"];
-        $values = [$entity->id, $entity->email, $entity->username, $entity->hash, $entity->privateKey, $entity->createdAt, $entity->settings->serialize()];
+        $attributes = ["Id", "UserName", "Email", "EmailHash", "PasswordHash", "PrivateKey", "CreatedAt", "Settings"];
+        $values = [$entity->id, $entity->username, $entity->email, $entity->emailHash, $entity->passwordHash, $entity->privateKey, $entity->createdAt, $entity->settings->serialize()];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -91,9 +91,10 @@ class UserRepository implements UserRepositoryInterface
     {
         $attributes = "(
             Id varchar(36) PRIMARY KEY NOT NULL,
-            UserName varchar(16) NOT NULL,
-            Email varchar(320) NOT NULL,
-            Hash varchar(255) NOT NULL,
+            UserName varchar(1024) NOT NULL,
+            Email varchar(1024) NOT NULL,
+            EmailHash varchar(128) NOT NULL,
+            PasswordHash varchar(1024) NOT NULL,
             PrivateKey varchar(255) NOT NULL,
             CreatedAt datetime NOT NULL,
             Settings json NOT NULL

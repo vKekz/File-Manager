@@ -47,10 +47,10 @@ class FileRepository implements FileRepositoryInterface
     /**
      * @inheritdoc
      */
-    function findByParentIdAndNameForUser(string $directoryId, string $userId, string $name): array
+    function findByParentIdAndNameHashForUser(string $directoryId, string $userId, string $nameHash): array
     {
-        $condition = "WHERE DirectoryId = ? AND UserId = ? AND Name = ?";
-        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $directoryId, $userId, $name);
+        $condition = "WHERE DirectoryId = ? AND UserId = ? AND NameHash = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $directoryId, $userId, $nameHash);
     }
 
     /**
@@ -59,8 +59,8 @@ class FileRepository implements FileRepositoryInterface
     function tryUpdate(FileEntity $file): bool
     {
         $condition = "WHERE Id = ?";
-        $attributes = ["Hash", "Size", "UploadedAt"];
-        $values = [$file->hash, $file->size, $file->uploadedAt, $file->id];
+        $attributes = ["RealHash", "Hash", "Size", "UploadedAt"];
+        $values = [$file->realHash, $file->hash, $file->size, $file->uploadedAt, $file->id];
 
         return $this->tryUpdateEntity($attributes, $values, $condition);
     }
@@ -70,8 +70,18 @@ class FileRepository implements FileRepositoryInterface
      */
     function tryAdd(FileEntity $entity): bool
     {
-        $attributes = ["Id", "DirectoryId", "UserId", "Name", "Hash", "Size", "UploadedAt",];
-        $values = [$entity->id, $entity->directoryId, $entity->userId, $entity->name, $entity->hash, $entity->size, $entity->uploadedAt];
+        $attributes = ["Id", "DirectoryId", "UserId", "Name", "NameHash", "RealHash", "Hash", "Size", "UploadedAt",];
+        $values = [
+            $entity->id,
+            $entity->directoryId,
+            $entity->userId,
+            $entity->name,
+            $entity->nameHash,
+            $entity->realHash,
+            $entity->hash,
+            $entity->size,
+            $entity->uploadedAt
+        ];
 
         return $this->database->insertData(self::TABLE_NAME, $attributes, $values);
     }
@@ -106,8 +116,10 @@ class FileRepository implements FileRepositoryInterface
             Id varchar(36) PRIMARY KEY NOT NULL,
             DirectoryId varchar(36) NOT NULL,
             UserId varchar(36) NOT NULL,
-            Name varchar(255) NOT NULL,
-            Hash varchar(255) NOT NULL,
+            Name varchar(1024) NOT NULL,
+            NameHash varchar(128) NOT NULL,
+            RealHash varchar(64) NOT NULL,
+            Hash varchar(64) NOT NULL,
             Size int NOT NULL,
             UploadedAt datetime NOT NULL,
             FOREIGN KEY (DirectoryId) REFERENCES " . DirectoryRepository::TABLE_NAME . "(Id),

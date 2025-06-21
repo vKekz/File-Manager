@@ -9,7 +9,9 @@ use App\Dtos\Users\UserDto;
 use App\Entities\User\UserEntity;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
+use App\Services\Cryptographic\CryptographicService;
 use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\FileSystem\FileSystemHandlerInterface;
 use App\Services\Session\SessionServiceInterface;
 use App\Validation\User\EmailValidator;
 use App\Validation\User\PasswordValidator;
@@ -28,7 +30,8 @@ readonly class AuthService implements AuthServiceInterface
         private UserRepositoryInterface $userRepository,
         private DirectoryRepositoryInterface $directoryRepository,
         private SessionServiceInterface $sessionService,
-        private CryptographicServiceInterface $cryptographicService
+        private CryptographicServiceInterface $cryptographicService,
+        private FileSystemHandlerInterface $fileSystemHandler
     )
     {
     }
@@ -58,7 +61,8 @@ readonly class AuthService implements AuthServiceInterface
                 "Password must be at least 8 characters long and include uppercase and lowercase letters, a number, and a special character");
         }
 
-        if ($this->userRepository->findByEmail($email))
+        $emailHash = $this->cryptographicService->sign($email, CryptographicService::HASH_ALGORITHM);
+        if ($this->userRepository->findByEmailHash($emailHash))
         {
             return new BadRequest("The email you have provided is already associated with an account");
         }
@@ -79,10 +83,14 @@ readonly class AuthService implements AuthServiceInterface
         $encryptedHash = $this->cryptographicService->encrypt($hash, $key);
         $encryptedKey = $this->cryptographicService->encrypt($key);
 
+        $encryptedEmail = $this->cryptographicService->encrypt($email, $key);
+        $encryptedUserName = $this->cryptographicService->encrypt($username, $key);
+
         $userEntity = new UserEntity(
             $id,
-            $username,
-            $email,
+            $encryptedUserName,
+            $encryptedEmail,
+            $emailHash,
             $encryptedHash,
             $encryptedKey,
             (new DateTime())
@@ -103,14 +111,16 @@ readonly class AuthService implements AuthServiceInterface
         // Make sure to create default root directory for user
         $this->directoryRepository->createRootDirectoryForUser($id);
 
-        $userDto = new UserDto(
-            $userEntity->id,
-            $userEntity->username,
-            $userEntity->email,
-            $userEntity->settings
-        );
+        // Create root folder on file system
+        $this->fileSystemHandler->createDirectory($this->fileSystemHandler->getAbsolutePath($id));
+
         return new AuthenticationResponse(
-            $userDto,
+            new UserDto(
+                $userEntity->id,
+                $username,
+                $email,
+                $userEntity->settings
+            ),
             $sessionToken->accessToken
         );
     }
@@ -120,7 +130,8 @@ readonly class AuthService implements AuthServiceInterface
      */
     function loginUser(UserLoginRequest $request): AuthenticationResponse | ApiResponse
     {
-        $userEntity = $this->userRepository->findByEmail($request->email);
+        $emailHash = $this->cryptographicService->sign($request->email, CryptographicService::HASH_ALGORITHM);
+        $userEntity = $this->userRepository->findByEmailHash($emailHash);
         if ($userEntity == null)
         {
             // TODO: Not safe to timing attack
@@ -128,7 +139,7 @@ readonly class AuthService implements AuthServiceInterface
         }
 
         $key = $this->cryptographicService->decrypt($userEntity->privateKey);
-        $decryptedPasswordHash = $this->cryptographicService->decrypt($userEntity->hash, $key);
+        $decryptedPasswordHash = $this->cryptographicService->decrypt($userEntity->passwordHash, $key);
         if (!$this->cryptographicService->verifyPassword($decryptedPasswordHash, $request->password))
         {
             return new BadRequest("Incorrect credentials");
@@ -140,14 +151,16 @@ readonly class AuthService implements AuthServiceInterface
             return $sessionToken;
         }
 
-        $userDto = new UserDto(
-            $userEntity->id,
-            $userEntity->username,
-            $userEntity->email,
-            $userEntity->settings
-        );
+        $decryptedEmail = $this->cryptographicService->decrypt($userEntity->email, $key);
+        $decryptedUserName = $this->cryptographicService->decrypt($userEntity->username, $key);
+
         return new AuthenticationResponse(
-            $userDto,
+            new UserDto(
+                $userEntity->id,
+                $decryptedUserName,
+                $decryptedEmail,
+                $userEntity->settings
+            ),
             $sessionToken->accessToken
         );
     }

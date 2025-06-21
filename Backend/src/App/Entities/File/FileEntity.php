@@ -14,6 +14,8 @@ class FileEntity
         public readonly string $directoryId,
         public readonly string $userId,
         public string $name,
+        public string $nameHash,
+        public string $realHash,
         public string $hash,
         public int $size,
         public string $uploadedAt
@@ -23,11 +25,11 @@ class FileEntity
 
     public function toDto(): FileDto
     {
-        return new FileDto($this->id, $this->name, $this->hash, $this->size, $this->uploadedAt);
+        return new FileDto($this->id, $this->name, $this->realHash, $this->size, $this->uploadedAt);
     }
 
     public static function fromArray(array $data): FileEntity
     {
-        return new self($data["Id"], $data["DirectoryId"], $data["UserId"], $data["Name"], $data["Hash"], $data["Size"], $data["UploadedAt"]);
+        return new self($data["Id"], $data["DirectoryId"], $data["UserId"], $data["Name"], $data["NameHash"], $data["RealHash"], $data["Hash"], $data["Size"], $data["UploadedAt"]);
     }
 }

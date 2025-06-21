@@ -2,8 +2,8 @@
 
 namespace App\Services\File;
 
-use App\Contracts\File\CreateFileRequest;
 use App\Contracts\File\DeleteFileResponse;
+use App\Contracts\File\UploadFileRequest;
 use App\Dtos\File\FileDto;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\FileResponse;
@@ -19,9 +19,9 @@ interface FileServiceInterface
      */
     function getFilesOfDirectory(string $directoryId): array | ApiResponse;
     /**
-     * Creates a file for the given directory.
+     * Uploads a file for the given directory. Replaces the existing one if names match.
      */
-    function createFile(CreateFileRequest $request): FileDto | ApiResponse;
+    function uploadFile(UploadFileRequest $request): FileDto | ApiResponse;
     /**
      * Deletes a file.
      */
@@ -29,5 +29,5 @@ interface FileServiceInterface
     /**
      * Prepares a file for download.
      */
-    function getFile(string $id): FileResponse | ApiResponse;
+    function downloadFile(string $id): FileResponse | ApiResponse;
 }

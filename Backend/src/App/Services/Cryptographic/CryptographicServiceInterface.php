@@ -22,13 +22,21 @@ interface CryptographicServiceInterface
      *
      * @see https://www.php.net/manual/en/function.openssl-encrypt.php
      */
-    function encrypt(string $data, ?string $key = null): string;
+    function encrypt(string $data, ?string $key = null, bool $binary = false): string;
     /**
      * Decrypts the given input, otherwise returns false on failure.
      *
      * @see https://www.php.net/manual/en/function.openssl-decrypt.php
      */
-    function decrypt(string $input, ?string $key = null): string | false;
+    function decrypt(string $input, ?string $key = null, bool $binary = false): string | false;
+    /**
+     * Encrypts a file from the given source and saves it at the given destination.
+     */
+    function encryptFile(string $source, string $destination, ?string $key = null): void;
+    /**
+     * Decrypts a file from the given source, otherwise returns false on failure.
+     */
+    function decryptFile(string $source, ?string $key = null): string | false;
     /**
      * Generates a password hash for the given input.
      */

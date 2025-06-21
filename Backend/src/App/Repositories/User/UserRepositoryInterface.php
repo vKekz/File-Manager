@@ -14,9 +14,9 @@ interface UserRepositoryInterface
      */
     function findById(string $id): ?UserEntity;
     /**
-     * Attempts to find a user entity by the given email. Returns null on failure.
+     * Attempts to find a user entity by the given email hash. Returns null on failure.
      */
-    function findByEmail(string $email): ?UserEntity;
+    function findByEmailHash(string $emailHash): ?UserEntity;
     /**
      * Attempts to update a users attributes. Returns true on success.
      */

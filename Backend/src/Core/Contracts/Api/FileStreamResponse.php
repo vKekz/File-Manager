@@ -2,10 +2,10 @@
 
 namespace Core\Contracts\Api;
 
-class FileResponse extends ApiResponse
+class FileStreamResponse extends ApiResponse
 {
     function __construct(
-        public readonly string $path,
+        public readonly string $data,
         public readonly string $name,
         public readonly string $size,
         mixed $message = ""
@@ -14,16 +14,8 @@ class FileResponse extends ApiResponse
         parent::__construct($message, 200);
     }
 
-    /**
-     * @see https://www.php.net/manual/en/function.readfile.php#refsect1-function.readfile-examples
-     */
     public function write(): void
     {
-        if (!file_exists($this->path) || !is_file($this->path))
-        {
-            return;
-        }
-
         if (ob_get_level())
         {
             ob_end_clean();
@@ -36,7 +28,9 @@ class FileResponse extends ApiResponse
         header("Pragma: no-cache");
         header("Connection: close");
 
-        readfile($this->path);
-        exit;
+        $output = fopen("php://output", "wb");
+        fwrite($output, $this->data);
+        fclose($output);
+        flush();
     }
 }

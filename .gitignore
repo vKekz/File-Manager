@@ -5,4 +5,4 @@
 */.env
 
 # Uploded user storage files
-/Backend/Storage/Users/*
+/Storage/Users/*

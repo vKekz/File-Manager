@@ -2,7 +2,7 @@
 
 namespace App\Entities\User;
 
-use App\Enums\FileReplacementMode;
+use App\Enums\FileReplacementBehaviour;
 
 /**
  * Represents settings that determines what details are shown on the storage page.
@@ -10,11 +10,11 @@ use App\Enums\FileReplacementMode;
 class UserStorageSettings
 {
     /**
-     * Gets the method that decides whether existing files should be replaced or kept when uploading a duplicate name.
+     * Gets the behaviour that decides whether existing files should be replaced or kept when uploading a duplicate.
      *
      * Will be set to replace by default.
      */
-    public FileReplacementMode $fileReplacementMode = FileReplacementMode::Replace;
+    public FileReplacementBehaviour $fileReplacementBehaviour = FileReplacementBehaviour::Replace;
     /**
      * A value indicating whether file hashes are shown on the storage page.
      *
@@ -33,6 +33,7 @@ class UserStorageSettings
         $settings = new UserStorageSettings();
         $settings->showFileHash = $data["showFileHash"];
         $settings->showUploadDate = $data["showUploadDate"];
+        $settings->fileReplacementBehaviour = FileReplacementBehaviour::from($data["fileReplacementBehaviour"]);
         return $settings;
     }
 }

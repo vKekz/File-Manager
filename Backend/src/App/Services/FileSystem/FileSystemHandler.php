@@ -2,6 +2,7 @@
 
 namespace App\Services\FileSystem;
 
+use App\Services\Cryptographic\CryptographicServiceInterface;
 use Core\Contracts\File\UploadedFile;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
@@ -13,6 +14,10 @@ use RecursiveIteratorIterator;
 class FileSystemHandler implements FileSystemHandlerInterface
 {
     private const USER_STORAGE_PATH = "Storage" . DIRECTORY_SEPARATOR . "Users";
+
+    function __construct(private readonly CryptographicServiceInterface $cryptographicService)
+    {
+    }
 
     /**
      * @inheritdoc
@@ -62,14 +67,24 @@ class FileSystemHandler implements FileSystemHandlerInterface
     /**
      * @inheritdoc
      */
-    function saveUploadedFile(UploadedFile $source, string $destination): void
+    function saveUploadedFile(UploadedFile $source, string $destination, bool $encrypt = false, ?string $key = null): void
     {
         if (!file_exists($source->tempPath))
         {
             return;
         }
 
-        move_uploaded_file($source->tempPath, $destination);
+        // Create directory if it does not exist
+        $this->createDirectory(dirname($destination));
+
+        if ($encrypt)
+        {
+            $this->cryptographicService->encryptFile($source->tempPath, $destination, $key);
+        }
+        else
+        {
+            move_uploaded_file($source->tempPath, $destination);
+        }
     }
 
     /**
@@ -90,6 +105,6 @@ class FileSystemHandler implements FileSystemHandlerInterface
      */
     function getAbsolutePath(string $relativePath): string
     {
-        return dirname(getcwd()) . DIRECTORY_SEPARATOR . self::USER_STORAGE_PATH . DIRECTORY_SEPARATOR . $relativePath;
+        return dirname(getcwd(), 2) . DIRECTORY_SEPARATOR . self::USER_STORAGE_PATH . DIRECTORY_SEPARATOR . $relativePath;
     }
 }

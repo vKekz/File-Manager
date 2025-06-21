@@ -17,6 +17,7 @@ use Core\Controllers\ApiController;
 use Core\Database\Database;
 use Core\DependencyInjection\ServiceContainer;
 use Core\Enums\HttpMethod;
+use JetBrains\PhpStorm\NoReturn;
 use ReflectionAttribute;
 
 /**
@@ -73,10 +74,12 @@ class App
         $controller->handleRequest(new ApiRequest($route, HttpMethod::getFromName($method)), $this->httpContext);
     }
 
+    #[NoReturn]
     private function cleanup(): void
     {
         $database = $this->serviceContainer->resolve(Database::class);
         $database->close();
+        exit;
     }
 
     private function registerController(ApiController $controller): void
