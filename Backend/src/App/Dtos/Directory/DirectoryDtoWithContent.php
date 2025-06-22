@@ -18,6 +18,7 @@ readonly class DirectoryDtoWithContent
         public string $parentId,
         public string $name,
         public string $path,
+        public string $createdAt,
         public bool $isRoot,
         public array $children,
         public array $files

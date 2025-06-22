@@ -3,6 +3,7 @@ import { StorageStateModel } from "../storage-state.model";
 import { DirectoryService } from "../../../services/directory.service";
 import { DirectoryDtoWithContent } from "../../../dtos/directory.dto";
 import { Injectable } from "@angular/core";
+import { calculateCompactDate } from "../../../helpers/compact-date.helper";
 
 @Injectable({ providedIn: "root" })
 export class DirectoryStateHandler {
@@ -21,6 +22,9 @@ export class DirectoryStateHandler {
       });
       return;
     }
+
+    // Update compact details
+    response.compactDate = calculateCompactDate(response.createdAt);
 
     // Update cache
     cache?.children.push(response);
@@ -42,7 +46,7 @@ export class DirectoryStateHandler {
     }
 
     const cacheIndex = cache?.children.findIndex((directory) => directory.id === id);
-    if (!cacheIndex || cacheIndex === -1) {
+    if (cacheIndex === undefined || cacheIndex === -1) {
       return;
     }
 

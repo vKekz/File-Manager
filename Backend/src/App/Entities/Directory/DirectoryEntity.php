@@ -24,7 +24,7 @@ class DirectoryEntity
 
     public function toDto(): DirectoryDto
     {
-        return new DirectoryDto($this->id, $this->parentId, $this->name, $this->path, $this->isRoot);
+        return new DirectoryDto($this->id, $this->parentId, $this->name, $this->path, $this->createdAt, $this->isRoot);
     }
 
     public static function fromArray(array $data): DirectoryEntity

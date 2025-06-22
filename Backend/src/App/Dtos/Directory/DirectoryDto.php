@@ -14,6 +14,7 @@ class DirectoryDto
         public readonly string $parentId,
         public string $name,
         public string $path,
+        public readonly string $createdAt,
         public readonly bool $isRoot,
     )
     {
@@ -25,11 +26,11 @@ class DirectoryDto
      */
     public function withContent(array $children, array $files): DirectoryDtoWithContent
     {
-        return new DirectoryDtoWithContent($this->id, $this->parentId, $this->name, $this->path, $this->isRoot, $children, $files);
+        return new DirectoryDtoWithContent($this->id, $this->parentId, $this->name, $this->path, $this->createdAt, $this->isRoot, $children, $files);
     }
 
     public static function fromArray(array $data): DirectoryDto
     {
-        return new self($data["Id"], $data["ParentId"], $data["Name"], $data["Path"], $data["IsRoot"]);
+        return new self($data["Id"], $data["ParentId"], $data["Name"], $data["Path"], $data["CreatedAt"], $data["IsRoot"]);
     }
 }

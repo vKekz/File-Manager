@@ -5,6 +5,7 @@ import { DirectoryDtoWithContent } from "../../../dtos/directory.dto";
 import { calculateCompactFileSize } from "../../../helpers/compact-file-size.helper";
 import { FileDto } from "../../../dtos/file.dto";
 import { Injectable } from "@angular/core";
+import { calculateCompactDate } from "../../../helpers/compact-date.helper";
 
 @Injectable({ providedIn: "root" })
 export class FileStateHandler {
@@ -35,8 +36,9 @@ export class FileStateHandler {
       return;
     }
 
-    // Calculate compact size for new file
+    // Calculate compact details for new file
     response.compactSize = calculateCompactFileSize(response.size);
+    response.compactDate = calculateCompactDate(response.uploadedAt);
 
     // Update cache
     cache?.files.push(response);
@@ -56,7 +58,7 @@ export class FileStateHandler {
     }
 
     const cacheIndex = cache?.files.findIndex((file) => file.id === response.id);
-    if (!cacheIndex || cacheIndex === -1) {
+    if (cacheIndex === undefined || cacheIndex === -1) {
       return;
     }
 
@@ -81,6 +83,7 @@ export class FileStateHandler {
     existingFile.size = newFile.size;
     existingFile.compactSize = calculateCompactFileSize(existingFile.size);
     existingFile.uploadedAt = newFile.uploadedAt;
+    existingFile.compactDate = calculateCompactDate(newFile.uploadedAt);
 
     const cachedFile = cache?.files?.find((file) => file.id === newFile.id);
     if (cachedFile) {
@@ -88,6 +91,7 @@ export class FileStateHandler {
       cachedFile.size = newFile.size;
       cachedFile.compactSize = calculateCompactFileSize(cachedFile.size);
       cachedFile.uploadedAt = newFile.uploadedAt;
+      cachedFile.compactDate = calculateCompactDate(newFile.uploadedAt);
       return;
     }
 

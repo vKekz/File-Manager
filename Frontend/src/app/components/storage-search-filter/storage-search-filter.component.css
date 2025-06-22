@@ -1,0 +1,47 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 35px;
+}
+
+label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: var(--dark-theme-secondary-background-color);
+  padding: 0.5rem 0.75rem;
+  border-bottom-left-radius: var(--border-radius-light);
+  border-top-left-radius: var(--border-radius-light);
+  border: 0;
+  cursor: pointer;
+  transition: var(--transition-delay);
+}
+
+label:hover {
+  background-color: var(--dark-theme-third-background-color-opacity-50);
+}
+
+input {
+  background-color: var(--dark-theme-background-color);
+  color: var(--dark-theme-font-color);
+
+  width: 175px;
+  padding: 0.5rem;
+
+  outline: 0;
+  border: 1px solid var(--dark-theme-third-background-color);
+  border-radius: var(--border-radius-light);
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+
+  transition: border var(--transition-delay);
+}
+
+input:hover {
+  border-color: var(--dark-theme-secondary-font-color);
+}
+
+input:focus {
+  border: 1px solid var(--primary-color);
+}

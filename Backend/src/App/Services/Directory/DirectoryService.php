@@ -13,6 +13,7 @@ use App\Repositories\File\FileRepositoryInterface;
 use App\Services\Cryptographic\CryptographicService;
 use App\Services\Cryptographic\CryptographicServiceInterface;
 use App\Services\File\FileServiceInterface;
+use App\Services\FileSystem\FileSystemHandler;
 use App\Services\FileSystem\FileSystemHandlerInterface;
 use App\Validation\Directory\DirectoryNameValidator;
 use Core\Context\HttpContext;
@@ -49,7 +50,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
         if (!DirectoryNameValidator::validate($name))
         {
             return new BadRequest(
-                "Directory name cannot be empty or contain any of the following special characters: " . DirectoryNameValidator::getInvalidCharactersFormatted());
+                "Directory name cannot be empty or contain any of the following special characters: " . FileSystemHandler::getInvalidCharactersFormatted());
         }
 
         // Check if the parent directory exists and is owned by the user
@@ -81,7 +82,8 @@ readonly class DirectoryService implements DirectoryServiceInterface
             return new InternalServerError();
         }
 
-        $path = $parentDirectory->path . DIRECTORY_SEPARATOR . $name;
+        $decryptedParentPath = $this->cryptographicService->decrypt($parentDirectory->path, $user->privateKey);
+        $path = $decryptedParentPath . DIRECTORY_SEPARATOR . $name;
         $absolutePath = $this->fileSystemHandler->getAbsolutePath($userId . $path);
 
         // Create real directory on file system
@@ -94,7 +96,7 @@ readonly class DirectoryService implements DirectoryServiceInterface
             $this->cryptographicService->encrypt($name, $user->privateKey),
             $nameHash,
             $this->cryptographicService->encrypt($path, $user->privateKey),
-            (new DateTime())->format(DATE_ISO8601_EXPANDED)
+            (new DateTime())->format(DATE_RFC3339)
         );
 
         // Create entry in database

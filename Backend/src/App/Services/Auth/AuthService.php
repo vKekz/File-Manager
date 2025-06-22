@@ -94,7 +94,7 @@ readonly class AuthService implements AuthServiceInterface
             $encryptedHash,
             $encryptedKey,
             (new DateTime())
-                ->format(DATE_ISO8601_EXPANDED)
+                ->format(DATE_RFC3339)
         );
 
         if (!$this->userRepository->tryAdd($userEntity))

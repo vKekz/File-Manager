@@ -3,6 +3,7 @@
 namespace App\Entities\User;
 
 use App\Enums\FileReplacementBehaviour;
+use App\Enums\StorageSearchBehaviour;
 
 /**
  * Represents settings that determines what details are shown on the storage page.
@@ -15,6 +16,12 @@ class UserStorageSettings
      * Will be set to replace by default.
      */
     public FileReplacementBehaviour $fileReplacementBehaviour = FileReplacementBehaviour::Replace;
+    /**
+     * Gets the behaviour that decides which files and directories are contained in the search.
+     *
+     * Will be set to current by default.
+     */
+    public StorageSearchBehaviour $storageSearchBehaviour = StorageSearchBehaviour::Current;
     /**
      * A value indicating whether file hashes are shown on the storage page.
      *
@@ -34,6 +41,7 @@ class UserStorageSettings
         $settings->showFileHash = $data["showFileHash"];
         $settings->showUploadDate = $data["showUploadDate"];
         $settings->fileReplacementBehaviour = FileReplacementBehaviour::from($data["fileReplacementBehaviour"]);
+        $settings->storageSearchBehaviour = StorageSearchBehaviour::from($data["storageSearchBehaviour"]);
         return $settings;
     }
 }

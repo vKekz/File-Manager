@@ -5,6 +5,8 @@ export interface DirectoryDto {
   parentId: string;
   name: string;
   path: string;
+  createdAt: string;
+  compactDate: string;
   isRoot: boolean;
 }
 

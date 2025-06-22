@@ -37,7 +37,7 @@ class DirectoryRepository implements DirectoryRepositoryInterface
             "root",
             "",
             "",
-            (new DateTime())->format(DATE_ISO8601_EXPANDED),
+            (new DateTime())->format(DATE_RFC3339),
             true
         );
         $this->tryAdd($rootDirectory);
@@ -75,6 +75,14 @@ class DirectoryRepository implements DirectoryRepositoryInterface
     {
         $condition = "WHERE ParentId = ? AND UserId = ? AND NameHash = ?";
         return $this->database->fetchData(self::TABLE_NAME, [], $condition, $parentId, $userId, $nameHash);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function findByUser(string $userId): array {
+        $condition = "WHERE UserId = ? AND IsRoot = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId, 0);
     }
 
     /**
@@ -131,7 +139,7 @@ class DirectoryRepository implements DirectoryRepositoryInterface
             UserId varchar(36) NOT NULL,
             Name varchar(255) NOT NULL,
             NameHash varchar(128) NOT NULL,
-            Path varchar(1024) NOT NULL,
+            Path varchar(2048) NOT NULL,
             CreatedAt datetime NOT NULL,
             IsRoot boolean NOT NULL,
             FOREIGN KEY (UserId) REFERENCES " . UserRepository::TABLE_NAME . "(Id)

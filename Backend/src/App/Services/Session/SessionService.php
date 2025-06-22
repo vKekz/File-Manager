@@ -52,10 +52,10 @@ readonly class SessionService implements SessionServiceInterface
             $userEntity->id,
             $this->httpContext->requestUserAgent,
             (new DateTime())
-                ->format(DATE_ISO8601_EXPANDED),
+                ->format(DATE_RFC3339),
             (new DateTime())
                 ->add(new DateInterval($this->configuration->authenticationTokenLifetime))
-                ->format(DATE_ISO8601_EXPANDED)
+                ->format(DATE_RFC3339)
         );
 
         if (!$this->sessionRepository->tryAdd($sessionEntity))

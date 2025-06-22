@@ -23,6 +23,18 @@ export class StorageTableComponent {
     protected readonly settingsService: SettingsService
   ) {}
 
+  protected highlightMatch(name: string): string {
+    const query = this.storageController.searchQuery();
+    if (!query) {
+      return name;
+    }
+
+    const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+    const regex = new RegExp(`(${escapedQuery})`, "ig");
+
+    return name.replace(regex, "<mark>$1</mark>");
+  }
+
   protected downloadFile(file: FileDto, anchor: HTMLAnchorElement) {
     return this.fileController.downloadFileViaAnchor(file, anchor);
   }

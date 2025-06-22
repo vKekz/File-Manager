@@ -10,6 +10,12 @@ export class SelectStorage {
   constructor(public readonly directoryId: string) {}
 }
 
+export class SearchStorage {
+  static readonly type = "[Storage] Search storage";
+
+  constructor(public readonly name: string) {}
+}
+
 export class ResetResponse {
   static readonly type = "[Storage] Reset response";
 

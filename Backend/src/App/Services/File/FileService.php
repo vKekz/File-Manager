@@ -14,7 +14,9 @@ use App\Repositories\Directory\DirectoryRepositoryInterface;
 use App\Repositories\File\FileRepositoryInterface;
 use App\Services\Cryptographic\CryptographicService;
 use App\Services\Cryptographic\CryptographicServiceInterface;
+use App\Services\FileSystem\FileSystemHandler;
 use App\Services\FileSystem\FileSystemHandlerInterface;
+use App\Validation\File\FileNameValidator;
 use Core\Context\HttpContext;
 use Core\Contracts\Api\ApiResponse;
 use Core\Contracts\Api\BadRequest;
@@ -45,6 +47,14 @@ readonly class FileService implements FileServiceInterface
      */
     function uploadFile(UploadFileRequest $request): FileDto | ApiResponse
     {
+        $file = $request->file;
+        $name = $file->name;
+        if (!FileNameValidator::validate($name))
+        {
+            return new BadRequest(
+                "File name cannot exceed 255 characters or contain any of the following special characters: " . FileSystemHandler::getInvalidCharactersFormatted());
+        }
+
         // Check if the directory exists and is owned by the user
         $directoryId = $request->directoryId;
         $directory = $this->directoryRepository->findById($directoryId);
@@ -60,8 +70,6 @@ readonly class FileService implements FileServiceInterface
             return new BadRequest("Directory is owned by another user");
         }
 
-        $file = $request->file;
-        $name = $file->name;
         $nameHash = $this->cryptographicService->sign($name, CryptographicService::HASH_ALGORITHM);
 
         // Check if a file with the same name already exists
@@ -104,7 +112,7 @@ readonly class FileService implements FileServiceInterface
             $realHash,
             $this->cryptographicService->signFile($absolutePath),
             $file->size,
-            (new DateTime())->format(DATE_ISO8601_EXPANDED)
+            (new DateTime())->format(DATE_RFC3339)
         );
 
         if (!$this->fileRepository->tryAdd($fileEntity))
@@ -212,7 +220,7 @@ readonly class FileService implements FileServiceInterface
         $file->realHash = $realHash;
         $file->hash = $this->cryptographicService->signFile($absolutePath);
         $file->size = $uploadedFile->size;
-        $file->uploadedAt = (new DateTime())->format(DATE_ISO8601_EXPANDED);
+        $file->uploadedAt = (new DateTime())->format(DATE_RFC3339);
 
         // Update in database
         if (!$this->fileRepository->tryUpdate($file))

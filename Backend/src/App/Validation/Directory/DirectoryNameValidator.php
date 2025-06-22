@@ -2,6 +2,7 @@
 
 namespace App\Validation\Directory;
 
+use App\Services\FileSystem\FileSystemHandler;
 use App\Validation\Validator;
 
 /**
@@ -16,6 +17,7 @@ class DirectoryNameValidator extends Validator
      */
     public static function validate(mixed &$input): bool
     {
+        // URL friendly encode
         $name = htmlspecialchars($input);
 
         // Remove any whitespace
@@ -29,7 +31,7 @@ class DirectoryNameValidator extends Validator
         }
 
         // Name cannot contain any special characters
-        if (strpbrk($name, self::getInvalidCharacters()))
+        if (strpbrk($name, FileSystemHandler::getInvalidCharacters()))
         {
             return false;
         }
@@ -37,16 +39,5 @@ class DirectoryNameValidator extends Validator
         $input = $name;
 
         return true;
-    }
-
-    private static function getInvalidCharacters(): string
-    {
-        return '<>|:*?\/.';
-    }
-
-    public static function getInvalidCharactersFormatted(): string
-    {
-        $invalidCharsArray = str_split(self::getInvalidCharacters());
-        return join(" ", $invalidCharsArray);
     }
 }

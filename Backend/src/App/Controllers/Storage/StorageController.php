@@ -31,8 +31,8 @@ class StorageController extends ApiController
     }
 
     #[HttpGet("/search")]
-    function search(#[QueryParameter] string $name): ApiResponse
+    function search(#[QueryParameter] string $name, #[QueryParameter] string $directoryId): ApiResponse
     {
-        return new Ok($name);
+        return new Ok($this->storageService->search($name, $directoryId));
     }
 }

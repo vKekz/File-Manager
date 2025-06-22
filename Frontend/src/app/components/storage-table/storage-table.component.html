@@ -2,15 +2,18 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th [width]="80" class="align-right">Größe</th>
+      @if (this.settingsService.showDates()) {
+        <th [width]="150" class="align-right hidden">Änderungsdatum</th>
+      }
+      <th [width]="100" class="align-right">Größe</th>
       <th [width]="25"></th>
     </tr>
   </thead>
 
   <tbody>
-    @if (this.isRootDirectory()) {
+    @if (this.isRootDirectory() && this.storageController.searchResult() === undefined) {
       <tr (click)="this.directoryController.goBack()">
-        <td class="">
+        <td>
           <div class="name-container">
             <div>
               <i class="bi bi-folder-fill folder-icon"></i>
@@ -18,6 +21,18 @@
             <span>. .</span>
           </div>
         </td>
+        @if (this.settingsService.showDates()) {
+          <td class="hidden"></td>
+        }
+        <td></td>
+        <td></td>
+      </tr>
+    }
+
+    @if (this.storageController.searchResult() !== undefined && this.storageController.itemsFound() === 0) {
+      <tr>
+        <td class="text-overflow">Keine Suchergebnisse gefunden.</td>
+        <td class="hidden"></td>
         <td></td>
         <td></td>
       </tr>
@@ -31,9 +46,14 @@
             <div>
               <i class="bi bi-folder-fill folder-icon"></i>
             </div>
-            <span class="text-overflow">{{ directory.name }}</span>
+            <span [innerHTML]="highlightMatch(directory.name)" class="text-overflow"></span>
           </div>
         </td>
+        @if (this.settingsService.showDates()) {
+          <td (click)="this.storageController.selectStorage(directory.id)" class="align-right hidden">
+            {{ directory.compactDate }}
+          </td>
+        }
         <td (click)="this.storageController.selectStorage(directory.id)"></td>
         <td [id]="DROPDOWN_TOGGLE_ID">
           <app-drop-down-toggle [type]="DropDownType.Directory" [directory]="directory"></app-drop-down-toggle>
@@ -50,7 +70,7 @@
               <app-file-type-icon [fileName]="file.name"></app-file-type-icon>
             </div>
             <div class="file-details-container text-overflow">
-              <span class="text-overflow">{{ file.name }}</span>
+              <span [innerHTML]="highlightMatch(file.name)" class="text-overflow"></span>
               @if (this.settingsService.showFileHashes()) {
                 <span class="text-overflow file-hash">
                   {{ file.hash }}
@@ -59,6 +79,11 @@
             </div>
           </div>
         </td>
+        @if (this.settingsService.showDates()) {
+          <td (click)="this.downloadFile(file, downloadAnchor)" class="align-right hidden">
+            {{ file.compactDate }}
+          </td>
+        }
         <td (click)="this.downloadFile(file, downloadAnchor)" class="align-right">
           {{ file.compactSize }}
         </td>

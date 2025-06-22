@@ -8,4 +8,8 @@ export class SettingsService {
   public showFileHashes() {
     return this.authController.getUser()?.settings?.storageSettings?.showFileHash ?? false;
   }
+
+  public showDates() {
+    return this.authController.getUser()?.settings?.storageSettings?.showUploadDate ?? false;
+  }
 }

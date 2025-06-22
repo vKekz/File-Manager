@@ -2,7 +2,9 @@
 
 namespace App\Services\Storage;
 
+use App\Contracts\Storage\SearchStorageResponse;
 use App\Dtos\Directory\DirectoryDtoWithContent;
+use App\Enums\StorageSearchBehaviour;
 use App\Mapping\Directory\DirectoryMapper;
 use App\Mapping\File\FileMapper;
 use App\Repositories\Directory\DirectoryRepositoryInterface;
@@ -73,8 +75,77 @@ readonly class StorageService implements StorageServiceInterface
         return $this->directoryMapper->mapSingle($directoryEntity)->withContent($children, $files);
     }
 
-    function search(string $name)
+    /**
+     * @inheritdoc
+     */
+    function search(string $name, string $directoryId): SearchStorageResponse
     {
-        // TODO: Implement search() method.
+        if (strlen($name) === 0)
+        {
+            return SearchStorageResponse::Empty();
+        }
+
+        // Get either all files or just the files in the current directory
+        $user = $this->httpContext->user;
+        if ($user->settings->storageSettings->storageSearchBehaviour === StorageSearchBehaviour::Full)
+        {
+            $directories = $this->directoryMapper->mapArray(
+                $this->directoryRepository->findByUser($user->id)
+            );
+            $files = $this->fileMapper->mapArray(
+                $this->fileRepository->findByUser($user->id)
+            );
+        }
+        else
+        {
+            $directories = $this->directoryMapper->mapArray(
+                $this->directoryRepository->findByParentIdForUser($user->id, $directoryId)
+            );
+            $files = $this->fileMapper->mapArray(
+                $this->fileRepository->findByDirectoryIdForUser($user->id, $directoryId)
+            );
+        }
+
+        $normalizedName = strtolower($name);
+
+        // Filter directories by name
+        $filteredDirectories = array_filter(
+            $directories,
+            function ($directory) use ($normalizedName, $user)
+            {
+                $directory->name = $this->cryptographicService->decrypt($directory->name, $user->privateKey);
+                $isMatch = stripos($directory->name, $normalizedName) !== false;
+
+                // Only decrypt path if there is a match
+                if ($isMatch)
+                {
+                    $directory->path = $this->cryptographicService->decrypt($directory->path, $user->privateKey);
+                }
+
+                return $isMatch;
+            }
+        );
+
+        // Filter files by name
+        $filteredFiles = array_filter(
+            $files,
+            function ($file) use ($normalizedName, $user)
+            {
+                $file->name = $this->cryptographicService->decrypt($file->name, $user->privateKey);
+                return stripos($file->name, $normalizedName) !== false;
+            }
+        );
+
+        if (count($filteredDirectories) > 0)
+        {
+            $filteredDirectories = array_values($filteredDirectories);
+        }
+
+        if (count($filteredFiles) > 0)
+        {
+            $filteredFiles = array_values($filteredFiles);
+        }
+
+        return new SearchStorageResponse($filteredDirectories, $filteredFiles);
     }
 }
