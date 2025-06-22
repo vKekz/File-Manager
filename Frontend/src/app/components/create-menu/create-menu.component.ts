@@ -2,6 +2,7 @@ import { Component, ElementRef, Input, ViewChild } from "@angular/core";
 import { DirectoryController } from "../../../controllers/directory.controller";
 import { FileController } from "../../../controllers/file.controller";
 import { CREATE_MENU_ID } from "../../../constants/id.constants";
+import { StorageController } from "../../../controllers/storage.controller";
 
 @Component({
   selector: "app-create-menu",
@@ -17,6 +18,7 @@ export class CreateMenuComponent {
   private nameInput?: ElementRef;
 
   constructor(
+    protected readonly storageController: StorageController,
     protected readonly directoryController: DirectoryController,
     protected readonly fileController: FileController
   ) {}

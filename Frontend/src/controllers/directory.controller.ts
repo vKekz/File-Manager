@@ -1,26 +1,22 @@
 import { Injectable, Signal } from "@angular/core";
 import { DirectoryDto } from "../dtos/directory.dto";
-import { ApiResponse } from "../contracts/api.response";
 import { Store } from "@ngxs/store";
-import {
-  CreateDirectory,
-  DeleteDirectory,
-  ResetResponse,
-  SelectDirectory,
-} from "../states/directory/directory.actions";
-import { DirectoryState } from "../states/directory/directory.state";
+import { CreateDirectory, DeleteDirectory } from "../states/storage/directory/directory.actions";
 import { toSignalSync } from "../helpers/to-signal.helper";
+import { StorageState } from "../states/storage/storage.state";
+import { StorageController } from "./storage.controller";
 
 @Injectable({ providedIn: "root" })
 export class DirectoryController {
   public readonly currentDirectory: Signal<DirectoryDto | undefined>;
   public readonly directories: Signal<DirectoryDto[]>;
-  public readonly response: Signal<ApiResponse | undefined>;
 
-  constructor(private readonly store: Store) {
-    this.currentDirectory = toSignalSync(this.store.select(DirectoryState.getCurrentDirectory));
-    this.directories = toSignalSync(this.store.select(DirectoryState.getDirectories));
-    this.response = toSignalSync(this.store.select(DirectoryState.getResponse));
+  constructor(
+    private readonly storageController: StorageController,
+    private readonly store: Store
+  ) {
+    this.currentDirectory = toSignalSync(this.store.select(StorageState.getCurrentDirectory));
+    this.directories = toSignalSync(this.store.select(StorageState.getDirectories));
   }
 
   public createDirectory(name: string) {
@@ -31,20 +27,12 @@ export class DirectoryController {
     this.store.dispatch(new DeleteDirectory(id));
   }
 
-  public selectDirectory(id: string) {
-    this.store.dispatch(new SelectDirectory(id));
-  }
-
   public goBack() {
     const current = this.currentDirectory();
     if (!current) {
       return;
     }
 
-    this.selectDirectory(current.parentId);
-  }
-
-  public reset() {
-    this.store.dispatch(new ResetResponse());
+    this.storageController.selectStorage(current.parentId);
   }
 }

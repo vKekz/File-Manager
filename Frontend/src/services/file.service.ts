@@ -26,12 +26,6 @@ export class FileService {
     return firstValueFrom(this.httpClient.get<Blob>(route, options));
   }
 
-  public getDirectoryFiles(directoryId: string) {
-    const route = `${this.endpoint}?directoryId=${directoryId}`;
-    const request = this.httpClient.get<FileDto[]>(route);
-    return firstValueFrom(request);
-  }
-
   public createFile(directoryId: string, file: File) {
     const payload = new FormData();
     payload.append("directoryId", directoryId);

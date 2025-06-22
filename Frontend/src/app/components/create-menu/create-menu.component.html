@@ -1,9 +1,6 @@
 <div [id]="CREATE_MENU_ID" [class]="isOpen ? 'open' : ''" class="container">
-  @if (this.directoryController.response()) {
-    <div class="errors">{{ this.directoryController.response()?.message }}</div>
-  }
-  @if (this.fileController.response()) {
-    <div class="errors">{{ this.fileController.response()?.message }}</div>
+  @if (this.storageController.response()) {
+    <div class="errors">{{ this.storageController.response()?.message }}</div>
   }
   <div class="options">
     <div class="create-directory">

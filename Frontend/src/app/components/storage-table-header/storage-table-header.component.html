@@ -1,11 +1,12 @@
 <div class="container">
-  <span>\root{{ this.directoryController.currentDirectory()?.path }}</span>
-  <div class="search-container">
-    <div>
-      <input type="text" />
-    </div>
-    <div>
-      <i class="bi bi-search"></i>
-    </div>
+  <div class="text-overflow title">
+    @if (this.storageController.searchResult() !== undefined) {
+      <span>{{ this.storageController.itemsFound() }} Suchergebnisse</span>
+    } @else {
+      <span>\root{{ this.directoryController.currentDirectory()?.path }}</span>
+    }
+  </div>
+  <div>
+    <app-storage-search-filter></app-storage-search-filter>
   </div>
 </div>

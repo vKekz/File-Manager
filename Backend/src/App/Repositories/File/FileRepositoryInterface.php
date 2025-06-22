@@ -29,6 +29,12 @@ interface FileRepositoryInterface
      */
     function findByParentIdAndNameHashForUser(string $directoryId, string $userId, string $nameHash): array;
     /**
+     * Returns an array of file entities that are owned by the given user.
+     *
+     * @return FileEntity[]
+     */
+    function findByUser(string $userId): array;
+    /**
      * Attempts to replace the given file entity's attributes. Returns true on success.
      */
     function tryUpdate(FileEntity $file): bool;

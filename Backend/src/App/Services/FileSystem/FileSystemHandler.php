@@ -90,7 +90,7 @@ class FileSystemHandler implements FileSystemHandlerInterface
     /**
      * @inheritdoc
      */
-    public function deleteFile(string $path): void
+    function deleteFile(string $path): void
     {
         if (!file_exists($path))
         {
@@ -106,5 +106,22 @@ class FileSystemHandler implements FileSystemHandlerInterface
     function getAbsolutePath(string $relativePath): string
     {
         return dirname(getcwd(), 2) . DIRECTORY_SEPARATOR . self::USER_STORAGE_PATH . DIRECTORY_SEPARATOR . $relativePath;
+    }
+
+    /**
+     * Returns an imploded string containing all invalid characters that are not allowed in files and directories.
+     */
+    static function getInvalidCharacters(): string
+    {
+        return '<>|:*?\/.';
+    }
+
+    /**
+     * Returns a formatted string from the invalid characters defined above.
+     */
+    static function getInvalidCharactersFormatted(): string
+    {
+        $invalidCharsArray = str_split(self::getInvalidCharacters());
+        return join(" ", $invalidCharsArray);
     }
 }

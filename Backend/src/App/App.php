@@ -6,6 +6,7 @@ use App\Controllers\Auth\AuthController;
 use App\Controllers\Directory\DirectoryController;
 use App\Controllers\File\FileController;
 use App\Controllers\Session\SessionController;
+use App\Controllers\Storage\StorageController;
 use App\Controllers\User\UserController;
 use App\Services\Session\SessionServiceInterface;
 use Core\Attributes\Authorization\Authorize;
@@ -39,11 +40,13 @@ class App
         $this->registerController($serviceContainer->resolve(FileController::class));
         $this->registerController($serviceContainer->resolve(SessionController::class));
         $this->registerController($serviceContainer->resolve(UserController::class));
+        $this->registerController($serviceContainer->resolve(StorageController::class));
     }
 
     /**
      * Forwards a given request to the corresponding controller that handles the request.
      */
+    #[NoReturn]
     public function handle(string $route, string $method): void
     {
         $this->handleRequest($route, $method);

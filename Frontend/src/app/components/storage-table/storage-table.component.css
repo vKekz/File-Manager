@@ -64,3 +64,9 @@ td:last-child {
   color: var(--dark-theme-secondary-font-color);
   font-size: 0.75rem;
 }
+
+@media screen and (max-width: 960px) {
+  .hidden {
+    display: none;
+  }
+}

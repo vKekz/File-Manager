@@ -23,6 +23,7 @@ export const APP_ROUTES = {
 export const API_ROUTES = {
   auth: "auth",
   session: "session",
+  storage: "storage",
   directory: "directory",
   file: "file",
 } as const;

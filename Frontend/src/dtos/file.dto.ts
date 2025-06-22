@@ -5,4 +5,5 @@ export interface FileDto {
   size: number;
   compactSize: string;
   uploadedAt: string;
+  compactDate: string;
 }

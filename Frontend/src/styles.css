@@ -36,6 +36,18 @@ body {
   margin: 0;
 }
 
+input {
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+mark {
+  background-color: var(--primary-color);
+  color: var(--dark-theme-font-color);
+  padding-inline: 0.15rem;
+  border-radius: var(--border-radius-lighter);
+}
+
 .align-left {
   text-align: left !important;
 }

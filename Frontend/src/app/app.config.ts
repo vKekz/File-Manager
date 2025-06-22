@@ -4,8 +4,7 @@ import { routes } from "./app.routes";
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { AuthInterceptor } from "../interceptors/auth.interceptor";
 import { NgxsModule } from "@ngxs/store";
-import { DirectoryState } from "../states/directory/directory.state";
-import { FileState } from "../states/file/file.state";
+import { StorageState } from "../states/storage/storage.state";
 
 export const API_URL = new InjectionToken("API_URL");
 
@@ -25,7 +24,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     authInterceptorProvider,
     apiUrlProvider,
-    importProvidersFrom(NgxsModule.forRoot([DirectoryState, FileState])),
+    importProvidersFrom(NgxsModule.forRoot([StorageState])),
     provideHttpClient(withInterceptorsFromDi()),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),

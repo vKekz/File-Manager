@@ -1,0 +1,13 @@
+<form (submit)="$event.preventDefault()" class="container">
+  <label for="search">
+    <i class="bi bi-search"></i>
+  </label>
+  <input
+    (input)="handleSearchInput($event)"
+    id="search"
+    name="search"
+    type="text"
+    placeholder="Dateien durchsuchen"
+    autocomplete="off"
+  />
+</form>

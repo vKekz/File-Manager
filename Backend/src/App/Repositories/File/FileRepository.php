@@ -56,6 +56,14 @@ class FileRepository implements FileRepositoryInterface
     /**
      * @inheritdoc
      */
+    function findByUser(string $userId): array {
+        $condition = "WHERE UserId = ?";
+        return $this->database->fetchData(self::TABLE_NAME, [], $condition, $userId);
+    }
+
+    /**
+     * @inheritdoc
+     */
     function tryUpdate(FileEntity $file): bool
     {
         $condition = "WHERE Id = ?";

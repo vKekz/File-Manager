@@ -7,6 +7,7 @@ import { DirectoryController } from "../../../controllers/directory.controller";
 import { copyTextToClipboard } from "../../../helpers/clipboard.helper";
 import { DropDownToggleComponent } from "../drop-down-toggle/drop-down-toggle.component";
 import { FileController } from "../../../controllers/file.controller";
+import { StorageController } from "../../../controllers/storage.controller";
 
 @Component({
   selector: "app-drop-down-menu",
@@ -31,16 +32,17 @@ export class DropDownMenuComponent {
   public directory?: DirectoryDto;
 
   constructor(
+    private readonly storageController: StorageController,
     private readonly directoryController: DirectoryController,
     protected readonly fileController: FileController
   ) {}
 
-  protected selectDirectory() {
+  protected selectStorage() {
     if (!this.directory) {
       return;
     }
 
-    this.directoryController.selectDirectory(this.directory.id);
+    this.storageController.selectStorage(this.directory.id);
   }
 
   protected deleteDirectory() {

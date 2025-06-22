@@ -1,9 +1,3 @@
-export class FetchFiles {
-  static readonly type = "[File] Fetch files";
-
-  constructor(public readonly directoryId: string) {}
-}
-
 export class CreateFile {
   static readonly type = "[File] Create file";
 

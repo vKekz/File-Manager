@@ -33,6 +33,12 @@ interface DirectoryRepositoryInterface
      */
     function findByParentIdAndNameHashForUser(string $parentId, string $userId, string $nameHash): array;
     /**
+     * Returns an array of directory entities that are owned by the given user.
+     *
+     * @return DirectoryEntity[]
+     */
+    function findByUser(string $userId): array;
+    /**
      * Attempts to add a directory entity to the repository. Returns true on success.
      */
     function tryAdd(DirectoryEntity $entity): bool;
