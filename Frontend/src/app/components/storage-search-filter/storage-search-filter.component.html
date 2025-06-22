@@ -2,12 +2,18 @@
   <label for="search">
     <i class="bi bi-search"></i>
   </label>
-  <input
-    (input)="handleSearchInput($event)"
-    id="search"
-    name="search"
-    type="text"
-    placeholder="Dateien durchsuchen"
-    autocomplete="off"
-  />
+  <div class="input-container">
+    <input
+      (input)="handleSearchInput()"
+      id="search"
+      name="search"
+      type="text"
+      placeholder="Dateien durchsuchen"
+      autocomplete="off"
+      #searchInput
+    />
+    <div (click)="handleClearSearch()" class="input-clear">
+      <i class="bi bi-x"></i>
+    </div>
+  </div>
 </form>

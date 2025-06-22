@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { debounceTime, distinctUntilChanged, Subject } from "rxjs";
 import { StorageController } from "../../../controllers/storage.controller";
 
@@ -9,6 +9,8 @@ import { StorageController } from "../../../controllers/storage.controller";
   styleUrl: "./storage-search-filter.component.css",
 })
 export class StorageSearchFilterComponent implements OnInit, OnDestroy {
+  @ViewChild("searchInput")
+  private readonly searchInput?: ElementRef;
   private readonly searchSubject: Subject<string> = new Subject<string>();
 
   constructor(private readonly storageController: StorageController) {}
@@ -23,10 +25,14 @@ export class StorageSearchFilterComponent implements OnInit, OnDestroy {
     this.searchSubject.unsubscribe();
   }
 
-  protected handleSearchInput(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    const value = inputElement.value;
+  protected handleSearchInput() {
+    const value = (this.searchInput?.nativeElement as HTMLInputElement).value;
     this.searchSubject.next(value);
+  }
+
+  protected handleClearSearch() {
+    (this.searchInput?.nativeElement as HTMLInputElement).value = "";
+    this.searchSubject.next("");
   }
 
   private handleSearch(searchedName: string) {
