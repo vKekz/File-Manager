@@ -14,17 +14,18 @@ import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component"
 import { UserController } from "../../../controllers/user.controller";
 import { ToggleType } from "../../../enums/toggle-type.enum";
 import { FormsModule } from "@angular/forms";
+import { ButtonComponent } from "../button/button.component";
 
 @Component({
   selector: "app-account-page",
-  imports: [ToggleSwitchComponent, FormsModule],
+  imports: [ToggleSwitchComponent, FormsModule, ButtonComponent],
   templateUrl: "./account-page.component.html",
   styleUrl: "./account-page.component.css",
 })
 export class AccountPageComponent {
   constructor(
     protected readonly authController: AuthController,
-    private readonly userController: UserController
+    protected readonly userController: UserController
   ) {}
 
   protected async handleSearchBehaviourChange(event: Event) {

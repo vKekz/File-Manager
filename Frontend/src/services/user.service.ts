@@ -26,4 +26,10 @@ export class UserService {
     const request = this.httpClient.patch<UserSettings>(route, payload);
     return firstValueFrom(request);
   }
+
+  public logout() {
+    const route = `${this.endpoint}/logout`;
+    const request = this.httpClient.post(route, {});
+    return firstValueFrom(request);
+  }
 }

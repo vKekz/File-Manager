@@ -20,6 +20,12 @@
         <span>{{ this.authController.getUser()?.email }}</span>
       </div>
     </div>
+    <div class="layout-settings">
+      <div class="layout-left"></div>
+      <div class="layout-right">
+        <app-button (click)="this.userController.logout()" text="Abmelden" [padding]="5"></app-button>
+      </div>
+    </div>
   </div>
   <div class="sub-container">
     <div class="title-container">

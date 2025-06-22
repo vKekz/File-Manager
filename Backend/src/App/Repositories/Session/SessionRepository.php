@@ -50,7 +50,18 @@ class SessionRepository implements SessionRepositoryInterface
      */
     function tryRemove(string $id): bool
     {
-        return false;
+        if (!$this->findById($id))
+        {
+            return false;
+        }
+
+        $condition = "WHERE Id = ?";
+        if (!$this->database->deleteData(self::TABLE_NAME, $condition, $id))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private function createTable(): void

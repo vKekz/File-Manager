@@ -12,4 +12,5 @@ use Core\Contracts\Api\ApiResponse;
 interface UserServiceInterface
 {
     function changeSettings(UpdateUserSettingsRequest $request): UserSettings | ApiResponse;
+    function logout(): void;
 }
