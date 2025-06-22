@@ -1,6 +1,7 @@
 :root {
   --primary-color: #8075ff;
 
+  --success-color: #34c759;
   --warning-color: #ff8585;
   --warning-color-opacity-15: rgba(255, 133, 133, 0.15);
 

@@ -1,0 +1,10 @@
+<label class="toggle-switch">
+  <input
+    (click)="this.type === ToggleType.FileHash ? toggleHash() : toggleDate()"
+    [ngModel]="value"
+    class="toggle"
+    name="showUploadDate"
+    type="checkbox"
+  />
+  <span class="slider"></span>
+</label>

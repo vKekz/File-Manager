@@ -24,6 +24,7 @@ export const API_ROUTES = {
   auth: "auth",
   session: "session",
   storage: "storage",
+  user: "user",
   directory: "directory",
   file: "file",
 } as const;

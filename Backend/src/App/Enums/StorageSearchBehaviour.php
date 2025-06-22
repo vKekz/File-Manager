@@ -8,11 +8,11 @@ namespace App\Enums;
 enum StorageSearchBehaviour: int
 {
     /**
-     * The search will contain all existing files and directories.
+     * Expanded search that will contain all existing files and directories.
      */
-    case Full = 0;
+    case Expanded = 0;
     /**
-     * The search will only contain the files and directories of the current directory.
+     * Classic search will only contain the files and directories of the current directory.
      */
-    case Current = 1;
+    case Classic = 1;
 }

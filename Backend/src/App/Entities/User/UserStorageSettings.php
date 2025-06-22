@@ -19,9 +19,9 @@ class UserStorageSettings
     /**
      * Gets the behaviour that decides which files and directories are contained in the search.
      *
-     * Will be set to current by default.
+     * Will be set to classic by default.
      */
-    public StorageSearchBehaviour $storageSearchBehaviour = StorageSearchBehaviour::Current;
+    public StorageSearchBehaviour $storageSearchBehaviour = StorageSearchBehaviour::Classic;
     /**
      * A value indicating whether file hashes are shown on the storage page.
      *

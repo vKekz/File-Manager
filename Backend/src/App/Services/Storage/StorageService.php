@@ -87,7 +87,7 @@ readonly class StorageService implements StorageServiceInterface
 
         // Get either all files or just the files in the current directory
         $user = $this->httpContext->user;
-        if ($user->settings->storageSettings->storageSearchBehaviour === StorageSearchBehaviour::Full)
+        if ($user->settings->storageSettings->storageSearchBehaviour === StorageSearchBehaviour::Expanded)
         {
             $directories = $this->directoryMapper->mapArray(
                 $this->directoryRepository->findByUser($user->id)

@@ -1,7 +1,92 @@
 <div class="container">
-  <div>{{ this.authController.getUser()?.id }}</div>
-  <div>{{ this.authController.getUser()?.username }}</div>
-  <div>{{ this.authController.getUser()?.email }}</div>
-  <div>Hash: {{ this.authController.getUser()?.settings?.storageSettings?.showFileHash }}</div>
-  <div>Date: {{ this.authController.getUser()?.settings?.storageSettings?.showUploadDate }}</div>
+  <div class="sub-container">
+    <div class="title-container">
+      <span class="title">Persönlichen Daten</span>
+      <span class="description">Hier hast du eine Übersicht deiner persönlichen Kontoinformationen.</span>
+    </div>
+    <div class="layout-settings">
+      <div class="layout-left">
+        <span>Benutzername</span>
+      </div>
+      <div class="layout-right">
+        <span>{{ this.authController.getUser()?.username }}</span>
+      </div>
+    </div>
+    <div class="layout-settings">
+      <div class="layout-left">
+        <span>E-Mail</span>
+      </div>
+      <div class="layout-right">
+        <span>{{ this.authController.getUser()?.email }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="sub-container">
+    <div class="title-container">
+      <span class="title">Dateien</span>
+      <span class="description">
+        Verwalte, wie deine Dateien gespeichert und angezeigt werden. Passe die Einstellungen an deine Arbeitsweise an.
+      </span>
+    </div>
+    <div class="layout-settings">
+      <div class="layout-left">
+        <span>Suchverhalten</span>
+      </div>
+      <div class="layout-right">
+        <select
+          (change)="handleSearchBehaviourChange($event)"
+          [ngModel]="this.authController.getUser()?.settings?.storageSettings?.storageSearchBehaviour"
+          name="searchBehaviour"
+        >
+          @for (searchBehaviour of storageSearchBehaviour; track $index) {
+            <option [value]="StorageSearchBehaviour[searchBehaviour]">
+              {{ storageSearchText[StorageSearchBehaviour[searchBehaviour]] }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="layout-settings">
+      <div class="layout-left">
+        <span>Ersetzverhalten</span>
+      </div>
+      <div class="layout-right">
+        <select
+          (change)="handleFileReplaceBehaviourChange($event)"
+          [ngModel]="this.authController.getUser()?.settings?.storageSettings?.fileReplacementBehaviour"
+          name="replacementBehaviour"
+        >
+          @for (replacementBehaviour of fileReplacementBehaviours; track $index) {
+            <option [value]="FileReplacementBehaviour[replacementBehaviour]">
+              {{ fileReplacementText[FileReplacementBehaviour[replacementBehaviour]] }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="layout-settings">
+      <div class="layout-left">
+        <span>Datei Signaturen anzeigen</span>
+      </div>
+      <div class="layout-right">
+        <app-toggle-switch
+          [value]="this.authController.getUser()?.settings?.storageSettings?.showFileHash!"
+          [type]="ToggleType.FileHash"
+        >
+        </app-toggle-switch>
+      </div>
+    </div>
+    <div class="layout-settings">
+      <div class="layout-left">
+        <span>Änderungsdatum anzeigen</span>
+      </div>
+      <div class="layout-right">
+        <app-toggle-switch
+          [value]="this.authController.getUser()?.settings?.storageSettings?.showUploadDate!"
+          [type]="ToggleType.Date"
+        >
+        </app-toggle-switch>
+      </div>
+    </div>
+  </div>
 </div>
