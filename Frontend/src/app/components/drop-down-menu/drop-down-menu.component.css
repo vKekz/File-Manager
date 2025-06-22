@@ -78,7 +78,7 @@
   animation-delay: calc(var(--drop-down-animation-delay) * 3);
 }
 
-.open .sub-container > div.item:nth-child(5) {
+.open .sub-container > div.item:nth-child(4) {
   animation-delay: calc(var(--drop-down-animation-delay) * 4);
 }
 
