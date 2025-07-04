@@ -1,0 +1,46 @@
+name: shelfy-docker
+
+services:
+  mariadb:
+    image: mariadb:10.4.32
+    container_name: database
+    hostname: database
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: shelfy
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - shelfy-network
+    restart: always
+
+  api:
+    container_name: api
+    hostname: api
+    image: shelfy-api
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: database
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: shelfy
+    volumes:
+      - storage-data:/Storage
+    networks:
+      - shelfy-network
+    depends_on:
+      - mariadb
+    restart: always
+
+networks:
+  shelfy-network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+  storage-data:
