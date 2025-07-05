@@ -2,6 +2,8 @@
 
 Secure and modern file manager written in PHP and Angular based on custom MVC implementation as a REST-API made for the Web Engineering lectures at DHBW.
 
+![landing.gif](assets/gifs/landing.gif)
+
 ## Key features
 
 The project was built with user-friendly features but also to maintain security.
@@ -9,6 +11,8 @@ The project was built with user-friendly features but also to maintain security.
 ### User authentication
 
 User authentication is based on a custom JWT implemented session management.
+
+![signin.gif](assets/gifs/signin.gif)
 
 ### Storage management
 
@@ -18,12 +22,16 @@ In your storage you are able to manage:
 
 but also search for your private files and folders.
 
+![storage.gif](assets/gifs/storage.gif)
+
 ### Profile settings
 
 To keep Shelfy the way you want, in your profile settings you are able to customize:
 - Search behavior
 - File overwrite mode
 - Display options
+
+![settings.gif](assets/gifs/settings.gif)
 
 ## Security
 
